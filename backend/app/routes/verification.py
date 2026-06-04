@@ -1,14 +1,20 @@
 """Verification routes.
 
-Phase 1 exposes a mock single-label verification endpoint only. Real upload
-validation, image preprocessing, OpenAI extraction, deterministic verification,
-and batch processing are intentionally deferred to later modules.
+Routes handle HTTP inputs and delegate validation, preprocessing, extraction,
+and response construction to service modules.
 """
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 
 from app.schemas import ExpectedFields, SingleVerificationResponse
-from app.services.mock_verification_service import build_mock_verification
+from app.services.image_preprocessor import ImagePreprocessingError
+from app.services.openai_extraction_service import (
+    ExtractionConfigurationError,
+    ExtractionServiceError,
+    InvalidExtractionResponseError,
+)
+from app.services.single_verification_service import verify_single_label
+from app.utils.file_validation import UploadValidationError
 
 router = APIRouter()
 
@@ -22,9 +28,6 @@ async def verify_label(
     net_contents: str = Form(...),
     government_warning: str = Form(...),
 ) -> SingleVerificationResponse:
-    if not file.filename:
-        raise HTTPException(status_code=400, detail="Please upload a label image.")
-
     expected_fields = ExpectedFields(
         brand_name=brand_name,
         class_type=class_type,
@@ -32,5 +35,15 @@ async def verify_label(
         net_contents=net_contents,
         government_warning=government_warning,
     )
-    return build_mock_verification(filename=file.filename, expected_fields=expected_fields)
-
+    try:
+        return await verify_single_label(file=file, expected_fields=expected_fields)
+    except UploadValidationError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except ImagePreprocessingError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except ExtractionConfigurationError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except InvalidExtractionResponseError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    except ExtractionServiceError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc

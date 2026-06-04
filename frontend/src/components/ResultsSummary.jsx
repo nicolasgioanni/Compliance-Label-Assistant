@@ -21,8 +21,7 @@ export default function ResultsSummary({ result }) {
         <p className="summary-label">Processing Time</p>
         <strong>{result.processing_time_ms} ms</strong>
       </div>
-      {result.message ? <p className="mock-note">{result.message}</p> : null}
+      {result.message ? <p className="result-note">{result.message}</p> : null}
     </section>
   );
 }
-

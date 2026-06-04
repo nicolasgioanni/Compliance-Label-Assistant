@@ -15,7 +15,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title="Alcohol Label Verification API",
         version="0.1.0",
-        description="Phase 1 API scaffold with health check and mock verification.",
+        description="Phase 2 API with health check, upload validation, preprocessing, and extraction.",
     )
 
     app.add_middleware(
@@ -32,4 +32,3 @@ def create_app() -> FastAPI:
 
 
 app = create_app()
-

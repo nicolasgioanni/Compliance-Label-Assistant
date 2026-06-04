@@ -54,8 +54,8 @@ class SingleVerificationResponse(BaseModel):
     extraction_time_ms: int
     verification_time_ms: int
     message: str | None = None
+    error: str | None = None
 
 
 class ErrorResponse(BaseModel):
     detail: str
-

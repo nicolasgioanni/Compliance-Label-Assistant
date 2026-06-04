@@ -151,7 +151,7 @@ textarea {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.mock-note {
+.result-note {
   grid-column: 1 / -1;
   margin: 0;
 }
@@ -235,4 +235,3 @@ dd {
     grid-template-columns: 1fr;
   }
 }
-

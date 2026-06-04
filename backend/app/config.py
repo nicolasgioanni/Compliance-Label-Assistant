@@ -7,7 +7,7 @@ prevents accidental frontend exposure of backend-only values.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import lru_cache
 import os
 
@@ -30,19 +30,15 @@ def _read_origins() -> list[str]:
 @dataclass(frozen=True)
 class Settings:
     service_name: str = "alcohol-label-verification-api"
-    openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
-    openai_model: str = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
-    max_file_size_mb: int = _read_int("MAX_FILE_SIZE_MB", 5)
-    max_batch_size: int = _read_int("MAX_BATCH_SIZE", 10)
-    max_image_width: int = _read_int("MAX_IMAGE_WIDTH", 1600)
-    allowed_origins: list[str] | None = None
-
-    def __post_init__(self) -> None:
-        if self.allowed_origins is None:
-            object.__setattr__(self, "allowed_origins", _read_origins())
+    openai_api_key: str = field(default_factory=lambda: os.getenv("OPENAI_API_KEY", ""))
+    openai_model: str = field(default_factory=lambda: os.getenv("OPENAI_MODEL", "gpt-4.1-mini"))
+    openai_timeout_seconds: int = field(default_factory=lambda: _read_int("OPENAI_TIMEOUT_SECONDS", 30))
+    max_file_size_mb: int = field(default_factory=lambda: _read_int("MAX_FILE_SIZE_MB", 5))
+    max_batch_size: int = field(default_factory=lambda: _read_int("MAX_BATCH_SIZE", 10))
+    max_image_width: int = field(default_factory=lambda: _read_int("MAX_IMAGE_WIDTH", 1600))
+    allowed_origins: list[str] = field(default_factory=_read_origins)
 
 
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
-

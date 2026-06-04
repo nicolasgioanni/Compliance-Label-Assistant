@@ -1,4 +1,4 @@
-"""Shared constants for the Phase 1 mock API."""
+"""Shared constants for API responses."""
 
 FIELD_LABELS = {
     "brand_name": "Brand Name",
@@ -7,4 +7,3 @@ FIELD_LABELS = {
     "net_contents": "Net Contents",
     "government_warning": "Government Warning",
 }
-
