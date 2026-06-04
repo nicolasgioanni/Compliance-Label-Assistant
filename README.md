@@ -1,13 +1,13 @@
 # Label Compliance Verifier
 
-Phase 2 prototype for an AI-assisted alcohol label verification app.
+Phase 3 prototype for an AI-assisted alcohol label verification app.
 
 This repository currently includes:
 
-- FastAPI backend with `GET /health` and an extraction-backed `POST /verify` endpoint.
-- React + Vite frontend with backend health check, single-file upload, expected fields form, and extracted result cards.
+- FastAPI backend with `GET /health` and a deterministic `POST /verify` endpoint.
+- React + Vite frontend with backend health check, single-file upload, expected fields form, and field-level result cards.
 
-Deterministic verification, batch processing, and full documentation are intentionally deferred to later phases.
+Batch processing and full documentation are intentionally deferred to later phases.
 
 ## Repository Structure
 
@@ -24,10 +24,10 @@ label-compliance-verifier/
 
 ```text
 Frontend -> FastAPI /health
-Frontend -> FastAPI /verify -> file validation -> image preprocessing -> OpenAI extraction -> structured response
+Frontend -> FastAPI /verify -> file validation -> image preprocessing -> OpenAI extraction -> deterministic verification -> structured response
 ```
 
-The current Phase 2 flow extracts visible label text and fields when `OPENAI_API_KEY` is configured. It does not yet perform deterministic field comparison.
+The current Phase 3 flow extracts visible label text and fields when `OPENAI_API_KEY` is configured, then deterministic backend code compares extracted values with expected application data.
 
 ## Running The Backend
 
@@ -73,7 +73,6 @@ npm run build
 
 ## Deferred Work
 
-- Phase 3: deterministic verification and text normalization.
 - Phase 4: batch upload UI and controlled backend batch processing.
 - Phase 5-6: hardening, full docs, sample data, deployment readiness, and expanded tests.
 
@@ -81,4 +80,4 @@ Future OpenAI implementation should use the current OpenAI Python SDK syntax for
 
 ## Important Scope Notes
 
-This Phase 2 prototype does not perform final legal compliance review. It extracts visible label text and flags fields for human review until deterministic verification is implemented in Phase 3.
+This Phase 3 prototype does not perform final legal compliance review. AI extracts visible label text, backend code verifies fields deterministically, and a human reviewer makes the final compliance judgment. Government warning bold text, font size, and placement checks remain out of scope.
