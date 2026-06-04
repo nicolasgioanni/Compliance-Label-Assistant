@@ -7,7 +7,7 @@ verification_service.py.
 
 from fastapi import UploadFile
 
-from app.config import get_settings
+from app.config import Settings, get_settings
 from app.schemas import ExpectedFields, SingleVerificationResponse
 from app.services.image_preprocessor import preprocess_image_for_extraction
 from app.services.openai_extraction_service import extract_label_fields
@@ -21,6 +21,14 @@ async def verify_single_label(
     expected_fields: ExpectedFields,
 ) -> SingleVerificationResponse:
     settings = get_settings()
+    return await process_single_label(file=file, expected_fields=expected_fields, settings=settings)
+
+
+async def process_single_label(
+    file: UploadFile,
+    expected_fields: ExpectedFields,
+    settings: Settings,
+) -> SingleVerificationResponse:
     processing_start = start_timer()
 
     original_image_bytes = await validate_upload_file(file, settings.max_file_size_mb)

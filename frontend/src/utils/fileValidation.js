@@ -1,5 +1,6 @@
 const ACCEPTED_TYPES = new Set(['image/jpeg', 'image/png']);
 const MAX_FILE_SIZE_MB = 5;
+const MAX_BATCH_FILES = 10;
 
 export function validateSingleFile(file) {
   if (!file) {
@@ -28,3 +29,30 @@ export function validateExpectedFields(expectedFields) {
   return '';
 }
 
+export function validateBatchFiles(files) {
+  if (!files.length) {
+    return 'Please select at least 2 label images for batch verification.';
+  }
+
+  if (files.length < 2) {
+    return 'Batch verification requires at least 2 label images.';
+  }
+
+  if (files.length > MAX_BATCH_FILES) {
+    return `Please upload ${MAX_BATCH_FILES} files or fewer.`;
+  }
+
+  const invalidFile = files.find((file) => !ACCEPTED_TYPES.has(file.type));
+  if (invalidFile) {
+    return `${invalidFile.name} is not a JPG or PNG image.`;
+  }
+
+  const oversizedFile = files.find((file) => file.size / (1024 * 1024) > MAX_FILE_SIZE_MB);
+  if (oversizedFile) {
+    return `${oversizedFile.name} is larger than ${MAX_FILE_SIZE_MB} MB.`;
+  }
+
+  return '';
+}
+
+export { MAX_BATCH_FILES, MAX_FILE_SIZE_MB };

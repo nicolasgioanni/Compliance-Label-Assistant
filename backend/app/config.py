@@ -35,6 +35,7 @@ class Settings:
     openai_timeout_seconds: int = field(default_factory=lambda: _read_int("OPENAI_TIMEOUT_SECONDS", 30))
     max_file_size_mb: int = field(default_factory=lambda: _read_int("MAX_FILE_SIZE_MB", 5))
     max_batch_size: int = field(default_factory=lambda: _read_int("MAX_BATCH_SIZE", 10))
+    batch_concurrency: int = field(default_factory=lambda: _read_int("BATCH_CONCURRENCY", 3))
     max_image_width: int = field(default_factory=lambda: _read_int("MAX_IMAGE_WIDTH", 1600))
     allowed_origins: list[str] = field(default_factory=_read_origins)
 

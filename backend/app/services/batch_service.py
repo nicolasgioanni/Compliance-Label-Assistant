@@ -1,0 +1,135 @@
+"""Coordinates limited batch verification.
+
+This service owns batch orchestration only. It reuses the single-label pipeline
+for validation, preprocessing, AI extraction, and deterministic verification so
+the batch route stays thin and field comparison remains auditable.
+"""
+
+from __future__ import annotations
+
+import asyncio
+
+from fastapi import UploadFile
+
+from app.config import Settings, get_settings
+from app.schemas import (
+    BatchVerificationItem,
+    BatchVerificationResponse,
+    ExpectedFields,
+    ExtractedFields,
+    OverallStatus,
+)
+from app.services.image_preprocessor import ImagePreprocessingError
+from app.services.openai_extraction_service import (
+    ExtractionConfigurationError,
+    ExtractionServiceError,
+    InvalidExtractionResponseError,
+)
+from app.services.single_verification_service import process_single_label
+from app.services.timing_service import get_elapsed_ms, start_timer
+from app.utils.file_validation import UploadValidationError
+
+
+MIN_BATCH_SIZE = 2
+OVERALL_STATUS_KEYS: tuple[OverallStatus, ...] = ("pass", "fail", "needs_review", "error")
+
+
+class BatchRequestValidationError(ValueError):
+    """Raised when the whole batch request is not valid."""
+
+
+def validate_batch_request(file_count: int, max_batch_size: int) -> None:
+    if file_count < MIN_BATCH_SIZE:
+        raise BatchRequestValidationError("Batch verification requires at least 2 label images.")
+    if file_count > max_batch_size:
+        raise BatchRequestValidationError(f"Batch size limit exceeded. Upload {max_batch_size} files or fewer.")
+
+
+async def verify_batch_labels(
+    files: list[UploadFile],
+    expected_fields: ExpectedFields,
+    settings: Settings | None = None,
+) -> BatchVerificationResponse:
+    active_settings = settings or get_settings()
+    validate_batch_request(len(files), active_settings.max_batch_size)
+
+    total_start = start_timer()
+    semaphore = asyncio.Semaphore(max(active_settings.batch_concurrency, 1))
+    tasks = [
+        _process_batch_file(
+            file=file,
+            expected_fields=expected_fields,
+            settings=active_settings,
+            semaphore=semaphore,
+        )
+        for file in files
+    ]
+    results = await asyncio.gather(*tasks)
+    status_counts = _build_status_counts(results)
+
+    return BatchVerificationResponse(
+        total_labels=len(results),
+        completed=sum(1 for result in results if result.overall_status != "error"),
+        status_counts=status_counts,
+        total_processing_time_ms=max(get_elapsed_ms(total_start), 1),
+        results=results,
+    )
+
+
+async def _process_batch_file(
+    file: UploadFile,
+    expected_fields: ExpectedFields,
+    settings: Settings,
+    semaphore: asyncio.Semaphore,
+) -> BatchVerificationItem:
+    async with semaphore:
+        processing_start = start_timer()
+        try:
+            single_result = await process_single_label(
+                file=file,
+                expected_fields=expected_fields,
+                settings=settings,
+            )
+            return BatchVerificationItem(**single_result.model_dump())
+        except (
+            UploadValidationError,
+            ImagePreprocessingError,
+            ExtractionConfigurationError,
+            InvalidExtractionResponseError,
+            ExtractionServiceError,
+        ) as exc:
+            return _build_error_item(file, expected_fields, processing_start, str(exc))
+        except Exception:
+            return _build_error_item(
+                file,
+                expected_fields,
+                processing_start,
+                "This file could not be processed. Please verify the image and try again.",
+            )
+
+
+def _build_error_item(
+    file: UploadFile,
+    expected_fields: ExpectedFields,
+    processing_start: float,
+    error_message: str,
+) -> BatchVerificationItem:
+    return BatchVerificationItem(
+        filename=file.filename or "uploaded-label",
+        overall_status="error",
+        expected_fields=expected_fields,
+        extracted_fields=ExtractedFields(),
+        field_results=[],
+        processing_time_ms=max(get_elapsed_ms(processing_start), 1),
+        extraction_time_ms=0,
+        verification_time_ms=0,
+        message="This label could not be processed.",
+        error=error_message,
+    )
+
+
+def _build_status_counts(results: list[BatchVerificationItem]) -> dict[str, int]:
+    counts = {status: 0 for status in OVERALL_STATUS_KEYS}
+    for result in results:
+        counts[result.overall_status] += 1
+    return counts

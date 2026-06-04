@@ -62,6 +62,21 @@ def _post_verify_with_extracted(monkeypatch, extracted_fields: ExtractedFields):
     )
 
 
+def _post_verify_batch_with_extracted(monkeypatch, extracted_fields: ExtractedFields, files):
+    async def fake_extract_label_fields(image_bytes: bytes, settings):
+        assert image_bytes
+        assert settings.openai_model
+        return extracted_fields
+
+    monkeypatch.setattr(single_verification_service, "extract_label_fields", fake_extract_label_fields)
+
+    return client.post(
+        "/verify-batch",
+        data=_expected_form_data(),
+        files=files,
+    )
+
+
 def test_verify_extraction_backed_contract(monkeypatch) -> None:
     response = _post_verify_with_extracted(
         monkeypatch,
@@ -184,3 +199,84 @@ def test_verify_missing_api_key_returns_setup_error(monkeypatch) -> None:
 
     assert response.status_code == 503
     assert "OPENAI_API_KEY" in response.json()["detail"]
+
+
+def test_verify_batch_rejects_too_few_files(monkeypatch) -> None:
+    response = _post_verify_batch_with_extracted(
+        monkeypatch,
+        ExtractedFields(),
+        [("files", ("old-tom.png", _image_bytes(), "image/png"))],
+    )
+
+    assert response.status_code == 400
+    assert "at least 2" in response.json()["detail"]
+
+
+def test_verify_batch_rejects_too_many_files(monkeypatch) -> None:
+    files = [
+        ("files", (f"old-tom-{index}.png", _image_bytes(), "image/png"))
+        for index in range(11)
+    ]
+
+    response = _post_verify_batch_with_extracted(monkeypatch, ExtractedFields(), files)
+
+    assert response.status_code == 400
+    assert "Batch size limit exceeded" in response.json()["detail"]
+
+
+def test_verify_batch_returns_one_result_per_valid_file(monkeypatch) -> None:
+    response = _post_verify_batch_with_extracted(
+        monkeypatch,
+        ExtractedFields(
+            brand_name="OLD TOM DISTILLERY",
+            class_type="Kentucky Straight Bourbon Whiskey",
+            alcohol_content="90 Proof",
+            net_contents="750 mL",
+            government_warning_text=STANDARD_WARNING,
+            raw_text="OLD TOM DISTILLERY",
+        ),
+        [
+            ("files", ("old-tom-a.png", _image_bytes(), "image/png")),
+            ("files", ("old-tom-b.jpg", _image_bytes("JPEG"), "image/jpeg")),
+        ],
+    )
+
+    body = response.json()
+
+    assert response.status_code == 200
+    assert body["mode"] == "batch"
+    assert body["total_labels"] == 2
+    assert body["completed"] == 2
+    assert body["status_counts"] == {"pass": 2, "fail": 0, "needs_review": 0, "error": 0}
+    assert len(body["results"]) == 2
+    assert body["results"][0]["filename"] == "old-tom-a.png"
+    assert "expected_fields" in body["results"][0]
+    assert "extracted_fields" in body["results"][0]
+    assert "field_results" in body["results"][0]
+
+
+def test_verify_batch_returns_partial_per_file_errors(monkeypatch) -> None:
+    response = _post_verify_batch_with_extracted(
+        monkeypatch,
+        ExtractedFields(
+            brand_name="OLD TOM DISTILLERY",
+            class_type="Kentucky Straight Bourbon Whiskey",
+            alcohol_content="90 Proof",
+            net_contents="750 mL",
+            government_warning_text=STANDARD_WARNING,
+            raw_text="OLD TOM DISTILLERY",
+        ),
+        [
+            ("files", ("old-tom.png", _image_bytes(), "image/png")),
+            ("files", ("bad.svg", b"<svg />", "image/svg+xml")),
+        ],
+    )
+
+    body = response.json()
+
+    assert response.status_code == 200
+    assert body["total_labels"] == 2
+    assert body["completed"] == 1
+    assert body["status_counts"] == {"pass": 1, "fail": 0, "needs_review": 0, "error": 1}
+    assert [result["overall_status"] for result in body["results"]] == ["pass", "error"]
+    assert "Unsupported file extension" in body["results"][1]["error"]

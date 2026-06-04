@@ -57,5 +57,18 @@ class SingleVerificationResponse(BaseModel):
     error: str | None = None
 
 
+class BatchVerificationItem(SingleVerificationResponse):
+    """Per-file batch result using the same shape as single verification."""
+
+
+class BatchVerificationResponse(BaseModel):
+    mode: Literal["batch"] = "batch"
+    total_labels: int
+    completed: int
+    status_counts: dict[str, int]
+    total_processing_time_ms: int
+    results: list[BatchVerificationItem]
+
+
 class ErrorResponse(BaseModel):
     detail: str

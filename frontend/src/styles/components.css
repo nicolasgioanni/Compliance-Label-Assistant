@@ -40,6 +40,31 @@
   padding: 1rem;
 }
 
+.mode-toggle {
+  background: #eef2f6;
+  border-radius: 8px;
+  display: grid;
+  gap: 0.35rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 0.35rem;
+}
+
+.mode-button {
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: #52616f;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  padding: 0.6rem 0.8rem;
+}
+
+.mode-button.active {
+  background: #ffffff;
+  color: #17212b;
+}
+
 .section-heading h2 {
   font-size: 1rem;
   margin: 0 0 0.75rem;
@@ -151,6 +176,10 @@ textarea {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.batch-summary {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .result-note {
   grid-column: 1 / -1;
   margin: 0;
@@ -186,6 +215,39 @@ textarea {
   display: grid;
   gap: 1rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.results-table {
+  border-collapse: collapse;
+  min-width: 760px;
+  width: 100%;
+}
+
+.results-table th,
+.results-table td {
+  border-bottom: 1px solid #d6dde5;
+  padding: 0.65rem 0.55rem;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.results-table th {
+  color: #52616f;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.results-table tbody tr {
+  cursor: pointer;
+}
+
+.results-table tbody tr:hover,
+.results-table .selected-row {
+  background: #f4f8fc;
 }
 
 .field-card {
@@ -230,6 +292,7 @@ dd {
 @media (max-width: 900px) {
   .verification-layout,
   .result-summary,
+  .batch-summary,
   .result-grid,
   .form-grid {
     grid-template-columns: 1fr;

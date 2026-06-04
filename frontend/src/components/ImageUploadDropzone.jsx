@@ -1,11 +1,16 @@
-import { validateSingleFile } from '../utils/fileValidation';
+import { validateBatchFiles, validateSingleFile } from '../utils/fileValidation';
 
-export default function ImageUploadDropzone({ selectedFile, onFileChange }) {
-  const validationMessage = selectedFile ? validateSingleFile(selectedFile) : '';
+export default function ImageUploadDropzone({ mode, selectedFiles, onFilesChange }) {
+  const validationMessage = selectedFiles.length
+    ? mode === 'batch'
+      ? validateBatchFiles(selectedFiles)
+      : validateSingleFile(selectedFiles[0])
+    : '';
+  const selectedFileLabel = getSelectedFileLabel(selectedFiles, mode);
 
   function handleFileChange(event) {
-    const nextFile = event.target.files?.[0] || null;
-    onFileChange(nextFile);
+    const nextFiles = Array.from(event.target.files || []);
+    onFilesChange(mode === 'batch' ? nextFiles : nextFiles.slice(0, 1));
   }
 
   return (
@@ -14,11 +19,27 @@ export default function ImageUploadDropzone({ selectedFile, onFileChange }) {
         <h2>Label Image</h2>
       </div>
       <label className="dropzone">
-        <input type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" onChange={handleFileChange} />
-        <span>{selectedFile ? selectedFile.name : 'Choose a JPG or PNG label image'}</span>
+        <input
+          type="file"
+          accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+          multiple={mode === 'batch'}
+          onChange={handleFileChange}
+        />
+        <span>{selectedFileLabel}</span>
       </label>
       {validationMessage ? <p className="field-warning">{validationMessage}</p> : null}
     </section>
   );
 }
 
+function getSelectedFileLabel(selectedFiles, mode) {
+  if (!selectedFiles.length) {
+    return mode === 'batch' ? 'Choose 2 to 10 JPG or PNG label images' : 'Choose a JPG or PNG label image';
+  }
+
+  if (mode === 'batch') {
+    return `${selectedFiles.length} label images selected`;
+  }
+
+  return selectedFiles[0].name;
+}
