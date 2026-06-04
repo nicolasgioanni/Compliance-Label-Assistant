@@ -6,7 +6,6 @@ This repository currently includes a working scaffold only:
 
 - FastAPI backend with `GET /health` and a mock `POST /verify` endpoint.
 - React + Vite frontend with backend health check, single-file upload, expected fields form, and mock result cards.
-- Persistent project instructions in `AGENTS.md`.
 
 OpenAI extraction, real image preprocessing, deterministic verification, batch processing, upload limit enforcement, and full documentation are intentionally deferred to later phases.
 
@@ -14,7 +13,6 @@ OpenAI extraction, real image preprocessing, deterministic verification, batch p
 
 ```text
 label-compliance-verifier/
-|-- AGENTS.md
 |-- README.md
 |-- frontend/
 |-- backend/
