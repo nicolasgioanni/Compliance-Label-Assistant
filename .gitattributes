@@ -1,0 +1,31 @@
+# Normalize text files to LF in the repository
+* text=auto eol=lf
+
+# Windows scripts can use CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Shell scripts should stay LF
+*.sh text eol=lf
+
+# Python, JS, CSS, HTML, Markdown, JSON should stay LF
+*.py text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.txt text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.docx binary
