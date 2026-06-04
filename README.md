@@ -1,13 +1,19 @@
 # Label Compliance Verifier
 
-Phase 4 prototype for an AI-assisted alcohol label verification app.
+AI-assisted alcohol label verification prototype for compliance review workflows.
 
-This repository currently includes:
+This prototype uses a hybrid AI + deterministic verification approach. A vision-capable model extracts visible text and likely label fields from uploaded alcohol label images. The backend then performs deterministic comparison between extracted values and expected application data. This keeps the AI portion focused on extraction while keeping verification decisions explainable and auditable.
 
-- FastAPI backend with `GET /health`, deterministic `POST /verify`, and limited `POST /verify-batch` endpoints.
-- React + Vite frontend with backend health check, single-file upload, batch upload, expected fields form, field-level result cards, and a batch results table.
+The prototype does not perform final legal compliance review. It assists agents by flagging likely matches, mismatches, missing fields, and review-needed cases. Visual formatting checks such as bold text, exact font size, and label placement are out of scope and documented as limitations.
 
-CSV export and full documentation are intentionally deferred to later phases.
+## Current Features
+
+- Single-label verification with image upload, expected application fields, AI extraction, deterministic comparison, extracted text, and timing metrics.
+- Limited batch verification for 2 to 10 uploaded JPG/PNG labels using shared expected application data.
+- Controlled batch concurrency with isolated per-file errors.
+- Client-side CSV export for batch results.
+- Backend-only OpenAI API key handling.
+- In-memory upload validation, image resizing, and JPEG compression before extraction.
 
 ## Repository Structure
 
@@ -20,65 +26,112 @@ label-compliance-verifier/
 `-- sample-data/
 ```
 
-## Current Data Flow
+## Data Flow
 
 ```text
-Frontend -> FastAPI /health
-Frontend -> FastAPI /verify -> file validation -> image preprocessing -> OpenAI extraction -> deterministic verification -> structured response
-Frontend -> FastAPI /verify-batch -> shared expected fields -> controlled per-file verification -> batch response
+Frontend
+-> FastAPI /verify or /verify-batch
+-> backend upload validation
+-> in-memory image preprocessing
+-> one OpenAI extraction call per image
+-> deterministic backend verification
+-> structured response with statuses and timing
+-> frontend cards, table, extracted text, and CSV export
 ```
 
-The current Phase 4 flow extracts visible label text and fields when `OPENAI_API_KEY` is configured, then deterministic backend code compares extracted values with expected application data. Batch mode uses one shared expected application dataset, accepts 2 to 10 label images by default, limits concurrent per-file processing, and isolates per-file failures so one bad image does not stop the full batch.
+AI extracts visible label text. Backend code verifies fields. A human agent makes the final compliance judgment.
 
-## Running The Backend
+## Running Locally
 
-```bash
+Backend:
+
+```powershell
 cd backend
 python -m pip install -r requirements.txt
+$env:OPENAI_API_KEY="your-openai-key"
+$env:ALLOWED_ORIGINS="http://localhost:5173"
 python -c "from app.main import app; print(app.title)"
-uvicorn app.main:app --reload
+python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Backend URL: `http://localhost:8000`
+Frontend:
 
-Health check:
-
-```bash
-curl http://localhost:8000/health
-```
-
-## Running The Frontend
-
-```bash
+```powershell
 cd frontend
 npm install
+$env:VITE_API_BASE_URL="http://127.0.0.1:8000"
 npm run dev
 ```
 
-Frontend URL: `http://localhost:5173`
+Open `http://localhost:5173`.
 
-The frontend reads the backend URL from `VITE_API_BASE_URL`. See `frontend/.env.example`.
+## Environment Variables
+
+Backend variables are centralized in `backend/app/config.py` and documented in `backend/.env.example`:
+
+- `OPENAI_API_KEY`
+- `OPENAI_MODEL`
+- `OPENAI_TIMEOUT_SECONDS`
+- `MAX_FILE_SIZE_MB`
+- `MAX_BATCH_SIZE`
+- `BATCH_CONCURRENCY`
+- `MAX_IMAGE_WIDTH`
+- `ALLOWED_ORIGINS`
+
+Frontend variables are documented in `frontend/.env.example`:
+
+- `VITE_API_BASE_URL`
+
+No OpenAI API key belongs in frontend code or frontend environment variables.
+
+## API Endpoints
+
+- `GET /health`
+- `POST /verify`
+- `POST /verify-batch`
+
+See [docs/api-contract.md](docs/api-contract.md) for request and response details.
+
+## Deployment
+
+Vercel frontend:
+
+- Root directory: `frontend`
+- Build command: `npm run build`
+- Output directory: `dist`
+- Environment variable: `VITE_API_BASE_URL=https://your-render-api.onrender.com`
+
+Render backend:
+
+- Root directory: `backend`
+- Build command: `pip install -r requirements.txt`
+- Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
+- Environment variables: use the backend variables listed above.
 
 ## Checks
 
-```bash
+Backend:
+
+```powershell
 cd backend
 python -m pytest
 python -m ruff check app
+python -c "from app.main import app; print(app.title)"
 ```
 
-```bash
+Frontend:
+
+```powershell
 cd frontend
 npm run build
 ```
 
-## Deferred Work
+## Limitations
 
-- CSV export.
-- Phase 5-6: hardening, full docs, sample data, deployment readiness, and expanded tests.
-
-Future OpenAI implementation should use the current OpenAI Python SDK syntax for Responses API image input and Structured Outputs. Prefer schema-enforced structured output over loose JSON parsing when practical. Verify the exact SDK syntax during implementation instead of relying on stale examples.
-
-## Important Scope Notes
-
-This Phase 4 prototype does not perform final legal compliance review. AI extracts visible label text, backend code verifies fields deterministically, and a human reviewer makes the final compliance judgment. Government warning bold text, font size, and placement checks remain out of scope.
+- No final legal compliance decision.
+- No COLA integration.
+- No database, authentication, admin dashboard, payment, or account system.
+- No persistent uploaded file storage.
+- Government warning bold text, font size, and placement are not verified.
+- Batch mode uses one shared expected application dataset for all uploaded labels.
+- External extraction depends on OpenAI API availability and correct backend configuration.

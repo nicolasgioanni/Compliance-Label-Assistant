@@ -5,6 +5,7 @@ from PIL import Image
 
 from app.config import Settings
 from app.main import app
+from app.routes import verification
 from app.schemas import ExtractedFields
 from app.services import single_verification_service
 
@@ -199,6 +200,27 @@ def test_verify_missing_api_key_returns_setup_error(monkeypatch) -> None:
 
     assert response.status_code == 503
     assert "OPENAI_API_KEY" in response.json()["detail"]
+
+
+def test_unexpected_verify_error_returns_safe_json(monkeypatch) -> None:
+    safe_client = TestClient(app, raise_server_exceptions=False)
+
+    async def fail_unexpectedly(file, expected_fields):
+        raise RuntimeError("internal stack detail should not be returned")
+
+    monkeypatch.setattr(verification, "verify_single_label", fail_unexpectedly)
+
+    response = safe_client.post(
+        "/verify",
+        data=_expected_form_data(),
+        files={"file": ("old-tom.png", _image_bytes(), "image/png")},
+    )
+
+    body = response.json()
+
+    assert response.status_code == 500
+    assert body == {"detail": "An unexpected server error occurred. Please try again."}
+    assert "internal stack detail" not in str(body)
 
 
 def test_verify_batch_rejects_too_few_files(monkeypatch) -> None:

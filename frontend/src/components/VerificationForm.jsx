@@ -8,6 +8,7 @@ import ImageUploadDropzone from './ImageUploadDropzone';
 import LoadingState from './LoadingState';
 import ResultsTable from './ResultsTable';
 import ResultsSummary from './ResultsSummary';
+import { downloadBatchResultsCsv } from '../utils/csvExport';
 import { validateBatchFiles, validateExpectedFields, validateSingleFile } from '../utils/fileValidation';
 
 const INITIAL_EXPECTED_FIELDS = {
@@ -89,8 +90,15 @@ export default function VerificationForm() {
 
       <div className="results-column">
         <ErrorBanner message={errorMessage} />
-        {isSubmitting ? <LoadingState /> : null}
+        {isSubmitting ? <LoadingState mode={mode} /> : null}
         <ResultsSummary result={resultForSummary} />
+        {batchResult ? (
+          <div className="result-actions">
+            <button className="secondary-button" type="button" onClick={() => downloadBatchResultsCsv(batchResult)}>
+              Export CSV
+            </button>
+          </div>
+        ) : null}
         {batchResult ? (
           <ResultsTable
             results={batchResult.results}
@@ -98,7 +106,8 @@ export default function VerificationForm() {
             onSelectResult={(_, index) => setSelectedBatchIndex(index)}
           />
         ) : null}
-        {resultForDetails ? (
+        <SelectedResultError result={resultForDetails} />
+        {resultForDetails?.field_results?.length ? (
           <section className="result-grid">
             {resultForDetails.field_results.map((fieldResult) => (
               <FieldResultCard key={fieldResult.field_name} result={fieldResult} />
@@ -108,6 +117,21 @@ export default function VerificationForm() {
         <ExtractedTextPanel extractedFields={resultForDetails?.extracted_fields} />
       </div>
     </form>
+  );
+}
+
+function SelectedResultError({ result }) {
+  if (!result?.error) {
+    return null;
+  }
+
+  return (
+    <section className="panel selected-error-panel">
+      <div className="section-heading">
+        <h2>Selected Label Error</h2>
+      </div>
+      <p>{result.error}</p>
+    </section>
   );
 }
 

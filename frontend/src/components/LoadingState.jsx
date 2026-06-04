@@ -1,8 +1,7 @@
-export default function LoadingState() {
+export default function LoadingState({ mode }) {
   return (
     <div className="loading-state" aria-live="polite">
-      Verifying label...
+      {mode === 'batch' ? 'Verifying batch...' : 'Verifying label...'}
     </div>
   );
 }
-

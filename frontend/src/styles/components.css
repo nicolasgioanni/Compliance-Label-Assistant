@@ -185,6 +185,11 @@ textarea {
   margin: 0;
 }
 
+.result-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .status-pill {
   border-radius: 999px;
   display: inline-flex;
@@ -255,6 +260,15 @@ textarea {
   border: 1px solid #d6dde5;
   border-radius: 8px;
   padding: 1rem;
+}
+
+.selected-error-panel {
+  border-color: #dc6b60;
+}
+
+.selected-error-panel p {
+  color: #8d2017;
+  margin: 0;
 }
 
 .field-card-header {
