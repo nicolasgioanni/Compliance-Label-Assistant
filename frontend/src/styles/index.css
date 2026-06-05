@@ -44,15 +44,6 @@ body {
   padding: var(--shell-padding);
 }
 
-.toast-region {
-  left: var(--shell-padding);
-  pointer-events: none;
-  position: fixed;
-  right: var(--shell-padding);
-  top: 5.35rem;
-  z-index: 20;
-}
-
 .page-header {
   align-items: center;
   background: rgba(255, 255, 255, 0.94);

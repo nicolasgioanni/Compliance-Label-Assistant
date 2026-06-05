@@ -1,3 +1,9 @@
+.verification-workflow {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .verification-layout {
   display: grid;
   gap: 1.1rem;
@@ -153,10 +159,27 @@ textarea {
   opacity: 0.68;
 }
 
-.action-row {
-  display: grid;
+.verification-actions {
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.7rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  justify-content: center;
+}
+
+.verification-actions .primary-button,
+.verification-actions .secondary-button {
+  min-width: 220px;
+}
+
+.error-banner-layer {
+  display: flex;
+  justify-content: center;
+  left: var(--shell-padding);
+  pointer-events: none;
+  position: fixed;
+  right: var(--shell-padding);
+  top: 5.35rem;
+  z-index: 40;
 }
 
 .error-banner {
@@ -205,11 +228,6 @@ textarea {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-.field-warning {
-  color: var(--color-danger);
-  margin: 0.65rem 0 0;
 }
 
 .loading-state {
@@ -450,15 +468,6 @@ textarea {
   padding: 1rem;
 }
 
-.selected-error-panel {
-  border-color: #dc6b60;
-}
-
-.selected-error-panel p {
-  color: var(--color-danger);
-  margin: 0;
-}
-
 .field-card-header {
   align-items: start;
   display: flex;
@@ -497,13 +506,21 @@ dd {
   .batch-summary,
   .queue-summary,
   .result-grid,
-  .form-grid,
-  .action-row {
+  .form-grid {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 520px) {
+  .verification-actions {
+    flex-direction: column;
+  }
+
+  .verification-actions .primary-button,
+  .verification-actions .secondary-button {
+    width: 100%;
+  }
+
   .queue-item-main {
     align-items: flex-start;
     flex-direction: column;

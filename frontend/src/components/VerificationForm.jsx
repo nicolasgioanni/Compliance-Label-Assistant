@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { verifySingleLabel } from '../api/verificationApi';
 import ErrorBanner from './ErrorBanner';
 import ExpectedFieldsForm from './ExpectedFieldsForm';
@@ -8,7 +8,7 @@ import LabelQueue from './LabelQueue';
 import LoadingState from './LoadingState';
 import ResultsSummary from './ResultsSummary';
 import { downloadQueueResultsCsv } from '../utils/csvExport';
-import { MAX_QUEUE_FILES, validateExpectedFields, validateSingleFile } from '../utils/fileValidation';
+import { MAX_FILE_SIZE_MB, MAX_QUEUE_FILES, validateExpectedFields, validateSingleFile } from '../utils/fileValidation';
 
 const MAX_QUEUE_SIZE = MAX_QUEUE_FILES;
 const VERIFY_ALL_CONCURRENCY = 2;
@@ -33,6 +33,22 @@ export default function VerificationForm() {
   const queueSummary = useMemo(() => buildQueueSummary(queueItems), [queueItems]);
   const hasQueueOutcome = queueItems.some((item) => item.result || item.status === 'error');
   const hasResultForExport = queueItems.some((item) => item.result);
+  const activeErrorMessage = errorMessage || selectedItem?.errorMessage || '';
+  const dismissActiveError = useCallback(() => {
+    if (errorMessage) {
+      setErrorMessage('');
+      return;
+    }
+
+    if (!selectedItem?.errorMessage) {
+      return;
+    }
+
+    const selectedItemId = selectedItem.id;
+    setQueueItems((currentItems) =>
+      currentItems.map((item) => (item.id === selectedItemId ? { ...item, errorMessage: null } : item)),
+    );
+  }, [errorMessage, selectedItem?.errorMessage, selectedItem?.id]);
 
   function handleAddFiles(files) {
     setErrorMessage('');
@@ -49,17 +65,14 @@ export default function VerificationForm() {
 
     const availableSlots = MAX_QUEUE_SIZE - queueItems.length;
     const filesToAdd = [];
-    const skippedMessages = [];
+    const filesToValidate = files.slice(0, availableSlots);
+    const excludedForLimitCount = Math.max(files.length - availableSlots, 0);
+    let hasInvalidFile = false;
 
-    files.forEach((file) => {
-      if (filesToAdd.length >= availableSlots) {
-        skippedMessages.push(`${file.name} was skipped because the queue limit is ${MAX_QUEUE_SIZE}.`);
-        return;
-      }
-
+    filesToValidate.forEach((file) => {
       const fileWarning = validateSingleFile(file);
       if (fileWarning) {
-        skippedMessages.push(`${file.name}: ${fileWarning}`);
+        hasInvalidFile = true;
         return;
       }
 
@@ -71,8 +84,10 @@ export default function VerificationForm() {
       setSelectedQueueItemId((currentSelectedId) => currentSelectedId || filesToAdd[0].id);
     }
 
-    if (skippedMessages.length) {
-      setErrorMessage(skippedMessages.join(' '));
+    if (excludedForLimitCount > 0) {
+      setErrorMessage(buildLimitExceededMessage(excludedForLimitCount));
+    } else if (hasInvalidFile) {
+      setErrorMessage(`Some files could not be added. Upload JPG or PNG images smaller than ${MAX_FILE_SIZE_MB} MB.`);
     }
   }
 
@@ -223,81 +238,83 @@ export default function VerificationForm() {
   }
 
   return (
-    <section className="verification-layout">
-      <div className="form-column">
-        <LabelQueue
-          maxQueueSize={MAX_QUEUE_SIZE}
-          isLocked={isQueueLocked}
-          queueItems={queueItems}
-          selectedQueueItemId={selectedQueueItemId}
-          onAddFiles={handleAddFiles}
-          onRemoveItem={handleRemoveItem}
-          onSelectItem={setSelectedQueueItemId}
-        />
-        {selectedItem ? (
-          <ExpectedFieldsForm
-            canApplyToAll={queueItems.length > 1}
-            contextFilename={selectedItem.filename}
-            disabled={isQueueLocked}
-            expectedFields={selectedItem.expectedFields}
-            onApplyToAll={handleApplyExpectedFieldsToAll}
-            onChange={handleExpectedFieldsChange}
+    <section className="verification-workflow">
+      <div className="verification-layout">
+        <div className="form-column">
+          <LabelQueue
+            maxQueueSize={MAX_QUEUE_SIZE}
+            isLocked={isQueueLocked}
+            queueItems={queueItems}
+            selectedQueueItemId={selectedQueueItemId}
+            onAddFiles={handleAddFiles}
+            onRemoveItem={handleRemoveItem}
+            onSelectItem={setSelectedQueueItemId}
           />
-        ) : (
-          <section className="panel empty-state">
-            <h2>Expected Application Data</h2>
-            <p>Add a label image to enter expected application data.</p>
-          </section>
-        )}
-        <div className="action-row">
-          <button
-            className="primary-button"
-            disabled={!selectedItem || isQueueLocked}
-            type="button"
-            onClick={handleVerifySelected}
-          >
-            Verify Selected Label
-          </button>
-          <button
-            className="secondary-button"
-            disabled={!queueItems.length || isQueueLocked}
-            type="button"
-            onClick={handleVerifyAll}
-          >
-            Verify Ready Labels
-          </button>
+        </div>
+
+        <div className="results-column">
+          {selectedItem ? (
+            <ExpectedFieldsForm
+              canApplyToAll={queueItems.length > 1}
+              contextFilename={selectedItem.filename}
+              disabled={isQueueLocked}
+              expectedFields={selectedItem.expectedFields}
+              onApplyToAll={handleApplyExpectedFieldsToAll}
+              onChange={handleExpectedFieldsChange}
+            />
+          ) : (
+            <section className="panel empty-state">
+              <h2>Expected Application Data</h2>
+              <p>Add a label image to enter expected application data.</p>
+            </section>
+          )}
+          <ErrorBanner message={activeErrorMessage} stackIndex={1} onDismiss={dismissActiveError} />
+          {isQueueLocked ? <LoadingState mode={isVerifyingAll ? 'queue' : 'single'} /> : null}
+          {hasQueueOutcome ? (
+            <>
+              <QueueSummary summary={queueSummary} />
+              {hasResultForExport ? (
+                <div className="result-actions">
+                  <button className="secondary-button" type="button" onClick={() => downloadQueueResultsCsv(queueItems)}>
+                    Export CSV
+                  </button>
+                </div>
+              ) : null}
+            </>
+          ) : null}
+          {selectedItem?.result ? <ResultsSummary result={selectedItem.result} /> : null}
+          {!hasQueueOutcome && !selectedItem?.result && !selectedItem?.errorMessage ? <ReadyState /> : null}
+          {hasQueueOutcome && selectedItem && !selectedItem.result && !selectedItem.errorMessage ? (
+            <SelectedPendingState filename={selectedItem.filename} />
+          ) : null}
+          {selectedItem?.result?.field_results?.length ? (
+            <section className="result-grid">
+              {selectedItem.result.field_results.map((fieldResult) => (
+                <FieldResultCard key={fieldResult.field_name} result={fieldResult} />
+              ))}
+            </section>
+          ) : null}
+          <ExtractedTextPanel extractedFields={selectedItem?.result?.extracted_fields} />
         </div>
       </div>
 
-      <div className="results-column">
-        <ErrorBanner message={errorMessage} />
-        {isQueueLocked ? <LoadingState mode={isVerifyingAll ? 'queue' : 'single'} /> : null}
-        {hasQueueOutcome ? (
-          <>
-            <QueueSummary summary={queueSummary} />
-            {hasResultForExport ? (
-              <div className="result-actions">
-                <button className="secondary-button" type="button" onClick={() => downloadQueueResultsCsv(queueItems)}>
-                  Export CSV
-                </button>
-              </div>
-            ) : null}
-          </>
-        ) : null}
-        {selectedItem?.result ? <ResultsSummary result={selectedItem.result} /> : null}
-        <SelectedItemError item={selectedItem} />
-        {!hasQueueOutcome && !selectedItem?.result && !selectedItem?.errorMessage ? <ReadyState /> : null}
-        {hasQueueOutcome && selectedItem && !selectedItem.result && !selectedItem.errorMessage ? (
-          <SelectedPendingState filename={selectedItem.filename} />
-        ) : null}
-        {selectedItem?.result?.field_results?.length ? (
-          <section className="result-grid">
-            {selectedItem.result.field_results.map((fieldResult) => (
-              <FieldResultCard key={fieldResult.field_name} result={fieldResult} />
-            ))}
-          </section>
-        ) : null}
-        <ExtractedTextPanel extractedFields={selectedItem?.result?.extracted_fields} />
+      <div className="verification-actions">
+        <button
+          className="primary-button"
+          disabled={!selectedItem || isQueueLocked}
+          type="button"
+          onClick={handleVerifySelected}
+        >
+          Verify Selected Label
+        </button>
+        <button
+          className="secondary-button"
+          disabled={!queueItems.length || isQueueLocked}
+          type="button"
+          onClick={handleVerifyAll}
+        >
+          Verify Ready Labels
+        </button>
       </div>
     </section>
   );
@@ -311,6 +328,11 @@ function ReadyState() {
       <p>One label works as a single verification. Multiple labels create a queue.</p>
     </section>
   );
+}
+
+function buildLimitExceededMessage(excludedFileCount) {
+  const fileLabel = excludedFileCount === 1 ? 'file was' : 'files were';
+  return `Too many files uploaded. ${excludedFileCount} ${fileLabel} excluded because the queue limit is ${MAX_QUEUE_SIZE}.`;
 }
 
 function SelectedPendingState({ filename }) {
@@ -353,21 +375,6 @@ function QueueSummary({ summary }) {
         <p className="summary-label">Error</p>
         <strong>{summary.errorCount}</strong>
       </div>
-    </section>
-  );
-}
-
-function SelectedItemError({ item }) {
-  if (!item?.errorMessage) {
-    return null;
-  }
-
-  return (
-    <section className="panel selected-error-panel">
-      <div className="section-heading">
-        <h2>Selected Label Error</h2>
-      </div>
-      <p>{item.errorMessage}</p>
     </section>
   );
 }

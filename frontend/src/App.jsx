@@ -38,16 +38,12 @@ export default function App() {
   return (
     <main className="app-shell">
       <Header isOnline={health?.status === 'ok'} />
-      <div className="toast-region" aria-live="polite">
-        {healthError ? (
-          <ErrorBanner
-            autoDismissMs={15000}
-            dismissible
-            message={healthError}
-            onDismiss={dismissHealthError}
-          />
-        ) : null}
-      </div>
+      {healthError ? (
+        <ErrorBanner
+          message={healthError}
+          onDismiss={dismissHealthError}
+        />
+      ) : null}
       <VerificationForm />
       <AppFooter />
     </main>
