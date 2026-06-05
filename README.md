@@ -1,6 +1,6 @@
-# Label Compliance Verifier
+# Compliance Label Assistant
 
-AI-assisted alcohol label verification prototype for compliance review workflows.
+AI-assisted alcohol label verification for comparing label artwork against expected application data.
 
 This prototype uses a hybrid AI + deterministic verification approach. A vision-capable model extracts visible text and likely label fields from uploaded alcohol label images. The backend then performs deterministic comparison between extracted values and expected application data. This keeps the AI portion focused on extraction while keeping verification decisions explainable and auditable.
 

@@ -1,5 +1,5 @@
 # Sample Data
 
-Sample expected values and label images will be added in later phases.
+Sample expected values and label images may be added in a later documentation/data pass.
 
-The Phase 3 scaffold does not include real label samples yet. Add sample label images and expected-value JSON files in a later documentation/data pass.
+This repository does not include real label samples yet.

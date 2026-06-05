@@ -28,10 +28,11 @@ def create_app() -> FastAPI:
     settings = get_settings()
 
     app = FastAPI(
-        title="Alcohol Label Verification API",
+        title="Compliance Label Assistant API",
         version="0.1.0",
         description=(
-            "API for AI extraction and deterministic verification of alcohol label artwork, "
+            "API for AI-assisted alcohol label verification comparing label artwork "
+            "against expected application data, "
             "including single-label and limited batch workflows."
         ),
     )

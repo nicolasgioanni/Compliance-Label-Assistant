@@ -1,4 +1,4 @@
-# Alcohol Label Verifier Prototype Plan
+# Compliance Label Assistant Prototype Plan
 
 ## Summary
 
