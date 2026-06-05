@@ -244,6 +244,7 @@ textarea {
 }
 
 .upload-control {
+  flex-shrink: 0;
   margin-top: 1rem;
 }
 
@@ -463,6 +464,15 @@ textarea {
 .queue-panel {
   display: flex;
   flex-direction: column;
+  height: 38.7rem;
+  min-height: 0;
+}
+
+.queue-list-region {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 0.15rem;
 }
 
 .queue-list {
