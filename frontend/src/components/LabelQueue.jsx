@@ -1,4 +1,5 @@
 import ImageUploadDropzone from './ImageUploadDropzone';
+import InfoTooltip from './InfoTooltip';
 import QueueItemCard from './QueueItemCard';
 
 export default function LabelQueue({
@@ -13,7 +14,16 @@ export default function LabelQueue({
   return (
     <section className="panel queue-panel">
       <div className="section-heading">
-        <h2>Label Queue</h2>
+        <div className="section-title-row">
+          <h2>Label Queue</h2>
+          <InfoTooltip label="About the label queue">
+            Add up to {maxQueueSize} label images here. Each file becomes its own queue item with its own expected
+            application data, verification status, result, and error state. Select a label in the queue to edit that
+            label's expected fields, review its result, or remove it with the X button. One queued label works like a
+            single verification; multiple queued labels let you verify several ready labels without sharing expected
+            data between them.
+          </InfoTooltip>
+        </div>
         <p>Add up to {maxQueueSize} label images. Select a label to edit its expected application data.</p>
       </div>
       {queueItems.length ? (

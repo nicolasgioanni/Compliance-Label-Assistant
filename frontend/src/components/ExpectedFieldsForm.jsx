@@ -1,4 +1,5 @@
 import { DEFAULT_GOVERNMENT_WARNING } from '../constants/defaultWarningText';
+import InfoTooltip from './InfoTooltip';
 
 const FIELD_DEFINITIONS = [
   { id: 'brandName', label: 'Brand Name', type: 'text' },
@@ -26,7 +27,16 @@ export default function ExpectedFieldsForm({
   return (
     <section className="panel">
       <div className="section-heading">
-        <h2>Expected Application Data</h2>
+        <div className="section-title-row">
+          <h2>Expected Application Data</h2>
+          <InfoTooltip label="About expected application data">
+            Enter the values the selected label is supposed to match from the product application: brand name, class or
+            type, alcohol content, net contents, and government warning text. These fields are saved only for the
+            selected queue item, so switching labels changes the form to that label's own expected data. Use the
+            standard warning helper when appropriate, or apply the current fields to all labels when several queued
+            images belong to the same product.
+          </InfoTooltip>
+        </div>
         {contextFilename ? <p>Editing claim for: {contextFilename}</p> : null}
       </div>
       <div className="form-grid">

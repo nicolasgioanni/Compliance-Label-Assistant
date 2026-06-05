@@ -4,6 +4,7 @@ import ErrorBanner from './ErrorBanner';
 import ExpectedFieldsForm from './ExpectedFieldsForm';
 import ExtractedTextPanel from './ExtractedTextPanel';
 import FieldResultCard from './FieldResultCard';
+import InfoTooltip from './InfoTooltip';
 import LabelQueue from './LabelQueue';
 import LoadingState from './LoadingState';
 import ResultsSummary from './ResultsSummary';
@@ -164,13 +165,7 @@ export default function VerificationForm() {
 
     const verificationQueue = queueItems.filter((item) => item.status === 'ready');
     if (!verificationQueue.length) {
-      const incompleteItem = queueItems.find((item) => item.status === 'needs_expected_data');
-      if (incompleteItem) {
-        setSelectedQueueItemId(incompleteItem.id);
-        setErrorMessage(`Complete expected application data for ${incompleteItem.filename} before verifying ready labels.`);
-      } else {
-        setErrorMessage('No ready labels to verify. Add a label or edit expected application data before running verification.');
-      }
+      setErrorMessage('Please complete expected application data for at least one label before verifying ready labels.');
       return;
     }
 
@@ -264,7 +259,16 @@ export default function VerificationForm() {
             />
           ) : (
             <section className="panel empty-state">
-              <h2>Expected Application Data</h2>
+              <div className="section-title-row">
+                <h2>Expected Application Data</h2>
+                <InfoTooltip label="About expected application data before adding labels">
+                  This panel becomes editable after you add a label image to the queue. Start by using the upload
+                  control in the Label Queue, then select the queued label you want to prepare. Once selected, this
+                  section will show the fields that describe what the label should match: brand name, class or type,
+                  alcohol content, net contents, and government warning text. Each queued label gets its own copy of
+                  those fields, so you can prepare one label at a time before verification.
+                </InfoTooltip>
+              </div>
               <p>Add a label image to enter expected application data.</p>
             </section>
           )}
@@ -283,7 +287,6 @@ export default function VerificationForm() {
             </>
           ) : null}
           {selectedItem?.result ? <ResultsSummary result={selectedItem.result} /> : null}
-          {!hasQueueOutcome && !selectedItem?.result && !selectedItem?.errorMessage ? <ReadyState /> : null}
           {hasQueueOutcome && selectedItem && !selectedItem.result && !selectedItem.errorMessage ? (
             <SelectedPendingState filename={selectedItem.filename} />
           ) : null}
@@ -316,16 +319,6 @@ export default function VerificationForm() {
           Verify Ready Labels
         </button>
       </div>
-    </section>
-  );
-}
-
-function ReadyState() {
-  return (
-    <section className="panel empty-state result-empty-state">
-      <h2>Ready to verify</h2>
-      <p>Add label artwork, enter expected application data, and run verification.</p>
-      <p>One label works as a single verification. Multiple labels create a queue.</p>
     </section>
   );
 }

@@ -1,6 +1,6 @@
 const ACCEPTED_TYPES = new Set(['image/jpeg', 'image/png']);
 const MAX_FILE_SIZE_MB = 5;
-const MAX_QUEUE_FILES = 5;
+const MAX_QUEUE_FILES = 10;
 const MAX_BATCH_FILES = 10;
 
 export function validateSingleFile(file) {

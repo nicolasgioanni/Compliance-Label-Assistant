@@ -8,7 +8,7 @@ The prototype does not perform final legal compliance review. It assists agents 
 
 ## Current Features
 
-- Unified label queue for 1 to 5 uploaded JPG/PNG labels, with expected application fields stored per label.
+- Unified label queue for 1 to 10 uploaded JPG/PNG labels, with expected application fields stored per label.
 - Per-label verification with AI extraction, deterministic comparison, extracted text, and timing metrics.
 - Controlled batch concurrency with isolated per-file errors.
 - Client-side CSV export for verified queue results, with unverified labels skipped.
@@ -139,6 +139,6 @@ npm run build
 - No database, authentication, admin dashboard, payment, or account system.
 - No persistent uploaded file storage.
 - Government warning bold text, font size, and placement are not verified.
-- The main frontend queue is limited to 5 labels and calls `/verify` once per queued label.
+- The main frontend queue is limited to 10 labels and calls `/verify` once per queued label.
 - The backend `/verify-batch` endpoint remains available for shared expected-field batch requests.
 - External extraction depends on OpenAI API availability and correct backend configuration.
