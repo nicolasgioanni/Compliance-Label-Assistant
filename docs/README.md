@@ -10,4 +10,4 @@ This folder documents the current prototype implementation and the approved road
 - [Deployment](deployment.md)
 - [Implementation Plan](implementation-plan.md)
 
-The implemented app supports single-label verification, limited batch verification, and client-side CSV export. Human review remains final.
+The implemented app supports a unified frontend label queue, per-label verification, the backend batch endpoint, and client-side CSV export for queue and batch result data. CSV import by filename-to-expected-field mapping is a future scalability improvement, not a current feature. Human review remains final.

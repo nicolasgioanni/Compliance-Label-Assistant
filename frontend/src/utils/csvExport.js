@@ -20,6 +20,36 @@ export function buildBatchResultsCsv(batchResult) {
 
 export function downloadBatchResultsCsv(batchResult, filename = 'batch-verification-results.csv') {
   const csvContent = buildBatchResultsCsv(batchResult);
+  downloadCsv(csvContent, filename);
+}
+
+export function buildQueueResultsCsv(queueItems) {
+  const resultItems = queueItems.filter((item) => item.result);
+  const exportRows = resultItems.map((item) => ({
+    filename: item.filename,
+    overall_status: item.result.overall_status,
+    field_results: item.result.field_results || [],
+    processing_time_ms: item.result.processing_time_ms || '',
+  }));
+
+  return buildCsvFromResults(exportRows);
+}
+
+export function downloadQueueResultsCsv(queueItems, filename = 'queue-verification-results.csv') {
+  const csvContent = buildQueueResultsCsv(queueItems);
+  downloadCsv(csvContent, filename);
+}
+
+function buildCsvFromResults(results) {
+  const headerRow = CSV_COLUMNS.map(([columnName]) => escapeCsvValue(columnName)).join(',');
+  const resultRows = results.map((result) =>
+    CSV_COLUMNS.map(([, fieldName]) => escapeCsvValue(getColumnValue(result, fieldName))).join(','),
+  );
+
+  return [headerRow, ...resultRows].join('\n');
+}
+
+function downloadCsv(csvContent, filename) {
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8' });
   const objectUrl = URL.createObjectURL(blob);
   const link = document.createElement('a');

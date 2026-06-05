@@ -1,45 +1,25 @@
-import { validateBatchFiles, validateSingleFile } from '../utils/fileValidation';
-
-export default function ImageUploadDropzone({ mode, selectedFiles, onFilesChange }) {
-  const validationMessage = selectedFiles.length
-    ? mode === 'batch'
-      ? validateBatchFiles(selectedFiles)
-      : validateSingleFile(selectedFiles[0])
-    : '';
-  const selectedFileLabel = getSelectedFileLabel(selectedFiles, mode);
-
+export default function ImageUploadDropzone({ disabled, maxQueueSize, onFilesAdded }) {
   function handleFileChange(event) {
     const nextFiles = Array.from(event.target.files || []);
-    onFilesChange(mode === 'batch' ? nextFiles : nextFiles.slice(0, 1));
+    if (nextFiles.length) {
+      onFilesAdded(nextFiles);
+    }
+    event.target.value = '';
   }
 
   return (
-    <section className="panel">
-      <div className="section-heading">
-        <h2>Label Image</h2>
-      </div>
-      <label className="dropzone">
+    <div className="upload-control">
+      <label className={disabled ? 'dropzone disabled' : 'dropzone'}>
         <input
-          type="file"
           accept=".jpg,.jpeg,.png,image/jpeg,image/png"
-          multiple={mode === 'batch'}
+          disabled={disabled}
+          multiple
+          type="file"
           onChange={handleFileChange}
         />
-        <span>{selectedFileLabel}</span>
+        <span>Add label images</span>
       </label>
-      {validationMessage ? <p className="field-warning">{validationMessage}</p> : null}
-    </section>
+      <p className="upload-helper">JPG or PNG only &bull; Maximum {maxQueueSize} labels</p>
+    </div>
   );
-}
-
-function getSelectedFileLabel(selectedFiles, mode) {
-  if (!selectedFiles.length) {
-    return mode === 'batch' ? 'Choose 2 to 10 JPG or PNG label images' : 'Choose a JPG or PNG label image';
-  }
-
-  if (mode === 'batch') {
-    return `${selectedFiles.length} label images selected`;
-  }
-
-  return selectedFiles[0].name;
 }

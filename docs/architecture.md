@@ -17,9 +17,10 @@ User
 ## Frontend
 
 - `frontend/src/api/verificationApi.js` is the only endpoint-aware frontend module.
-- Components render upload controls, expected fields, loading/error states, result summaries, batch tables, selected-label details, and extracted text.
+- Components render the label queue, upload controls, per-label expected fields, loading/error states, queue summaries, selected-label details, and extracted text.
 - Reusable frontend logic stays in `frontend/src/utils`, including file validation, status styling, and CSV export.
-- CSV export is client-side only and does not include raw extracted text.
+- CSV export is client-side only, skips unverified queue items, and does not include raw extracted text.
+- Future CSV import can populate each queue item's expected fields by matching spreadsheet rows to queued files by filename.
 
 ## Backend
 

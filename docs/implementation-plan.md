@@ -5,7 +5,7 @@
 - Build the monorepo from the current placeholder repo into `/frontend`, `/backend`, `docs`, and `sample-data`.
 - Implement the product framing consistently: AI extracts visible label text, backend code verifies fields, and a human agent makes the final compliance judgment.
 - Use the corrected Render command everywhere: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`.
-- Include CSV export because it is small, useful, and requested as a stretch feature.
+- Include CSV export because it is small, useful, and requested as a stretch feature. Defer CSV import until larger filename-mapped batches are needed.
 
 ## Key Changes
 
@@ -13,7 +13,8 @@
 - Backend services: isolate image preprocessing, OpenAI extraction, deterministic verification, batch orchestration, timing, response building, file validation, logging, and text normalization. Add one small shared label-processing helper if needed to keep routes thin.
 - OpenAI extraction: use backend-only OpenAI SDK with one vision call per image, base64 image input, short extraction-only prompt, structured JSON output, timeout, and one retry. Use the current OpenAI Python SDK syntax for Responses API image input and Structured Outputs. Prefer schema-enforced structured output with a Pydantic model when practical. Verify the exact SDK syntax during implementation instead of relying on stale examples.
 - Verification: expose lowercase API status values: `pass`, `normalized_match`, `fail`, `missing`, `needs_review`, `error`; roll any `fail` to overall `fail`, errors to `error`, and normalized/unclear/missing cases to `needs_review`.
-- Frontend: React/Vite one-page UI with single/batch mode, upload dropzone, expected fields form, standard warning button, API client, result summary, field cards, batch table, selected detail view, raw extracted text panel, CSV export, and friendly error banner.
+- Frontend: React/Vite one-page UI with a unified label queue, upload control, per-label expected fields form, standard warning button, API client, queue summary, field cards, selected detail view, raw extracted text panel, CSV export, and friendly error banner.
+- Future CSV import: allow a spreadsheet with `filename`, `brand_name`, `class_type`, `alcohol_content`, `net_contents`, and `government_warning` to prefill queued labels by exact filename match before verification.
 
 ## API And Behavior
 
@@ -34,12 +35,13 @@
 
 - Backend unit tests for text normalization, brand/class matching, ABV/proof equivalence, net contents conversion, government warning checks, file validation, and API contract.
 - API tests mock the extraction service so no test requires a real OpenAI API call.
-- Frontend verification: run `npm run build`; manually smoke test health check, single upload, batch upload, row selection, extracted text rendering, errors, and CSV export.
+- Frontend verification: run `npm run build`; manually smoke test health check, one-label queue verification, multi-label queue verification, item selection, extracted text rendering, errors, and CSV export.
 - Final self-audit: confirm route thinness, backend-only API key, configurable CORS/limits/model, image compression, batch concurrency, no sensitive logging, no permanent storage, and docs matching implemented behavior.
 
 ## Assumptions
 
-- Batch mode uses one shared expected application dataset for all uploaded labels.
+- The frontend queue supports separate expected application data per label.
+- Backend `/verify-batch` uses one shared expected application dataset for all uploaded labels.
 - No authentication, database, COLA integration, generated sample images, or final legal compliance engine.
 - `sample-data/labels` will include a README only; expected-value JSON samples will be created.
 - Docs will state live demo URLs as placeholders unless deployment URLs are provided later.

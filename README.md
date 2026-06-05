@@ -8,10 +8,10 @@ The prototype does not perform final legal compliance review. It assists agents 
 
 ## Current Features
 
-- Single-label verification with image upload, expected application fields, AI extraction, deterministic comparison, extracted text, and timing metrics.
-- Limited batch verification for 2 to 10 uploaded JPG/PNG labels using shared expected application data.
+- Unified label queue for 1 to 5 uploaded JPG/PNG labels, with expected application fields stored per label.
+- Per-label verification with AI extraction, deterministic comparison, extracted text, and timing metrics.
 - Controlled batch concurrency with isolated per-file errors.
-- Client-side CSV export for batch results.
+- Client-side CSV export for verified queue results, with unverified labels skipped.
 - Backend-only OpenAI API key handling.
 - In-memory upload validation, image resizing, and JPEG compression before extraction.
 
@@ -29,14 +29,14 @@ label-compliance-verifier/
 ## Data Flow
 
 ```text
-Frontend
--> FastAPI /verify or /verify-batch
+Frontend queue
+-> FastAPI /verify once per queued label
 -> backend upload validation
 -> in-memory image preprocessing
 -> one OpenAI extraction call per image
 -> deterministic backend verification
 -> structured response with statuses and timing
--> frontend cards, table, extracted text, and CSV export
+-> frontend queue summary, selected-label details, extracted text, and CSV export
 ```
 
 AI extracts visible label text. Backend code verifies fields. A human agent makes the final compliance judgment.
@@ -92,6 +92,12 @@ No OpenAI API key belongs in frontend code or frontend environment variables.
 
 See [docs/api-contract.md](docs/api-contract.md) for request and response details.
 
+## CSV Export And Future Import
+
+CSV export is implemented in the frontend for queue results. It exports `queue-verification-results.csv`, includes one row per verified label, skips unverified queue items, and does not include raw extracted text. The existing shared-field batch result CSV helper remains available for batch result data.
+
+CSV import is a future scalability improvement. For larger submission batches, reviewers could upload a spreadsheet mapping filenames to expected application data so queued labels can be matched by filename and prefilled before verification.
+
 ## Deployment
 
 Vercel frontend:
@@ -133,5 +139,6 @@ npm run build
 - No database, authentication, admin dashboard, payment, or account system.
 - No persistent uploaded file storage.
 - Government warning bold text, font size, and placement are not verified.
-- Batch mode uses one shared expected application dataset for all uploaded labels.
+- The main frontend queue is limited to 5 labels and calls `/verify` once per queued label.
+- The backend `/verify-batch` endpoint remains available for shared expected-field batch requests.
 - External extraction depends on OpenAI API availability and correct backend configuration.
