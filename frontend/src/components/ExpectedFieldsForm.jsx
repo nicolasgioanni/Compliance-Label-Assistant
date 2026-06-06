@@ -25,7 +25,7 @@ export default function ExpectedFieldsForm({
   }
 
   return (
-    <section className="panel">
+    <>
       <div className="section-heading">
         <div className="section-title-row">
           <h2>Expected Application Data</h2>
@@ -74,6 +74,6 @@ export default function ExpectedFieldsForm({
           Apply Current Data to All Labels
         </button>
       </div>
-    </section>
+    </>
   );
 }

@@ -7,8 +7,8 @@ The prototype is designed around safe handling of uploaded files and backend-onl
 - OpenAI API key is read only by the backend from `OPENAI_API_KEY`.
 - Frontend uses only `VITE_API_BASE_URL` and never calls OpenAI directly.
 - CORS origins are configured from `ALLOWED_ORIGINS`.
-- Backend validates file extension, MIME type, empty files, file size, and Pillow image openability.
-- Batch size is limited by `MAX_BATCH_SIZE`.
+- Backend validates file extension, MIME type, decoded image format, empty files, file size, and Pillow image openability.
+- Batch size is limited by `MAX_BATCH_SIZE`, and duplicate filenames in a batch are rejected before processing.
 - Uploaded image bytes are processed in memory and are not written to permanent storage.
 - Logging is minimal and should not include API keys, image bytes, full payloads, raw secrets, or full environment dumps.
 - Unexpected backend exceptions return a generic JSON error instead of stack traces.

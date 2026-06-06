@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { FILE_INPUT_ACCEPT, SUPPORTED_IMAGE_DESCRIPTION } from '../utils/fileValidation';
 
 export default function ImageUploadDropzone({ disabled, maxQueueSize, onFilesAdded }) {
   const [isDragActive, setIsDragActive] = useState(false);
@@ -52,7 +53,7 @@ export default function ImageUploadDropzone({ disabled, maxQueueSize, onFilesAdd
         onDrop={handleDrop}
       >
         <input
-          accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+          accept={FILE_INPUT_ACCEPT}
           disabled={disabled}
           multiple
           type="file"
@@ -69,7 +70,7 @@ export default function ImageUploadDropzone({ disabled, maxQueueSize, onFilesAdd
           </span>
           <span className="dropzone-title">Drop a label image here</span>
           <span className="dropzone-subtitle">
-            or click to browse &bull; PNG or JPG only &bull; Maximum {maxQueueSize} files
+            or click to browse &bull; {SUPPORTED_IMAGE_DESCRIPTION} only &bull; Maximum {maxQueueSize} files
           </span>
         </span>
       </label>

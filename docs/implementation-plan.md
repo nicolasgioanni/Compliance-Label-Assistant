@@ -22,7 +22,7 @@
 - `POST /verify-batch` accepts `files[]` plus the same expected fields; supports 2-10 files, shared expected values, concurrency `3`, partial per-file errors, and total timing.
 - Single response shape: `filename`, `overall_status`, `expected_fields`, `extracted_fields`, `field_results`, `processing_time_ms`, `extraction_time_ms`, `verification_time_ms`, and optional `error`.
 - Batch response shape: `total_labels`, `status_counts`, `total_processing_time_ms`, and `results` using the same per-file shape as single verification.
-- File validation rejects empty files, oversized files, bad extensions, bad MIME types, excessive batch size, and images Pillow cannot open.
+- File validation rejects empty files, oversized files, bad extensions, bad MIME types, decoded format mismatches, duplicate batch filenames, excessive batch size, and images Pillow cannot open.
 
 ## Verification Rules
 

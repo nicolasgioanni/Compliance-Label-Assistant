@@ -2,12 +2,13 @@ export default function Header({ isOnline }) {
   return (
     <header className="page-header">
       <div className="brand-lockup">
-        <div className="logo-mark" aria-hidden="true">
-          CLA
-        </div>
-        <div>
-          <h1>Compliance Label Assistant</h1>
-          <p>TTB Label Compliance Verification</p>
+        <img className="logo-mark" src="/cla-logo.png" alt="" aria-hidden="true" />
+        <div className="brand-divider" aria-hidden="true" />
+        <div className="brand-wordmark">
+          <h1 className="brand-initials">CLA</h1>
+          <p className="brand-title">Compliance Label Assistant</p>
+          <div className="brand-rule" aria-hidden="true" />
+          <p className="brand-subtitle">TTB Label Compliance Verification</p>
         </div>
       </div>
       <div className={isOnline ? 'system-pill online' : 'system-pill offline'} aria-live="polite">

@@ -8,12 +8,12 @@ The prototype does not perform final legal compliance review. It assists agents 
 
 ## Current Features
 
-- Unified label queue for 1 to 10 uploaded JPG/PNG labels, with expected application fields stored per label.
+- Unified label queue for 1 to 10 uploaded JPG, PNG, WebP, or TIFF labels, with expected application fields stored per label.
 - Per-label verification with AI extraction, deterministic comparison, extracted text, and timing metrics.
 - Controlled batch concurrency with isolated per-file errors.
 - Client-side CSV export for verified queue results, with unverified labels skipped.
 - Backend-only OpenAI API key handling.
-- In-memory upload validation, image resizing, and JPEG compression before extraction.
+- In-memory upload validation, duplicate filename rejection, image resizing, and JPEG compression before extraction.
 
 ## Repository Structure
 
@@ -138,6 +138,7 @@ npm run build
 - No COLA integration.
 - No database, authentication, admin dashboard, payment, or account system.
 - No persistent uploaded file storage.
+- PDF and HEIC/HEIF uploads are not supported in the MVP; they require additional decoding or rasterization dependencies.
 - Government warning bold text, font size, and placement are not verified.
 - The main frontend queue is limited to 10 labels and calls `/verify` once per queued label.
 - The backend `/verify-batch` endpoint remains available for shared expected-field batch requests.

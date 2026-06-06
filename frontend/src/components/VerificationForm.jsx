@@ -1,6 +1,5 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { verifySingleLabel } from '../api/verificationApi';
-import ErrorBanner from './ErrorBanner';
 import ExpectedFieldsForm from './ExpectedFieldsForm';
 import ExtractedTextPanel from './ExtractedTextPanel';
 import FieldResultCard from './FieldResultCard';
@@ -9,10 +8,19 @@ import LabelQueue from './LabelQueue';
 import LoadingState from './LoadingState';
 import ResultsSummary from './ResultsSummary';
 import { downloadQueueResultsCsv } from '../utils/csvExport';
-import { MAX_FILE_SIZE_MB, MAX_QUEUE_FILES, validateExpectedFields, validateSingleFile } from '../utils/fileValidation';
+import {
+  MAX_FILE_SIZE_MB,
+  MAX_QUEUE_FILES,
+  SUPPORTED_IMAGE_DESCRIPTION,
+  buildDuplicateFilesMessage,
+  normalizeFilename,
+  validateExpectedFields,
+  validateSingleFile,
+} from '../utils/fileValidation';
 
 const MAX_QUEUE_SIZE = MAX_QUEUE_FILES;
 const VERIFY_ALL_CONCURRENCY = 2;
+const QUEUE_REMOVAL_ANIMATION_MS = 90;
 
 const EMPTY_EXPECTED_FIELDS = {
   brandName: '',
@@ -22,58 +30,69 @@ const EMPTY_EXPECTED_FIELDS = {
   governmentWarning: '',
 };
 
-export default function VerificationForm() {
+export default function VerificationForm({ showError = () => {} }) {
   const [queueItems, setQueueItems] = useState([]);
   const [selectedQueueItemId, setSelectedQueueItemId] = useState(null);
-  const [errorMessage, setErrorMessage] = useState('');
   const [isVerifyingAll, setIsVerifyingAll] = useState(false);
+  const [removingQueueItemIds, setRemovingQueueItemIds] = useState(() => new Set());
+  const removalTimeoutsRef = useRef(new Map());
 
-  const selectedItem = queueItems.find((item) => item.id === selectedQueueItemId) || null;
+  const activeQueueItems = useMemo(
+    () => queueItems.filter((item) => !removingQueueItemIds.has(item.id)),
+    [queueItems, removingQueueItemIds],
+  );
+  const selectedItem = activeQueueItems.find((item) => item.id === selectedQueueItemId) || null;
   const isAnyItemVerifying = queueItems.some((item) => item.status === 'verifying');
   const isQueueLocked = isAnyItemVerifying || isVerifyingAll;
-  const queueSummary = useMemo(() => buildQueueSummary(queueItems), [queueItems]);
-  const hasQueueOutcome = queueItems.some((item) => item.result || item.status === 'error');
-  const hasResultForExport = queueItems.some((item) => item.result);
-  const activeErrorMessage = errorMessage || selectedItem?.errorMessage || '';
-  const dismissActiveError = useCallback(() => {
-    if (errorMessage) {
-      setErrorMessage('');
-      return;
-    }
-
-    if (!selectedItem?.errorMessage) {
-      return;
-    }
-
-    const selectedItemId = selectedItem.id;
+  const queueSummary = useMemo(() => buildQueueSummary(activeQueueItems), [activeQueueItems]);
+  const hasQueueOutcome = activeQueueItems.some((item) => item.result || item.status === 'error');
+  const hasResultForExport = activeQueueItems.some((item) => item.result);
+  const clearItemErrorMessage = useCallback((itemId) => {
     setQueueItems((currentItems) =>
-      currentItems.map((item) => (item.id === selectedItemId ? { ...item, errorMessage: null } : item)),
+      currentItems.map((item) => (item.id === itemId ? { ...item, errorMessage: null } : item)),
     );
-  }, [errorMessage, selectedItem?.errorMessage, selectedItem?.id]);
+  }, []);
+
+  useEffect(
+    () => () => {
+      removalTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
+      removalTimeoutsRef.current.clear();
+    },
+    [],
+  );
 
   function handleAddFiles(files) {
-    setErrorMessage('');
-
     if (isQueueLocked) {
-      setErrorMessage('Wait for verification to finish before adding more labels.');
+      showError('Wait for verification to finish before adding more labels.');
       return;
     }
 
-    if (queueItems.length >= MAX_QUEUE_SIZE) {
-      setErrorMessage('The label queue is full. Remove a label before adding another.');
-      return;
-    }
-
-    const availableSlots = MAX_QUEUE_SIZE - queueItems.length;
     const filesToAdd = [];
-    const filesToValidate = files.slice(0, availableSlots);
-    const excludedForLimitCount = Math.max(files.length - availableSlots, 0);
-    let hasInvalidFile = false;
+    const existingFilenames = new Set(activeQueueItems.map((item) => normalizeFilename(item.filename)));
+    const selectedFilenames = new Set();
+    let duplicateCount = 0;
+    let invalidCount = 0;
+    let excludedForLimitCount = 0;
 
-    filesToValidate.forEach((file) => {
+    files.forEach((file) => {
+      const normalizedFilename = normalizeFilename(file.name);
+      if (normalizedFilename && (existingFilenames.has(normalizedFilename) || selectedFilenames.has(normalizedFilename))) {
+        duplicateCount += 1;
+        return;
+      }
+
+      if (normalizedFilename) {
+        selectedFilenames.add(normalizedFilename);
+      }
+
       const fileWarning = validateSingleFile(file);
       if (fileWarning) {
-        hasInvalidFile = true;
+        invalidCount += 1;
+        return;
+      }
+
+      if (activeQueueItems.length + filesToAdd.length >= MAX_QUEUE_SIZE) {
+        excludedForLimitCount += 1;
         return;
       }
 
@@ -85,34 +104,74 @@ export default function VerificationForm() {
       setSelectedQueueItemId((currentSelectedId) => currentSelectedId || filesToAdd[0].id);
     }
 
+    const uploadWarnings = [];
+    if (duplicateCount > 0) {
+      uploadWarnings.push(buildDuplicateFilesMessage(duplicateCount));
+    }
     if (excludedForLimitCount > 0) {
-      setErrorMessage(buildLimitExceededMessage(excludedForLimitCount));
-    } else if (hasInvalidFile) {
-      setErrorMessage(`Some files could not be added. Upload JPG or PNG images smaller than ${MAX_FILE_SIZE_MB} MB.`);
+      uploadWarnings.push(buildLimitExceededMessage(excludedForLimitCount));
+    }
+    if (invalidCount > 0) {
+      uploadWarnings.push(
+        `Some files could not be added. Upload ${SUPPORTED_IMAGE_DESCRIPTION} images smaller than ${MAX_FILE_SIZE_MB} MB.`,
+      );
+    }
+
+    if (uploadWarnings.length) {
+      showError(uploadWarnings.join(' '));
+    } else {
+      showError('');
     }
   }
 
   function handleRemoveItem(itemId) {
     if (isQueueLocked) {
-      setErrorMessage('Wait for verification to finish before removing labels.');
+      showError('Wait for verification to finish before removing labels.');
+      return;
+    }
+    if (removingQueueItemIds.has(itemId) || removalTimeoutsRef.current.has(itemId)) {
       return;
     }
 
-    setErrorMessage('');
-    const removeIndex = queueItems.findIndex((item) => item.id === itemId);
-    const nextItems = queueItems.filter((item) => item.id !== itemId);
+    const removeIndex = activeQueueItems.findIndex((item) => item.id === itemId);
+    if (removeIndex === -1) {
+      return;
+    }
 
-    setQueueItems(nextItems);
+    showError('');
+    const nextItems = activeQueueItems.filter((item) => item.id !== itemId);
 
     if (itemId === selectedQueueItemId) {
       const nextSelectedItem = nextItems[removeIndex] || nextItems[removeIndex - 1] || null;
       setSelectedQueueItemId(nextSelectedItem?.id || null);
     }
+
+    setRemovingQueueItemIds((currentIds) => {
+      const nextIds = new Set(currentIds);
+      nextIds.add(itemId);
+      return nextIds;
+    });
+
+    const timeoutId = setTimeout(() => {
+      setQueueItems((currentItems) => currentItems.filter((item) => item.id !== itemId));
+      setRemovingQueueItemIds((currentIds) => {
+        const nextIds = new Set(currentIds);
+        nextIds.delete(itemId);
+        return nextIds;
+      });
+      removalTimeoutsRef.current.delete(itemId);
+    }, QUEUE_REMOVAL_ANIMATION_MS);
+
+    removalTimeoutsRef.current.set(itemId, timeoutId);
   }
 
   function handleExpectedFieldsChange(nextExpectedFields) {
     if (!selectedItem || isQueueLocked) {
       return;
+    }
+
+    if (selectedItem.errorMessage) {
+      showError('');
     }
 
     setQueueItems((currentItems) =>
@@ -135,7 +194,7 @@ export default function VerificationForm() {
       return;
     }
 
-    setErrorMessage('');
+    showError('');
     setQueueItems((currentItems) =>
       currentItems.map((item) => applyExpectedFieldsToItem(item, selectedItem.expectedFields)),
     );
@@ -143,33 +202,33 @@ export default function VerificationForm() {
 
   async function handleVerifySelected() {
     if (!selectedItem) {
-      setErrorMessage('Add and select a label image before running verification.');
+      showError('Add and select a label image before running verification.');
       return;
     }
 
     const fieldWarning = validateExpectedFields(selectedItem.expectedFields);
     if (fieldWarning) {
-      setErrorMessage(fieldWarning);
+      showError(fieldWarning);
       return;
     }
 
-    setErrorMessage('');
+    showError('');
     await verifyQueueItem(selectedItem);
   }
 
   async function handleVerifyAll() {
-    if (!queueItems.length) {
-      setErrorMessage('Add at least one label image before running verification.');
+    if (!activeQueueItems.length) {
+      showError('Add at least one label image before running verification.');
       return;
     }
 
-    const verificationQueue = queueItems.filter((item) => item.status === 'ready');
+    const verificationQueue = activeQueueItems.filter((item) => item.status === 'ready');
     if (!verificationQueue.length) {
-      setErrorMessage('Please complete expected application data for at least one label before verifying ready labels.');
+      showError('Please complete expected application data for at least one label before verifying ready labels.');
       return;
     }
 
-    setErrorMessage('');
+    showError('');
     setIsVerifyingAll(true);
     let nextIndex = 0;
 
@@ -217,12 +276,14 @@ export default function VerificationForm() {
         ),
       );
     } catch (error) {
+      const errorMessage = getVerificationErrorMessage(error);
+      showError(errorMessage, { onDismiss: () => clearItemErrorMessage(itemSnapshot.id) });
       setQueueItems((currentItems) =>
         currentItems.map((item) =>
           item.id === itemSnapshot.id
             ? {
                 ...item,
-                errorMessage: getVerificationErrorMessage(error),
+                errorMessage,
                 result: null,
                 status: 'error',
               }
@@ -240,6 +301,7 @@ export default function VerificationForm() {
             maxQueueSize={MAX_QUEUE_SIZE}
             isLocked={isQueueLocked}
             queueItems={queueItems}
+            removingQueueItemIds={removingQueueItemIds}
             selectedQueueItemId={selectedQueueItemId}
             onAddFiles={handleAddFiles}
             onRemoveItem={handleRemoveItem}
@@ -248,38 +310,49 @@ export default function VerificationForm() {
         </div>
 
         <div className="results-column">
-          {selectedItem ? (
-            <ExpectedFieldsForm
-              canApplyToAll={queueItems.length > 1}
-              contextFilename={selectedItem.filename}
-              disabled={isQueueLocked}
-              expectedFields={selectedItem.expectedFields}
-              onApplyToAll={handleApplyExpectedFieldsToAll}
-              onChange={handleExpectedFieldsChange}
-            />
-          ) : (
-            <section className="panel empty-state">
-              <div className="section-title-row">
-                <h2>Expected Application Data</h2>
-                <InfoTooltip label="About expected application data before adding labels">
-                  This panel becomes editable after you add a label image to the queue. Start by using the upload
-                  control in the Label Queue, then select the queued label you want to prepare. Once selected, this
-                  section will show the fields that describe what the label should match: brand name, class or type,
-                  alcohol content, net contents, and government warning text. Each queued label gets its own copy of
-                  those fields, so you can prepare one label at a time before verification.
-                </InfoTooltip>
-              </div>
-              <p>Add a label image to enter expected application data.</p>
-            </section>
-          )}
-          <ErrorBanner message={activeErrorMessage} stackIndex={1} onDismiss={dismissActiveError} />
+          <section
+            className={
+              selectedItem
+                ? 'panel expected-data-panel expected-data-panel-active'
+                : 'panel expected-data-panel expected-data-panel-empty empty-state'
+            }
+          >
+            {selectedItem ? (
+              <ExpectedFieldsForm
+                canApplyToAll={activeQueueItems.length > 1}
+                contextFilename={selectedItem.filename}
+                disabled={isQueueLocked}
+                expectedFields={selectedItem.expectedFields}
+                onApplyToAll={handleApplyExpectedFieldsToAll}
+                onChange={handleExpectedFieldsChange}
+              />
+            ) : (
+              <>
+                <div className="section-title-row">
+                  <h2>Expected Application Data</h2>
+                  <InfoTooltip label="About expected application data before adding labels">
+                    This panel becomes editable after you add a label image to the queue. Start by using the upload
+                    control in the Label Queue, then select the queued label you want to prepare. Once selected, this
+                    section will show the fields that describe what the label should match: brand name, class or type,
+                    alcohol content, net contents, and government warning text. Each queued label gets its own copy of
+                    those fields, so you can prepare one label at a time before verification.
+                  </InfoTooltip>
+                </div>
+                <p>Add a label image to enter expected application data.</p>
+              </>
+            )}
+          </section>
           {isQueueLocked ? <LoadingState mode={isVerifyingAll ? 'queue' : 'single'} /> : null}
           {hasQueueOutcome ? (
             <>
               <QueueSummary summary={queueSummary} />
               {hasResultForExport ? (
                 <div className="result-actions">
-                  <button className="secondary-button" type="button" onClick={() => downloadQueueResultsCsv(queueItems)}>
+                  <button
+                    className="secondary-button"
+                    type="button"
+                    onClick={() => downloadQueueResultsCsv(activeQueueItems)}
+                  >
                     Export CSV
                   </button>
                 </div>
@@ -312,7 +385,7 @@ export default function VerificationForm() {
         </button>
         <button
           className="secondary-button"
-          disabled={!queueItems.length || isQueueLocked}
+          disabled={!activeQueueItems.length || isQueueLocked}
           type="button"
           onClick={handleVerifyAll}
         >

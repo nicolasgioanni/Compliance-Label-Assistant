@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { checkHealth } from './api/verificationApi';
 import AppFooter from './components/AppFooter';
 import Header from './components/Header';
@@ -7,8 +7,37 @@ import ErrorBanner from './components/ErrorBanner';
 
 export default function App() {
   const [health, setHealth] = useState(null);
-  const [healthError, setHealthError] = useState('');
-  const dismissHealthError = useCallback(() => setHealthError(''), []);
+  const [activeError, setActiveError] = useState(null);
+  const activeErrorRef = useRef(null);
+  const nextErrorIdRef = useRef(0);
+
+  const dismissActiveError = useCallback(() => {
+    const currentError = activeErrorRef.current;
+    activeErrorRef.current = null;
+    currentError?.onDismiss?.();
+    setActiveError(null);
+  }, []);
+
+  const showError = useCallback((message, options = {}) => {
+    const currentError = activeErrorRef.current;
+    currentError?.onDismiss?.();
+
+    if (!message) {
+      activeErrorRef.current = null;
+      setActiveError(null);
+      return;
+    }
+
+    const nextError = {
+      id: nextErrorIdRef.current + 1,
+      message,
+      onDismiss: options.onDismiss,
+    };
+
+    nextErrorIdRef.current = nextError.id;
+    activeErrorRef.current = nextError;
+    setActiveError(nextError);
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -18,12 +47,11 @@ export default function App() {
         const healthResponse = await checkHealth();
         if (isMounted) {
           setHealth(healthResponse);
-          setHealthError('');
         }
       } catch (error) {
         if (isMounted) {
           setHealth({ status: 'error' });
-          setHealthError(getHealthErrorMessage(error));
+          showError(getHealthErrorMessage(error));
         }
       }
     }
@@ -33,18 +61,19 @@ export default function App() {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [showError]);
 
   return (
     <main className="app-shell">
       <Header isOnline={health?.status === 'ok'} />
-      {healthError ? (
+      {activeError ? (
         <ErrorBanner
-          message={healthError}
-          onDismiss={dismissHealthError}
+          key={activeError.id}
+          message={activeError.message}
+          onDismiss={dismissActiveError}
         />
       ) : null}
-      <VerificationForm />
+      <VerificationForm showError={showError} />
       <AppFooter />
     </main>
   );

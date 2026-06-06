@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-export default function ErrorBanner({ autoDismissMs = 15000, dismissible = true, message, onDismiss, stackIndex = 0 }) {
+export default function ErrorBanner({ autoDismissMs = 15000, dismissible = true, message, onDismiss }) {
   const [isVisible, setIsVisible] = useState(Boolean(message));
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export default function ErrorBanner({ autoDismissMs = 15000, dismissible = true,
   }
 
   return (
-    <div className="error-banner-layer" style={{ top: `calc(5.35rem + ${stackIndex * 4.7}rem)` }}>
+    <div className="error-banner-layer">
       <div className="error-banner" role="alert">
         <span>{message}</span>
         {dismissible ? (

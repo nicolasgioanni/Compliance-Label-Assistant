@@ -45,6 +45,25 @@ def validate_batch_request(file_count: int, max_batch_size: int) -> None:
         raise BatchRequestValidationError(f"Batch size limit exceeded. Upload {max_batch_size} files or fewer.")
 
 
+def validate_batch_filenames(files: list[UploadFile]) -> None:
+    seen_filenames: set[str] = set()
+    duplicate_count = 0
+
+    for file in files:
+        normalized_filename = _normalize_filename(file.filename)
+        if not normalized_filename:
+            continue
+
+        if normalized_filename in seen_filenames:
+            duplicate_count += 1
+            continue
+
+        seen_filenames.add(normalized_filename)
+
+    if duplicate_count:
+        raise BatchRequestValidationError(_build_duplicate_files_message(duplicate_count))
+
+
 async def verify_batch_labels(
     files: list[UploadFile],
     expected_fields: ExpectedFields,
@@ -52,6 +71,7 @@ async def verify_batch_labels(
 ) -> BatchVerificationResponse:
     active_settings = settings or get_settings()
     validate_batch_request(len(files), active_settings.max_batch_size)
+    validate_batch_filenames(files)
 
     total_start = start_timer()
     semaphore = asyncio.Semaphore(max(active_settings.batch_concurrency, 1))
@@ -133,3 +153,12 @@ def _build_status_counts(results: list[BatchVerificationItem]) -> dict[str, int]
     for result in results:
         counts[result.overall_status] += 1
     return counts
+
+
+def _normalize_filename(filename: str | None) -> str:
+    return (filename or "").strip().casefold()
+
+
+def _build_duplicate_files_message(duplicate_count: int) -> str:
+    file_label = "file was" if duplicate_count == 1 else "files were"
+    return f"{duplicate_count} duplicate {file_label} detected and not uploaded."

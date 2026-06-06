@@ -9,6 +9,8 @@ from io import BytesIO
 
 from PIL import Image, ImageOps, UnidentifiedImageError
 
+from app.utils.file_validation import SUPPORTED_IMAGE_DESCRIPTION
+
 
 class ImagePreprocessingError(ValueError):
     """Raised when an uploaded image cannot be prepared for extraction."""
@@ -44,6 +46,6 @@ def preprocess_image_for_extraction(
             return output_buffer.getvalue()
     except (OSError, UnidentifiedImageError) as exc:
         raise ImagePreprocessingError(
-            "The uploaded image could not be processed. Please upload a readable JPG or PNG label image."
+            "The uploaded image could not be processed. "
+            f"Please upload a readable {SUPPORTED_IMAGE_DESCRIPTION} label image."
         ) from exc
-

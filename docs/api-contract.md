@@ -24,6 +24,8 @@ Accepts `multipart/form-data`:
 - `net_contents`
 - `government_warning`
 
+Supported upload formats are JPG/JPEG, PNG, WebP, and TIFF/TIF.
+
 Response:
 
 ```json
@@ -75,6 +77,7 @@ Accepts `multipart/form-data`:
 - `government_warning`
 
 Batch mode accepts 2 to `MAX_BATCH_SIZE` files and uses one shared expected application dataset.
+Supported upload formats are JPG/JPEG, PNG, WebP, and TIFF/TIF. Duplicate filenames in the same batch request are rejected case-insensitively before processing.
 
 Response:
 

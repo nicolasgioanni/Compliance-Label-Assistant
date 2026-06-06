@@ -246,6 +246,20 @@ def test_verify_batch_rejects_too_many_files(monkeypatch) -> None:
     assert "Batch size limit exceeded" in response.json()["detail"]
 
 
+def test_verify_batch_rejects_duplicate_filenames(monkeypatch) -> None:
+    response = _post_verify_batch_with_extracted(
+        monkeypatch,
+        ExtractedFields(),
+        [
+            ("files", ("old-tom.png", _image_bytes(), "image/png")),
+            ("files", ("Old-Tom.PNG", _image_bytes(), "image/png")),
+        ],
+    )
+
+    assert response.status_code == 400
+    assert "1 duplicate file was detected and not uploaded." in response.json()["detail"]
+
+
 def test_verify_batch_returns_one_result_per_valid_file(monkeypatch) -> None:
     response = _post_verify_batch_with_extracted(
         monkeypatch,

@@ -4,6 +4,7 @@ import QueueItemCard from './QueueItemCard';
 
 export default function LabelQueue({
   queueItems,
+  removingQueueItemIds = new Set(),
   selectedQueueItemId,
   maxQueueSize,
   isLocked = false,
@@ -11,6 +12,8 @@ export default function LabelQueue({
   onSelectItem,
   onRemoveItem,
 }) {
+  const activeQueueItemCount = queueItems.filter((item) => !removingQueueItemIds.has(item.id)).length;
+
   return (
     <section className="panel queue-panel">
       <div className="section-heading">
@@ -29,23 +32,28 @@ export default function LabelQueue({
       <div className="queue-list-region">
         {queueItems.length ? (
           <div className="queue-list">
-            {queueItems.map((item) => (
-              <QueueItemCard
-                isSelected={item.id === selectedQueueItemId}
-                item={item}
-                key={item.id}
-                removeDisabled={isLocked || item.status === 'verifying'}
-                onRemove={() => onRemoveItem(item.id)}
-                onSelect={() => onSelectItem(item.id)}
-              />
-            ))}
+            {queueItems.map((item) => {
+              const isRemoving = removingQueueItemIds.has(item.id);
+
+              return (
+                <QueueItemCard
+                  isRemoving={isRemoving}
+                  isSelected={item.id === selectedQueueItemId}
+                  item={item}
+                  key={item.id}
+                  removeDisabled={isLocked || isRemoving || item.status === 'verifying'}
+                  onRemove={() => onRemoveItem(item.id)}
+                  onSelect={() => onSelectItem(item.id)}
+                />
+              );
+            })}
           </div>
         ) : (
           <div className="queue-empty-state">No labels queued yet.</div>
         )}
       </div>
       <ImageUploadDropzone
-        disabled={isLocked || queueItems.length >= maxQueueSize}
+        disabled={isLocked || activeQueueItemCount >= maxQueueSize}
         maxQueueSize={maxQueueSize}
         onFilesAdded={onAddFiles}
       />

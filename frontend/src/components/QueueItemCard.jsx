@@ -6,15 +6,19 @@ const QUEUE_STATUS_LABELS = {
   error: 'Error',
 };
 
-export default function QueueItemCard({ item, isSelected, removeDisabled = false, onSelect, onRemove }) {
+export default function QueueItemCard({ item, isRemoving = false, isSelected, removeDisabled = false, onSelect, onRemove }) {
   const statusLabel = QUEUE_STATUS_LABELS[item.status] || 'Needs Expected Data';
   const statusClassName = getQueueStatusClassName(item.status);
+  const queueItemClassName = ['queue-item', isSelected ? 'selected' : '', isRemoving ? 'removing' : '']
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <div className={isSelected ? 'queue-item selected' : 'queue-item'}>
+    <div className={queueItemClassName}>
       <button
         aria-current={isSelected ? 'true' : undefined}
         className="queue-item-main"
+        disabled={isRemoving}
         type="button"
         onClick={onSelect}
       >
@@ -24,7 +28,7 @@ export default function QueueItemCard({ item, isSelected, removeDisabled = false
       <button
         aria-label={`Remove ${item.filename}`}
         className="queue-remove-button"
-        disabled={removeDisabled}
+        disabled={removeDisabled || isRemoving}
         type="button"
         onClick={onRemove}
       >

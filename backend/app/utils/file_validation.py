@@ -14,8 +14,23 @@ from fastapi import UploadFile
 from PIL import Image, UnidentifiedImageError
 
 
-ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png"}
-ALLOWED_MIME_TYPES = {"image/jpeg", "image/png"}
+SUPPORTED_IMAGE_DESCRIPTION = "JPG, PNG, WebP, or TIFF"
+ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".tif", ".tiff"}
+ALLOWED_MIME_TYPES = {"image/jpeg", "image/png", "image/webp", "image/tiff"}
+IMAGE_FORMAT_BY_EXTENSION = {
+    ".jpg": "JPEG",
+    ".jpeg": "JPEG",
+    ".png": "PNG",
+    ".webp": "WEBP",
+    ".tif": "TIFF",
+    ".tiff": "TIFF",
+}
+MIME_TYPES_BY_IMAGE_FORMAT = {
+    "JPEG": {"image/jpeg"},
+    "PNG": {"image/png"},
+    "WEBP": {"image/webp"},
+    "TIFF": {"image/tiff"},
+}
 
 
 class UploadValidationError(ValueError):
@@ -31,42 +46,64 @@ def validate_batch_size(file_count: int, max_batch_size: int) -> None:
         raise UploadValidationError(f"Batch size limit exceeded. Upload {max_batch_size} files or fewer.")
 
 
-def validate_upload_metadata(file: UploadFile) -> None:
+def validate_upload_metadata(file: UploadFile) -> tuple[str, str]:
     filename = file.filename or ""
     extension = Path(filename).suffix.lower()
+    content_type = (file.content_type or "").lower()
 
     if not filename:
         raise UploadValidationError("Please upload a label image.")
 
     if extension not in ALLOWED_EXTENSIONS:
-        raise UploadValidationError("Unsupported file extension. Please upload a JPG or PNG image.")
+        raise UploadValidationError(f"Unsupported file extension. Please upload a {SUPPORTED_IMAGE_DESCRIPTION} image.")
 
-    if file.content_type not in ALLOWED_MIME_TYPES:
-        raise UploadValidationError("Unsupported file type. Please upload a JPG or PNG image.")
+    if content_type not in ALLOWED_MIME_TYPES:
+        raise UploadValidationError(f"Unsupported file type. Please upload a {SUPPORTED_IMAGE_DESCRIPTION} image.")
+
+    return extension, content_type
 
 
 def validate_file_size(file_bytes: bytes, max_file_size_mb: int) -> None:
     if not file_bytes:
-        raise UploadValidationError("The uploaded file is empty. Please upload a JPG or PNG label image.")
+        raise UploadValidationError(
+            f"The uploaded file is empty. Please upload a {SUPPORTED_IMAGE_DESCRIPTION} label image."
+        )
 
     if len(file_bytes) > _max_size_bytes(max_file_size_mb):
         raise UploadValidationError(f"File too large. Upload an image smaller than {max_file_size_mb} MB.")
 
 
-def validate_image_can_open(file_bytes: bytes) -> None:
+def validate_image_can_open(file_bytes: bytes, extension: str, content_type: str) -> None:
     try:
         with Image.open(BytesIO(file_bytes)) as image:
+            image_format = image.format
             image.verify()
     except (OSError, UnidentifiedImageError) as exc:
         raise UploadValidationError(
-            "The uploaded file could not be opened as an image. Please upload a readable JPG or PNG label image."
+            "The uploaded file could not be opened as an image. "
+            f"Please upload a readable {SUPPORTED_IMAGE_DESCRIPTION} label image."
         ) from exc
+
+    if image_format not in MIME_TYPES_BY_IMAGE_FORMAT:
+        raise UploadValidationError(f"Unsupported image content. Please upload a {SUPPORTED_IMAGE_DESCRIPTION} image.")
+
+    expected_format = IMAGE_FORMAT_BY_EXTENSION[extension]
+    if image_format != expected_format:
+        raise UploadValidationError(
+            "File extension does not match image content. "
+            f"Please upload a valid {SUPPORTED_IMAGE_DESCRIPTION} image."
+        )
+
+    if content_type not in MIME_TYPES_BY_IMAGE_FORMAT[image_format]:
+        raise UploadValidationError(
+            "File type does not match image content. "
+            f"Please upload a valid {SUPPORTED_IMAGE_DESCRIPTION} image."
+        )
 
 
 async def validate_upload_file(file: UploadFile, max_file_size_mb: int) -> bytes:
-    validate_upload_metadata(file)
+    extension, content_type = validate_upload_metadata(file)
     file_bytes = await file.read()
     validate_file_size(file_bytes, max_file_size_mb)
-    validate_image_can_open(file_bytes)
+    validate_image_can_open(file_bytes, extension, content_type)
     return file_bytes
-

@@ -15,7 +15,8 @@
 - The app does not make final legal compliance decisions.
 - There is no COLA integration.
 - There is no database, authentication, admin dashboard, or persistent uploaded file storage.
+- PDF and HEIC/HEIF uploads are not supported in the MVP.
 - Government warning bold text, font size, and placement are not verified.
 - Extraction quality depends on label image quality and OpenAI API availability.
-- The frontend queue is limited to 5 labels.
+- The frontend queue is limited to 10 labels.
 - Backend batch uploads are limited by `MAX_BATCH_SIZE`, defaulting to 10 files.

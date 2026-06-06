@@ -1,4 +1,7 @@
-const ACCEPTED_TYPES = new Set(['image/jpeg', 'image/png']);
+const SUPPORTED_IMAGE_DESCRIPTION = 'JPG, PNG, WebP, or TIFF';
+const ACCEPTED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/tiff']);
+const ACCEPTED_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.tif', '.tiff']);
+const FILE_INPUT_ACCEPT = '.jpg,.jpeg,.png,.webp,.tif,.tiff,image/jpeg,image/png,image/webp,image/tiff';
 const MAX_FILE_SIZE_MB = 5;
 const MAX_QUEUE_FILES = 10;
 const MAX_BATCH_FILES = 10;
@@ -8,8 +11,8 @@ export function validateSingleFile(file) {
     return 'Please select one label image.';
   }
 
-  if (!ACCEPTED_TYPES.has(file.type)) {
-    return 'Please upload a JPG or PNG image.';
+  if (!isAcceptedImageFile(file)) {
+    return `Please upload a ${SUPPORTED_IMAGE_DESCRIPTION} image.`;
   }
 
   const sizeInMb = file.size / (1024 * 1024);
@@ -43,9 +46,9 @@ export function validateBatchFiles(files) {
     return `Please upload ${MAX_BATCH_FILES} files or fewer.`;
   }
 
-  const invalidFile = files.find((file) => !ACCEPTED_TYPES.has(file.type));
+  const invalidFile = files.find((file) => !isAcceptedImageFile(file));
   if (invalidFile) {
-    return `${invalidFile.name} is not a JPG or PNG image.`;
+    return `${invalidFile.name} is not a ${SUPPORTED_IMAGE_DESCRIPTION} image.`;
   }
 
   const oversizedFile = files.find((file) => file.size / (1024 * 1024) > MAX_FILE_SIZE_MB);
@@ -56,4 +59,29 @@ export function validateBatchFiles(files) {
   return '';
 }
 
-export { MAX_BATCH_FILES, MAX_FILE_SIZE_MB, MAX_QUEUE_FILES };
+export function buildDuplicateFilesMessage(duplicateCount) {
+  const fileLabel = duplicateCount === 1 ? 'file was' : 'files were';
+  return `${duplicateCount} duplicate ${fileLabel} detected and not uploaded.`;
+}
+
+export function normalizeFilename(filename) {
+  return (filename || '').trim().toLowerCase();
+}
+
+function isAcceptedImageFile(file) {
+  const extension = getFileExtension(file.name);
+  const contentType = (file.type || '').toLowerCase();
+
+  return ACCEPTED_EXTENSIONS.has(extension) && ACCEPTED_TYPES.has(contentType);
+}
+
+function getFileExtension(filename) {
+  const extensionStart = filename.lastIndexOf('.');
+  if (extensionStart < 0) {
+    return '';
+  }
+
+  return filename.slice(extensionStart).toLowerCase();
+}
+
+export { FILE_INPUT_ACCEPT, MAX_BATCH_FILES, MAX_FILE_SIZE_MB, MAX_QUEUE_FILES, SUPPORTED_IMAGE_DESCRIPTION };

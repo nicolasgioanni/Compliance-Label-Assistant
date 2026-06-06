@@ -58,6 +58,15 @@ def test_validate_batch_request_rejects_too_many_files() -> None:
         raise AssertionError("Expected too-many-files validation error.")
 
 
+def test_validate_batch_filenames_rejects_duplicates() -> None:
+    try:
+        batch_service.validate_batch_filenames([_upload_file("label.png"), _upload_file("Label.PNG")])
+    except batch_service.BatchRequestValidationError as exc:
+        assert "1 duplicate file was detected and not uploaded." in str(exc)
+    else:
+        raise AssertionError("Expected duplicate filename validation error.")
+
+
 async def _run_partial_failure_test(monkeypatch) -> None:
     async def fake_process_single_label(file, expected_fields, settings):
         if file.filename == "bad.png":

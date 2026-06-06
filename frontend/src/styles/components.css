@@ -1,4 +1,5 @@
 .verification-workflow {
+  --workflow-panel-height: 38.7rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -18,7 +19,7 @@
 }
 
 .panel {
-  background: rgba(255, 255, 255, 0.94);
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-soft);
@@ -136,7 +137,7 @@ dt {
 
 input,
 textarea {
-  background: #ffffff;
+  background: var(--color-surface-muted);
   border: 1px solid #b9c4cf;
   border-radius: var(--radius-control);
   color: var(--color-text);
@@ -146,7 +147,7 @@ textarea {
 
 input:disabled,
 textarea:disabled {
-  background: #eef2f5;
+  background: #e1e8f0;
   color: var(--color-muted);
   cursor: not-allowed;
 }
@@ -187,7 +188,7 @@ textarea {
 }
 
 .dropzone.drag-active {
-  background: #eef6ff;
+  background: #dcecff;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(31, 92, 151, 0.12);
 }
@@ -264,7 +265,8 @@ textarea {
 }
 
 .primary-button:disabled {
-  background: #8795a3;
+  background: #607488;
+  color: #ffffff;
   cursor: not-allowed;
 }
 
@@ -274,9 +276,9 @@ textarea {
 }
 
 .secondary-button:disabled {
-  color: var(--color-muted);
+  background: #607488;
+  color: #ffffff;
   cursor: not-allowed;
-  opacity: 0.68;
 }
 
 .verification-actions {
@@ -458,14 +460,31 @@ textarea {
 
 .results-table tbody tr:hover,
 .results-table .selected-row {
-  background: #f4f8fc;
+  background: #e8f2ff;
 }
 
 .queue-panel {
   display: flex;
   flex-direction: column;
-  height: 38.7rem;
+  height: var(--workflow-panel-height);
   min-height: 0;
+}
+
+.expected-data-panel {
+  overflow: hidden;
+  transition:
+    height 180ms ease,
+    opacity 160ms ease;
+}
+
+.expected-data-panel-empty {
+  height: 7rem;
+  opacity: 0.94;
+}
+
+.expected-data-panel-active {
+  height: var(--workflow-panel-height);
+  opacity: 1;
 }
 
 .queue-list-region {
@@ -480,9 +499,16 @@ textarea {
   gap: 0.6rem;
 }
 
-.queue-empty-state,
-.empty-state {
+.queue-empty-state {
   background: var(--color-surface-muted);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-card);
+  color: var(--color-muted);
+  padding: 1rem;
+}
+
+.empty-state {
+  background: var(--color-surface);
   border: 1px dashed var(--color-border);
   border-radius: var(--radius-card);
   color: var(--color-muted);
@@ -506,12 +532,25 @@ textarea {
   border-radius: var(--radius-card);
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
+  opacity: 1;
   overflow: hidden;
+  transform: translateX(0);
+  transition:
+    opacity 90ms ease,
+    transform 90ms ease;
 }
 
 .queue-item.selected {
+  background: var(--color-selected-bg);
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(31, 92, 151, 0.12);
+}
+
+.queue-item.removing {
+  box-shadow: none;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-0.5rem);
 }
 
 .queue-item-main {
@@ -525,6 +564,10 @@ textarea {
   min-width: 0;
   padding: 0.75rem 0.8rem;
   text-align: left;
+}
+
+.queue-item-main:disabled {
+  cursor: default;
 }
 
 .queue-filename {
@@ -553,6 +596,11 @@ textarea {
   background: transparent;
   color: #9aa6b2;
   cursor: not-allowed;
+}
+
+.queue-item.removing .queue-item-main,
+.queue-item.removing .queue-remove-button {
+  pointer-events: none;
 }
 
 .queue-status {
@@ -622,7 +670,7 @@ dd {
 }
 
 .raw-text {
-  background: #f4f7fa;
+  background: var(--color-surface-muted);
   border-radius: var(--radius-control);
   overflow: auto;
   padding: 0.85rem;
@@ -637,6 +685,12 @@ dd {
   .result-grid,
   .form-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .queue-item {
+    transition: none;
   }
 }
 
