@@ -1,8 +1,15 @@
-import { useState } from 'react';
+import { useRef } from 'react';
 import { FILE_INPUT_ACCEPT, SUPPORTED_IMAGE_DESCRIPTION } from '../utils/fileValidation';
 
-export default function ImageUploadDropzone({ disabled, maxQueueSize, onFilesAdded }) {
-  const [isDragActive, setIsDragActive] = useState(false);
+export default function ImageUploadDropzone({
+  disabled,
+  maxQueueSize,
+  onFilesAdded,
+}) {
+  const fileInputRef = useRef(null);
+  const folderInputRef = useRef(null);
+
+  const inputDisabled = disabled;
 
   function handleFileChange(event) {
     const nextFiles = Array.from(event.target.files || []);
@@ -12,68 +19,72 @@ export default function ImageUploadDropzone({ disabled, maxQueueSize, onFilesAdd
     event.target.value = '';
   }
 
-  function handleDragOver(event) {
-    event.preventDefault();
-
-    if (disabled) {
-      event.dataTransfer.dropEffect = 'none';
-      return;
-    }
-
-    event.dataTransfer.dropEffect = 'copy';
-    setIsDragActive(true);
+  function handleAddFilesClick() {
+    fileInputRef.current?.click();
   }
 
-  function handleDragLeave() {
-    setIsDragActive(false);
+  function handleAddFolderClick() {
+    folderInputRef.current?.click();
   }
-
-  function handleDrop(event) {
-    event.preventDefault();
-    setIsDragActive(false);
-
-    if (disabled) {
-      return;
-    }
-
-    const droppedFiles = Array.from(event.dataTransfer.files || []);
-    if (droppedFiles.length) {
-      onFilesAdded(droppedFiles);
-    }
-  }
-
-  const dropzoneClassName = disabled ? 'dropzone disabled' : `dropzone${isDragActive ? ' drag-active' : ''}`;
 
   return (
     <div className="upload-control">
-      <label
-        className={dropzoneClassName}
-        onDragLeave={handleDragLeave}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
-      >
-        <input
-          accept={FILE_INPUT_ACCEPT}
-          disabled={disabled}
-          multiple
-          type="file"
-          onChange={handleFileChange}
-        />
-        <span className="dropzone-copy">
-          <span aria-hidden="true" className="dropzone-icon">
-            <svg viewBox="0 0 32 32" focusable="false">
-              <path d="M8 6h10l6 6v14H8z" />
-              <path d="M18 6v7h6" />
-              <path d="M16 23V13" />
-              <path d="M12 17l4-4 4 4" />
+      <div className="upload-actions">
+        <button
+          className="upload-action-button"
+          disabled={inputDisabled}
+          type="button"
+          onClick={handleAddFilesClick}
+        >
+          <span aria-hidden="true" className="upload-action-icon">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M7 3h7l5 5v13H7z" />
+              <path d="M14 3v6h5" />
+              <path d="M10 14h6" />
+              <path d="M10 17h4" />
             </svg>
           </span>
-          <span className="dropzone-title">Drop a label image here</span>
-          <span className="dropzone-subtitle">
-            or click to browse &bull; {SUPPORTED_IMAGE_DESCRIPTION} only &bull; Maximum {maxQueueSize} files
+          <span>Add Files</span>
+        </button>
+        <button
+          className="upload-action-button"
+          disabled={inputDisabled}
+          type="button"
+          onClick={handleAddFolderClick}
+        >
+          <span aria-hidden="true" className="upload-action-icon">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M3 6h7l2 3h9v12H3z" />
+              <path d="M3 6v15" />
+              <path d="M3 9h18" />
+            </svg>
           </span>
-        </span>
-      </label>
+          <span>Add Folder</span>
+        </button>
+      </div>
+      <input
+        accept={FILE_INPUT_ACCEPT}
+        className="upload-hidden-input"
+        disabled={inputDisabled}
+        multiple
+        ref={fileInputRef}
+        type="file"
+        onChange={handleFileChange}
+      />
+      <input
+        accept={FILE_INPUT_ACCEPT}
+        className="upload-hidden-input"
+        directory=""
+        disabled={inputDisabled}
+        multiple
+        ref={folderInputRef}
+        type="file"
+        webkitdirectory=""
+        onChange={handleFileChange}
+      />
+      <p className="upload-helper">
+        {SUPPORTED_IMAGE_DESCRIPTION} only &bull; Maximum {maxQueueSize} labels
+      </p>
     </div>
   );
 }

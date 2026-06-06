@@ -12,6 +12,8 @@ export default function QueueItemCard({ item, isRemoving = false, isSelected, re
   const queueItemClassName = ['queue-item', isSelected ? 'selected' : '', isRemoving ? 'removing' : '']
     .filter(Boolean)
     .join(' ');
+  const filePath = item.relativePath || item.filename;
+  const shouldShowPath = Boolean(item.relativePath && item.relativePath !== item.filename);
 
   return (
     <div className={queueItemClassName}>
@@ -22,11 +24,14 @@ export default function QueueItemCard({ item, isRemoving = false, isSelected, re
         type="button"
         onClick={onSelect}
       >
-        <span className="queue-filename">{item.filename}</span>
+        <span className="queue-file-copy" title={filePath}>
+          <span className="queue-filename">{item.filename}</span>
+          {shouldShowPath ? <span className="queue-file-path">{item.relativePath}</span> : null}
+        </span>
         <span className={statusClassName}>{statusLabel}</span>
       </button>
       <button
-        aria-label={`Remove ${item.filename}`}
+        aria-label={`Remove ${filePath}`}
         className="queue-remove-button"
         disabled={removeDisabled || isRemoving}
         type="button"

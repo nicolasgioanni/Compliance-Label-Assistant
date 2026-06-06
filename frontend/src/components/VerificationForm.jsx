@@ -9,10 +9,7 @@ import LoadingState from './LoadingState';
 import ResultsSummary from './ResultsSummary';
 import { downloadQueueResultsCsv } from '../utils/csvExport';
 import {
-  MAX_FILE_SIZE_MB,
   MAX_QUEUE_FILES,
-  SUPPORTED_IMAGE_DESCRIPTION,
-  buildDuplicateFilesMessage,
   normalizeFilename,
   validateExpectedFields,
   validateSingleFile,
@@ -20,7 +17,8 @@ import {
 
 const MAX_QUEUE_SIZE = MAX_QUEUE_FILES;
 const VERIFY_ALL_CONCURRENCY = 2;
-const QUEUE_REMOVAL_ANIMATION_MS = 90;
+const QUEUE_REMOVAL_ANIMATION_MS = 160;
+const QUEUE_REMOVAL_SNAP_PAUSE_MS = 35;
 
 const EMPTY_EXPECTED_FIELDS = {
   brandName: '',
@@ -67,22 +65,23 @@ export default function VerificationForm({ showError = () => {} }) {
       return;
     }
 
+    if (activeQueueItems.length >= MAX_QUEUE_SIZE) {
+      showError(buildQueueFullMessage());
+      return;
+    }
+
     const filesToAdd = [];
-    const existingFilenames = new Set(activeQueueItems.map((item) => normalizeFilename(item.filename)));
-    const selectedFilenames = new Set();
+    const existingFileKeys = new Set(activeQueueItems.map((item) => normalizeFilename(getQueueItemFileKey(item))));
+    const selectedFileKeys = new Set();
     let duplicateCount = 0;
     let invalidCount = 0;
     let excludedForLimitCount = 0;
 
     files.forEach((file) => {
-      const normalizedFilename = normalizeFilename(file.name);
-      if (normalizedFilename && (existingFilenames.has(normalizedFilename) || selectedFilenames.has(normalizedFilename))) {
+      const normalizedFileKey = normalizeFilename(getFileQueueKey(file));
+      if (normalizedFileKey && (existingFileKeys.has(normalizedFileKey) || selectedFileKeys.has(normalizedFileKey))) {
         duplicateCount += 1;
         return;
-      }
-
-      if (normalizedFilename) {
-        selectedFilenames.add(normalizedFilename);
       }
 
       const fileWarning = validateSingleFile(file);
@@ -96,6 +95,10 @@ export default function VerificationForm({ showError = () => {} }) {
         return;
       }
 
+      if (normalizedFileKey) {
+        selectedFileKeys.add(normalizedFileKey);
+      }
+
       filesToAdd.push(createQueueItem(file));
     });
 
@@ -104,24 +107,29 @@ export default function VerificationForm({ showError = () => {} }) {
       setSelectedQueueItemId((currentSelectedId) => currentSelectedId || filesToAdd[0].id);
     }
 
-    const uploadWarnings = [];
-    if (duplicateCount > 0) {
-      uploadWarnings.push(buildDuplicateFilesMessage(duplicateCount));
+    const uploadErrorMessage = buildUploadWarningMessage({
+      addedCount: filesToAdd.length,
+      duplicateCount,
+      excludedForLimitCount,
+      invalidCount,
+    });
+
+    if (uploadErrorMessage) {
+      showError(uploadErrorMessage);
     }
-    if (excludedForLimitCount > 0) {
-      uploadWarnings.push(buildLimitExceededMessage(excludedForLimitCount));
-    }
-    if (invalidCount > 0) {
-      uploadWarnings.push(
-        `Some files could not be added. Upload ${SUPPORTED_IMAGE_DESCRIPTION} images smaller than ${MAX_FILE_SIZE_MB} MB.`,
-      );
+  }
+
+  function handleClearQueue() {
+    if (isQueueLocked) {
+      showError('Wait for verification to finish before clearing the queue.');
+      return;
     }
 
-    if (uploadWarnings.length) {
-      showError(uploadWarnings.join(' '));
-    } else {
-      showError('');
-    }
+    removalTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
+    removalTimeoutsRef.current.clear();
+    setQueueItems([]);
+    setSelectedQueueItemId(null);
+    setRemovingQueueItemIds(new Set());
   }
 
   function handleRemoveItem(itemId) {
@@ -160,7 +168,7 @@ export default function VerificationForm({ showError = () => {} }) {
         return nextIds;
       });
       removalTimeoutsRef.current.delete(itemId);
-    }, QUEUE_REMOVAL_ANIMATION_MS);
+    }, QUEUE_REMOVAL_ANIMATION_MS + QUEUE_REMOVAL_SNAP_PAUSE_MS);
 
     removalTimeoutsRef.current.set(itemId, timeoutId);
   }
@@ -304,6 +312,7 @@ export default function VerificationForm({ showError = () => {} }) {
             removingQueueItemIds={removingQueueItemIds}
             selectedQueueItemId={selectedQueueItemId}
             onAddFiles={handleAddFiles}
+            onClearQueue={handleClearQueue}
             onRemoveItem={handleRemoveItem}
             onSelectItem={setSelectedQueueItemId}
           />
@@ -314,7 +323,7 @@ export default function VerificationForm({ showError = () => {} }) {
             className={
               selectedItem
                 ? 'panel expected-data-panel expected-data-panel-active'
-                : 'panel expected-data-panel expected-data-panel-empty empty-state'
+                : 'panel expected-data-panel expected-data-panel-empty'
             }
           >
             {selectedItem ? (
@@ -396,9 +405,41 @@ export default function VerificationForm({ showError = () => {} }) {
   );
 }
 
-function buildLimitExceededMessage(excludedFileCount) {
-  const fileLabel = excludedFileCount === 1 ? 'file was' : 'files were';
-  return `Too many files uploaded. ${excludedFileCount} ${fileLabel} excluded because the queue limit is ${MAX_QUEUE_SIZE}.`;
+function buildQueueFullMessage() {
+  return 'Queue is full. Clear Queue before adding more labels.';
+}
+
+function buildUploadWarningMessage({ addedCount, duplicateCount, excludedForLimitCount, invalidCount }) {
+  const warningParts = [];
+
+  if (invalidCount > 0) {
+    warningParts.push(`Skipped ${invalidCount} unsupported or oversized ${pluralizeFile(invalidCount)}.`);
+  }
+
+  if (duplicateCount > 0) {
+    warningParts.push(`Skipped ${duplicateCount} duplicate ${pluralizeFile(duplicateCount)}.`);
+  }
+
+  if (excludedForLimitCount > 0) {
+    warningParts.push(
+      `Skipped ${excludedForLimitCount} ${pluralizeFile(excludedForLimitCount)} because the queue limit is ${MAX_QUEUE_SIZE} labels.`,
+    );
+  }
+
+  if (!warningParts.length) {
+    return '';
+  }
+
+  const addedMessage =
+    addedCount > 0
+      ? `Added ${addedCount} label ${addedCount === 1 ? 'image' : 'images'}.`
+      : 'No label images were added.';
+
+  return [addedMessage, ...warningParts].join(' ');
+}
+
+function pluralizeFile(count) {
+  return count === 1 ? 'file' : 'files';
 }
 
 function SelectedPendingState({ filename }) {
@@ -446,15 +487,30 @@ function QueueSummary({ summary }) {
 }
 
 function createQueueItem(file) {
+  const relativePath = getFileRelativePath(file);
+
   return {
     id: createClientId(),
     file,
     filename: file.name,
+    relativePath,
     expectedFields: { ...EMPTY_EXPECTED_FIELDS },
     result: null,
     status: 'needs_expected_data',
     errorMessage: null,
   };
+}
+
+function getQueueItemFileKey(item) {
+  return item.relativePath || item.filename;
+}
+
+function getFileQueueKey(file) {
+  return getFileRelativePath(file) || file.name;
+}
+
+function getFileRelativePath(file) {
+  return typeof file.webkitRelativePath === 'string' ? file.webkitRelativePath : '';
 }
 
 function getVerificationErrorMessage(error) {
