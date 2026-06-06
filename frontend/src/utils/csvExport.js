@@ -24,7 +24,7 @@ export function downloadBatchResultsCsv(batchResult, filename = 'batch-verificat
 }
 
 export function buildQueueResultsCsv(queueItems) {
-  const resultItems = queueItems.filter((item) => item.result);
+  const resultItems = queueItems.filter((item) => item.result && !item.isResultStale);
   const exportRows = resultItems.map((item) => ({
     filename: item.filename,
     overall_status: item.result.overall_status,

@@ -1,12 +1,6 @@
 import { DEFAULT_GOVERNMENT_WARNING } from '../constants/defaultWarningText';
+import { EXAMPLE_EXPECTED_FIELDS, VISIBLE_EXPECTED_FIELD_DEFINITIONS } from '../utils/expectedFields';
 import InfoTooltip from './InfoTooltip';
-
-const FIELD_DEFINITIONS = [
-  { id: 'brandName', label: 'Brand Name', type: 'text' },
-  { id: 'classType', label: 'Class / Type Designation', type: 'text' },
-  { id: 'alcoholContent', label: 'Alcohol Content', type: 'text' },
-  { id: 'netContents', label: 'Net Contents', type: 'text' },
-];
 
 export default function ExpectedFieldsForm({
   canApplyToAll = false,
@@ -16,55 +10,63 @@ export default function ExpectedFieldsForm({
   onApplyToAll,
   onChange,
 }) {
+  const isBrandReady = Boolean(expectedFields.brandName?.trim());
+  const claimStatus = isBrandReady ? 'Ready' : 'Brand name required';
+
   function updateField(fieldName, value) {
-    onChange({ ...expectedFields, [fieldName]: value });
+    onChange({ ...expectedFields, governmentWarning: DEFAULT_GOVERNMENT_WARNING, [fieldName]: value });
   }
 
-  function useDefaultWarning() {
-    updateField('governmentWarning', DEFAULT_GOVERNMENT_WARNING);
+  function useExample() {
+    onChange({ ...expectedFields, ...EXAMPLE_EXPECTED_FIELDS });
   }
 
   return (
     <>
       <div className="section-heading">
-        <div className="section-title-row">
-          <h2>Expected Application Data</h2>
-          <InfoTooltip label="About expected application data">
-            Enter the values the selected label is supposed to match from the product application: brand name, class or
-            type, alcohol content, net contents, and government warning text. These fields are saved only for the
-            selected queue item, so switching labels changes the form to that label's own expected data. Use the
-            standard warning helper when appropriate, or apply the current fields to all labels when several queued
-            images belong to the same product.
-          </InfoTooltip>
+        <div className="expected-form-heading-row">
+          <div className="section-title-row">
+            <h2>Expected Application Data</h2>
+            <InfoTooltip label="About expected application data">
+              Enter the product application values the selected label should match. Brand name is required to verify a
+              label; the other visible fields are optional and only checked when provided. The standard government
+              warning is applied automatically.
+            </InfoTooltip>
+          </div>
+          <button className="link-button expected-example-action" disabled={disabled} type="button" onClick={useExample}>
+            Use Example
+          </button>
         </div>
-        {contextFilename ? <p>Editing claim for: {contextFilename}</p> : null}
+        {contextFilename ? (
+          <p className={isBrandReady ? 'claim-context claim-context-ready' : 'claim-context claim-context-incomplete'}>
+            <span className="claim-context-label">
+              Editing claim for: <strong>{contextFilename}</strong>
+            </span>
+            <span className="claim-status">{claimStatus}</span>
+          </p>
+        ) : null}
       </div>
       <div className="form-grid">
-        {FIELD_DEFINITIONS.map((field) => (
+        {VISIBLE_EXPECTED_FIELD_DEFINITIONS.map((field) => (
           <label className="field" key={field.id}>
-            <span>{field.label}</span>
+            <span>
+              {field.label}
+              {field.required ? (
+                <abbr className="required-marker" title="Required">
+                  *
+                </abbr>
+              ) : null}
+            </span>
             <input
               disabled={disabled}
               type={field.type}
-              value={expectedFields[field.id]}
+              value={expectedFields[field.id] || ''}
               onChange={(event) => updateField(field.id, event.target.value)}
             />
           </label>
         ))}
       </div>
-      <label className="field warning-field">
-        <span>Government Warning Text</span>
-        <textarea
-          disabled={disabled}
-          rows="5"
-          value={expectedFields.governmentWarning}
-          onChange={(event) => updateField('governmentWarning', event.target.value)}
-        />
-      </label>
       <div className="form-actions">
-        <button className="secondary-button" disabled={disabled} type="button" onClick={useDefaultWarning}>
-          Use Standard Warning Text
-        </button>
         <button
           className="secondary-button"
           disabled={disabled || !canApplyToAll}

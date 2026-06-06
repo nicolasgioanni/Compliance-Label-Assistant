@@ -2,7 +2,9 @@ const QUEUE_STATUS_LABELS = {
   needs_expected_data: 'Needs Expected Data',
   ready: 'Ready',
   verifying: 'Verifying',
-  verified: 'Verified',
+  pass: 'Pass',
+  fail: 'Fail',
+  needs_review: 'Needs Review',
   error: 'Error',
 };
 
@@ -19,6 +21,7 @@ export default function QueueItemCard({ item, isRemoving = false, isSelected, re
     <div className={queueItemClassName}>
       <button
         aria-current={isSelected ? 'true' : undefined}
+        aria-label={`${isSelected ? 'Selected label' : 'Select label'} ${filePath}, status ${statusLabel}`}
         className="queue-item-main"
         disabled={isRemoving}
         type="button"

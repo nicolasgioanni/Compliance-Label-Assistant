@@ -257,11 +257,19 @@ def calculate_overall_status(field_results: list[FieldResult]) -> OverallStatus:
 
 
 def verify_expected_fields(expected_fields: ExpectedFields, extracted_fields: ExtractedFields) -> list[FieldResult]:
-    return [
+    field_results = [
         verify_brand_name(expected_fields.brand_name, extracted_fields.brand_name),
-        verify_class_type(expected_fields.class_type, extracted_fields.class_type),
-        verify_alcohol_content(expected_fields.alcohol_content, extracted_fields.alcohol_content),
-        verify_net_contents(expected_fields.net_contents, extracted_fields.net_contents),
-        verify_government_warning(expected_fields.government_warning, extracted_fields.government_warning_text),
     ]
 
+    if not _is_missing(expected_fields.class_type):
+        field_results.append(verify_class_type(expected_fields.class_type, extracted_fields.class_type))
+
+    if not _is_missing(expected_fields.alcohol_content):
+        field_results.append(verify_alcohol_content(expected_fields.alcohol_content, extracted_fields.alcohol_content))
+
+    if not _is_missing(expected_fields.net_contents):
+        field_results.append(verify_net_contents(expected_fields.net_contents, extracted_fields.net_contents))
+
+    field_results.append(verify_government_warning(expected_fields.government_warning, extracted_fields.government_warning_text))
+
+    return field_results

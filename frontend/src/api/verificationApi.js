@@ -1,3 +1,5 @@
+import { DEFAULT_GOVERNMENT_WARNING } from '../constants/defaultWarningText';
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 async function parseApiResponse(response) {
@@ -16,7 +18,7 @@ function appendExpectedFields(formData, expectedFields) {
   formData.append('class_type', expectedFields.classType);
   formData.append('alcohol_content', expectedFields.alcoholContent);
   formData.append('net_contents', expectedFields.netContents);
-  formData.append('government_warning', expectedFields.governmentWarning);
+  formData.append('government_warning', expectedFields.governmentWarning || DEFAULT_GOVERNMENT_WARNING);
 }
 
 export async function checkHealth() {

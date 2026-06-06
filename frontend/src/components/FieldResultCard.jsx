@@ -13,7 +13,7 @@ export default function FieldResultCard({ result }) {
           <dd>{result.expected}</dd>
         </div>
         <div>
-          <dt>Found</dt>
+          <dt>Observed</dt>
           <dd>{result.found || 'Not found'}</dd>
         </div>
         <div>
@@ -22,10 +22,9 @@ export default function FieldResultCard({ result }) {
         </div>
         <div>
           <dt>Confidence</dt>
-          <dd>{Math.round(result.confidence * 100)}%</dd>
+          <dd>{Number.isFinite(result.confidence) ? `${Math.round(result.confidence * 100)}%` : 'Not available'}</dd>
         </div>
       </dl>
     </article>
   );
 }
-

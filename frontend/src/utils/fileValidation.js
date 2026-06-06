@@ -1,3 +1,5 @@
+import { hasCompleteExpectedFields } from './expectedFields';
+
 const SUPPORTED_IMAGE_DESCRIPTION = 'JPG, PNG, WebP, or TIFF';
 const ACCEPTED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/tiff']);
 const ACCEPTED_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.tif', '.tiff']);
@@ -24,10 +26,8 @@ export function validateSingleFile(file) {
 }
 
 export function validateExpectedFields(expectedFields) {
-  const hasMissingField = Object.values(expectedFields).some((value) => !value.trim());
-
-  if (hasMissingField) {
-    return 'Please complete all expected application fields.';
+  if (!hasCompleteExpectedFields(expectedFields)) {
+    return 'Please enter a brand name before verifying this label.';
   }
 
   return '';

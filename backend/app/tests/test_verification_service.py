@@ -156,3 +156,24 @@ def test_verify_expected_fields_returns_field_results() -> None:
 
     assert [result.status for result in results] == ["pass", "pass", "pass", "pass", "pass"]
 
+
+def test_verify_expected_fields_skips_blank_optional_expected_values() -> None:
+    expected = ExpectedFields(
+        brand_name="OLD TOM DISTILLERY",
+        class_type="",
+        alcohol_content="",
+        net_contents="",
+        government_warning=STANDARD_WARNING,
+    )
+    extracted = ExtractedFields(
+        brand_name="OLD TOM DISTILLERY",
+        class_type=None,
+        alcohol_content=None,
+        net_contents=None,
+        government_warning_text=STANDARD_WARNING,
+    )
+
+    results = verify_expected_fields(expected, extracted)
+
+    assert [result.field_name for result in results] == ["brand_name", "government_warning"]
+    assert [result.status for result in results] == ["pass", "pass"]
