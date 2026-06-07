@@ -22,7 +22,7 @@ export default function ExpectedFieldsForm({
   }
 
   return (
-    <>
+    <div className="expected-fields-form">
       <div className="section-heading">
         <div className="expected-form-heading-row">
           <div className="section-title-row">
@@ -33,16 +33,21 @@ export default function ExpectedFieldsForm({
               warning is applied automatically.
             </InfoTooltip>
           </div>
-          <button className="link-button expected-example-action" disabled={disabled} type="button" onClick={useExample}>
-            Use Example
-          </button>
+          <span
+            className={
+              isBrandReady
+                ? 'claim-status-pill claim-status-pill-ready'
+                : 'claim-status-pill claim-status-pill-incomplete'
+            }
+          >
+            {claimStatus}
+          </span>
         </div>
         {contextFilename ? (
           <p className={isBrandReady ? 'claim-context claim-context-ready' : 'claim-context claim-context-incomplete'}>
             <span className="claim-context-label">
               Editing claim for: <strong>{contextFilename}</strong>
             </span>
-            <span className="claim-status">{claimStatus}</span>
           </p>
         ) : null}
       </div>
@@ -67,6 +72,9 @@ export default function ExpectedFieldsForm({
         ))}
       </div>
       <div className="form-actions">
+        <button className="link-button expected-example-action" disabled={disabled} type="button" onClick={useExample}>
+          Load Example Data
+        </button>
         <button
           className="secondary-button"
           disabled={disabled || !canApplyToAll}
@@ -76,6 +84,6 @@ export default function ExpectedFieldsForm({
           Apply Current Data to All Labels
         </button>
       </div>
-    </>
+    </div>
   );
 }

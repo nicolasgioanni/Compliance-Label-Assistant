@@ -31,12 +31,12 @@ export default function LabelQueue({
           </div>
           {activeQueueItemCount ? (
             <button
-              className="secondary-button clear-queue-button"
+              className="link-button clear-queue-button"
               disabled={isLocked}
               type="button"
               onClick={onClearQueue}
             >
-              Clear Queue
+              Clear Labels
             </button>
           ) : null}
         </div>
