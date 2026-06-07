@@ -20,6 +20,7 @@ The prototype does not perform final legal compliance review. It assists agents 
 ```text
 label-compliance-verifier/
 |-- README.md
+|-- scripts/
 |-- frontend/
 |-- backend/
 |-- docs/
@@ -43,7 +44,48 @@ AI extracts visible label text. Backend code verifies fields. A human agent make
 
 ## Running Locally
 
-Backend:
+Recommended Windows one-terminal startup:
+
+```powershell
+.\scripts\start-dev.ps1
+```
+
+This creates or reuses `backend/.venv`, installs backend requirements only when the venv is missing, incomplete, or `requirements.txt` changed, installs frontend npm dependencies when `frontend/node_modules` is missing, loads `backend/.env` without printing secret values, and runs both servers in one terminal. Press `Ctrl+C` to stop both.
+
+Before verifying labels, put your OpenAI key in `backend/.env`:
+
+```powershell
+notepad backend\.env
+```
+
+Set `OPENAI_API_KEY=your-openai-key`. Do not put OpenAI keys in frontend files.
+
+Open `http://localhost:5173`. The backend runs at `http://127.0.0.1:8000`.
+
+Useful script commands:
+
+```powershell
+.\scripts\setup-local.ps1       # install local backend/frontend dependencies
+.\scripts\start-dev.ps1         # run backend and frontend together
+.\scripts\start-backend.ps1     # run only FastAPI
+.\scripts\start-frontend.ps1    # run only Vite
+```
+
+Optional ports:
+
+```powershell
+.\scripts\start-dev.ps1 -BackendPort 8010 -FrontendPort 5174
+```
+
+From a nested repo folder, use the repo root path:
+
+```powershell
+& "$((git rev-parse --show-toplevel).Trim())\scripts\start-dev.ps1"
+```
+
+A bare script path like `.\scripts\start-dev.ps1` only works from the repository root because PowerShell resolves `.\` relative to the current directory unless `scripts` is added to your `PATH`.
+
+Manual two-terminal startup still works. Use one terminal for the backend:
 
 ```powershell
 cd backend
@@ -54,16 +96,16 @@ python -c "from app.main import app; print(app.title)"
 python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Frontend:
+Use another terminal for the frontend:
 
 ```powershell
 cd frontend
 npm install
 $env:VITE_API_BASE_URL="http://127.0.0.1:8000"
-npm run dev
+npm run dev -- --host localhost --port 5173
 ```
 
-Open `http://localhost:5173`.
+See [docs/local-development.md](docs/local-development.md) for first-run steps, script parameters, and troubleshooting.
 
 ## Environment Variables
 

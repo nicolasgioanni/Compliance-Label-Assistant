@@ -6,6 +6,7 @@ This folder documents the current prototype implementation and the approved road
 - [Security](security.md)
 - [Performance](performance.md)
 - [API Contract](api-contract.md)
+- [Local Development](local-development.md)
 - [Assumptions And Limitations](assumptions-limitations.md)
 - [Deployment](deployment.md)
 - [Implementation Plan](implementation-plan.md)
