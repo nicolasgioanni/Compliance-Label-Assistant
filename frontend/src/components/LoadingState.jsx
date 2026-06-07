@@ -1,7 +1,8 @@
-export default function LoadingState({ mode }) {
+export default function LoadingState() {
   return (
     <div className="loading-state" aria-live="polite">
-      {mode === 'queue' ? 'Verifying labels...' : 'Verifying selected label...'}
+      <span className="loading-spinner loading-state-spinner" aria-hidden="true" />
+      <span>Verifying Label</span>
     </div>
   );
 }

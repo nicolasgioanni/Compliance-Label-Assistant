@@ -26,6 +26,7 @@ export default function VerificationForm({ showError = () => {} }) {
   const [isVerifyingAll, setIsVerifyingAll] = useState(false);
   const [removingQueueItemIds, setRemovingQueueItemIds] = useState(() => new Set());
   const removalTimeoutsRef = useRef(new Map());
+  const verificationInFlightRef = useRef(false);
 
   const activeQueueItems = useMemo(
     () => queueItems.filter((item) => !removingQueueItemIds.has(item.id)),
@@ -51,7 +52,7 @@ export default function VerificationForm({ showError = () => {} }) {
   );
 
   function handleAddFiles(files) {
-    if (isQueueLocked) {
+    if (isVerificationBlocked()) {
       showError('Wait for verification to finish before adding more labels.');
       return;
     }
@@ -111,7 +112,7 @@ export default function VerificationForm({ showError = () => {} }) {
   }
 
   function handleClearQueue() {
-    if (isQueueLocked) {
+    if (isVerificationBlocked()) {
       showError('Wait for verification to finish before clearing the queue.');
       return;
     }
@@ -124,7 +125,7 @@ export default function VerificationForm({ showError = () => {} }) {
   }
 
   function handleRemoveItem(itemId) {
-    if (isQueueLocked) {
+    if (isVerificationBlocked()) {
       showError('Wait for verification to finish before removing labels.');
       return;
     }
@@ -165,7 +166,7 @@ export default function VerificationForm({ showError = () => {} }) {
   }
 
   function handleExpectedFieldsChange(nextExpectedFields) {
-    if (!selectedItem || isQueueLocked) {
+    if (!selectedItem || isVerificationBlocked()) {
       return;
     }
 
@@ -190,7 +191,7 @@ export default function VerificationForm({ showError = () => {} }) {
   }
 
   function handleApplyExpectedFieldsToAll() {
-    if (!selectedItem || isQueueLocked) {
+    if (!selectedItem || isVerificationBlocked()) {
       return;
     }
 
@@ -201,7 +202,7 @@ export default function VerificationForm({ showError = () => {} }) {
   }
 
   function handleEditExpectedData() {
-    if (!selectedItem || isQueueLocked) {
+    if (!selectedItem || isVerificationBlocked()) {
       return;
     }
 
@@ -211,7 +212,7 @@ export default function VerificationForm({ showError = () => {} }) {
   }
 
   async function handleVerifySelected() {
-    if (isQueueLocked) {
+    if (isVerificationBlocked()) {
       return;
     }
 
@@ -226,12 +227,20 @@ export default function VerificationForm({ showError = () => {} }) {
       return;
     }
 
-    showError('');
-    await verifyQueueItem(selectedItem);
+    if (!startVerificationRun()) {
+      return;
+    }
+
+    try {
+      showError('');
+      await verifyQueueItem(selectedItem);
+    } finally {
+      finishVerificationRun();
+    }
   }
 
   async function handleVerifyReadyLabels() {
-    if (isQueueLocked) {
+    if (isVerificationBlocked()) {
       return;
     }
 
@@ -246,15 +255,20 @@ export default function VerificationForm({ showError = () => {} }) {
       return;
     }
 
+    if (!startVerificationRun()) {
+      return;
+    }
+
     showError('');
     setIsVerifyingAll(true);
+    markQueueItemsVerifying(verificationQueue.map((item) => item.id));
     let nextIndex = 0;
 
     async function worker() {
       while (nextIndex < verificationQueue.length) {
         const item = verificationQueue[nextIndex];
         nextIndex += 1;
-        await verifyQueueItem(item);
+        await verifyQueueItem(item, { markVerifying: false });
       }
     }
 
@@ -263,21 +277,14 @@ export default function VerificationForm({ showError = () => {} }) {
       await Promise.all(Array.from({ length: workerCount }, worker));
     } finally {
       setIsVerifyingAll(false);
+      finishVerificationRun();
     }
   }
 
-  async function verifyQueueItem(itemSnapshot) {
-    setQueueItems((currentItems) =>
-      currentItems.map((item) =>
-        item.id === itemSnapshot.id
-          ? {
-              ...item,
-              errorMessage: null,
-              status: 'verifying',
-            }
-          : item,
-      ),
-    );
+  async function verifyQueueItem(itemSnapshot, { markVerifying = true } = {}) {
+    if (markVerifying) {
+      markQueueItemsVerifying([itemSnapshot.id]);
+    }
 
     try {
       const result = await verifySingleLabel(itemSnapshot.file, itemSnapshot.expectedFields);
@@ -312,6 +319,38 @@ export default function VerificationForm({ showError = () => {} }) {
     }
   }
 
+  function markQueueItemsVerifying(itemIds) {
+    const itemIdSet = new Set(itemIds);
+    setQueueItems((currentItems) =>
+      currentItems.map((item) =>
+        itemIdSet.has(item.id)
+          ? {
+              ...item,
+              errorMessage: null,
+              status: 'verifying',
+            }
+          : item,
+      ),
+    );
+  }
+
+  function isVerificationBlocked() {
+    return isQueueLocked || verificationInFlightRef.current;
+  }
+
+  function startVerificationRun() {
+    if (verificationInFlightRef.current) {
+      return false;
+    }
+
+    verificationInFlightRef.current = true;
+    return true;
+  }
+
+  function finishVerificationRun() {
+    verificationInFlightRef.current = false;
+  }
+
   return (
     <section className="verification-workflow">
       <div className="verification-layout">
@@ -339,7 +378,6 @@ export default function VerificationForm({ showError = () => {} }) {
             queueSummary={queueSummary}
             selectedItem={selectedItem}
             showQueueSummary={hasQueueOutcome}
-            verifyingMode={isVerifyingAll ? 'queue' : 'single'}
             onApplyExpectedFieldsToAll={handleApplyExpectedFieldsToAll}
             onEditExpectedData={handleEditExpectedData}
             onExpectedFieldsChange={handleExpectedFieldsChange}

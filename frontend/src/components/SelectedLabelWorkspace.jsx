@@ -16,7 +16,6 @@ export default function SelectedLabelWorkspace({
   queueSummary,
   selectedItem,
   showQueueSummary = false,
-  verifyingMode = 'single',
   onApplyExpectedFieldsToAll,
   onEditExpectedData,
   onExpectedFieldsChange,
@@ -46,9 +45,7 @@ export default function SelectedLabelWorkspace({
       ) : null}
       <div className="selected-workspace-scroll">
         {!selectedItem ? <NoSelectedLabelState /> : null}
-        {selectedItem?.status === 'verifying' ? (
-          <SelectedLoadingState filename={selectedItem.filename} mode={verifyingMode} />
-        ) : null}
+        {selectedItem?.status === 'verifying' ? <SelectedLoadingState /> : null}
         {shouldShowResult ? <SelectedResultDetail item={selectedItem} onEditExpectedData={onEditExpectedData} /> : null}
         {shouldShowError ? (
           <SelectedErrorState
@@ -90,14 +87,10 @@ function NoSelectedLabelState() {
   );
 }
 
-function SelectedLoadingState({ filename, mode }) {
+function SelectedLoadingState() {
   return (
     <div className="workspace-loading-state">
-      <div className="workspace-state-heading">
-        <p className="summary-label">Selected Label</p>
-        <h2>{filename}</h2>
-      </div>
-      <LoadingState mode={mode} />
+      <LoadingState />
     </div>
   );
 }

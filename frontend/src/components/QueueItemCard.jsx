@@ -31,7 +31,12 @@ export default function QueueItemCard({ item, isRemoving = false, isSelected, re
           <span className="queue-filename">{item.filename}</span>
           {shouldShowPath ? <span className="queue-file-path">{item.relativePath}</span> : null}
         </span>
-        <span className={statusClassName}>{statusLabel}</span>
+        <span className={statusClassName}>
+          {item.status === 'verifying' ? (
+            <span className="loading-spinner queue-status-spinner" aria-hidden="true" />
+          ) : null}
+          {statusLabel}
+        </span>
       </button>
       <button
         aria-label={`Remove ${filePath}`}
