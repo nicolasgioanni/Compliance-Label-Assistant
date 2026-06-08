@@ -1,6 +1,7 @@
 import ImageUploadDropzone from './ImageUploadDropzone';
 import InfoTooltip from './InfoTooltip';
 import QueueItemCard from './QueueItemCard';
+import QueueStatusFilters from './QueueStatusFilters';
 
 export default function LabelQueue({
   queueItems,
@@ -8,12 +9,16 @@ export default function LabelQueue({
   selectedQueueItemId,
   maxQueueSize,
   isLocked = false,
+  totalQueueItemCount = queueItems.length,
+  selectedFilterIds,
+  filtersDisabled = false,
   onAddFiles,
   onClearQueue,
   onSelectItem,
   onRemoveItem,
+  onToggleFilter,
 }) {
-  const activeQueueItemCount = queueItems.filter((item) => !removingQueueItemIds.has(item.id)).length;
+  const emptyMessage = totalQueueItemCount > 0 ? 'No labels match the selected filters.' : 'No labels queued yet.';
 
   return (
     <section className="panel queue-panel">
@@ -29,7 +34,7 @@ export default function LabelQueue({
               data between them.
             </InfoTooltip>
           </div>
-          {activeQueueItemCount ? (
+          {totalQueueItemCount ? (
             <button
               className="link-button clear-queue-button"
               disabled={isLocked}
@@ -42,6 +47,11 @@ export default function LabelQueue({
         </div>
         <p>Add label images, then select a label to edit its expected application data.</p>
       </div>
+      <QueueStatusFilters
+        filtersDisabled={filtersDisabled}
+        selectedFilterIds={selectedFilterIds}
+        onToggleFilter={onToggleFilter}
+      />
       <div className="queue-list-region">
         {queueItems.length ? (
           <div className="queue-list">
@@ -62,7 +72,7 @@ export default function LabelQueue({
             })}
           </div>
         ) : (
-          <div className="queue-empty-state">No labels queued yet.</div>
+          <div className="queue-empty-state">{emptyMessage}</div>
         )}
       </div>
       <ImageUploadDropzone

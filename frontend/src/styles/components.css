@@ -962,6 +962,107 @@ textarea {
   min-height: 0;
 }
 
+.queue-filter-bar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  justify-content: space-between;
+  margin: -0.25rem 0 0.75rem;
+  min-width: 0;
+}
+
+.queue-filter-heading {
+  align-items: center;
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 0.4rem;
+}
+
+.queue-filter-label {
+  color: var(--color-muted);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.queue-filter-pills {
+  display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.queue-filter-pill {
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 900;
+  line-height: 1;
+  padding: 0.42rem 0.65rem;
+  transition:
+    background 140ms ease,
+    border-color 140ms ease,
+    color 140ms ease,
+    opacity 140ms ease;
+  white-space: nowrap;
+}
+
+.queue-filter-pill:hover:not(:disabled) {
+  border-color: currentColor;
+}
+
+.queue-filter-pill-needs-work {
+  background: transparent;
+  border-color: var(--color-warning);
+  color: var(--color-warning);
+}
+
+.queue-filter-pill-pass {
+  background: transparent;
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+.queue-filter-pill-fail {
+  background: transparent;
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.queue-filter-pill-selected.queue-filter-pill-needs-work {
+  background: var(--color-warning);
+  border-color: var(--color-warning);
+  color: #ffffff;
+}
+
+.queue-filter-pill-selected.queue-filter-pill-pass {
+  background: var(--color-success);
+  border-color: var(--color-success);
+  color: #ffffff;
+}
+
+.queue-filter-pill-selected.queue-filter-pill-fail {
+  background: var(--color-danger);
+  border-color: var(--color-danger);
+  color: #ffffff;
+}
+
+.queue-filter-pill:focus-visible {
+  box-shadow: 0 0 0 3px rgba(31, 92, 151, 0.14);
+  outline: none;
+}
+
+.queue-filter-pill:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
 .expected-data-panel {
   overflow: hidden;
   transition:
@@ -1271,6 +1372,16 @@ dd {
 
   .queue-summary-status-pill {
     white-space: normal;
+  }
+
+  .queue-filter-bar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .queue-filter-pills {
+    justify-content: flex-start;
+    width: 100%;
   }
 }
 

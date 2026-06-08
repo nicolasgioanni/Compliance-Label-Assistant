@@ -11,6 +11,10 @@ import {
   validateExpectedFields,
 } from '../utils/fileValidation';
 import { buildUploadWarningMessage, planQueueFileAddition } from '../utils/queueFileValidation';
+import {
+  createDefaultQueueFilterIds,
+  filterQueueItemsByStatus,
+} from '../utils/queueStatusFilters';
 
 const MAX_QUEUE_SIZE = MAX_QUEUE_FILES;
 const VERIFY_ALL_CONCURRENCY = 2;
@@ -25,12 +29,17 @@ export default function VerificationForm({ showError = () => {} }) {
   const [selectedQueueItemId, setSelectedQueueItemId] = useState(null);
   const [isVerifyingAll, setIsVerifyingAll] = useState(false);
   const [removingQueueItemIds, setRemovingQueueItemIds] = useState(() => new Set());
+  const [selectedQueueFilterIds, setSelectedQueueFilterIds] = useState(createDefaultQueueFilterIds);
   const removalTimeoutsRef = useRef(new Map());
   const verificationInFlightRef = useRef(false);
 
   const activeQueueItems = useMemo(
     () => queueItems.filter((item) => !removingQueueItemIds.has(item.id)),
     [queueItems, removingQueueItemIds],
+  );
+  const visibleQueueItems = useMemo(
+    () => filterQueueItemsByStatus(queueItems, selectedQueueFilterIds),
+    [queueItems, selectedQueueFilterIds],
   );
   const selectedItem = activeQueueItems.find((item) => item.id === selectedQueueItemId) || null;
   const isAnyItemVerifying = queueItems.some((item) => item.status === 'verifying');
@@ -97,6 +106,22 @@ export default function VerificationForm({ showError = () => {} }) {
     setQueueItems([]);
     setSelectedQueueItemId(null);
     setRemovingQueueItemIds(new Set());
+  }
+
+  function handleToggleQueueFilter(filterId) {
+    if (isQueueLocked) {
+      return;
+    }
+
+    setSelectedQueueFilterIds((currentFilterIds) => {
+      const nextFilterIds = new Set(currentFilterIds);
+      if (nextFilterIds.has(filterId)) {
+        nextFilterIds.delete(filterId);
+      } else {
+        nextFilterIds.add(filterId);
+      }
+      return nextFilterIds;
+    });
   }
 
   function handleRemoveItem(itemId) {
@@ -333,13 +358,17 @@ export default function VerificationForm({ showError = () => {} }) {
           <LabelQueue
             maxQueueSize={MAX_QUEUE_SIZE}
             isLocked={isQueueLocked}
-            queueItems={queueItems}
+            queueItems={visibleQueueItems}
             removingQueueItemIds={removingQueueItemIds}
             selectedQueueItemId={selectedQueueItemId}
+            totalQueueItemCount={activeQueueItems.length}
+            selectedFilterIds={selectedQueueFilterIds}
+            filtersDisabled={isQueueLocked}
             onAddFiles={handleAddFiles}
             onClearQueue={handleClearQueue}
             onRemoveItem={handleRemoveItem}
             onSelectItem={setSelectedQueueItemId}
+            onToggleFilter={handleToggleQueueFilter}
           />
         </div>
 
