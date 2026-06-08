@@ -11,8 +11,10 @@ export default function QueueStatusFilters({
       <div className="queue-filter-heading">
         <span className="queue-filter-label">Filters</span>
         <InfoTooltip label="About queue filters">
-          Filters only change which labels are visible in this queue. They do not remove labels or change verification
-          results.
+          Use these buttons to choose which labels you see in the queue. A filled button is on; click it to hide that
+          group, then click it again to show it. Needs Review shows labels that still need data, are ready to verify, or
+          are currently verifying. Pass shows labels that passed verification. Fail shows labels that failed, need
+          review, or hit an error. Filters only change what is visible here. They never delete labels or change results.
         </InfoTooltip>
       </div>
       <div className="queue-filter-pills">

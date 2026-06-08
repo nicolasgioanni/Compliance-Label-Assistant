@@ -7,12 +7,13 @@ import SelectedResultDetail from './SelectedResultDetail';
 const RESULT_STATUSES = new Set(['pass', 'fail', 'needs_review']);
 
 export default function SelectedLabelWorkspace({
-  canApplyToAll = false,
+  canCopyClaimData = false,
+  copyClaimDataDisabledReason = '',
   isExpanded = false,
   isQueueLocked = false,
   isVerifySelectedDisabled = true,
   selectedItem,
-  onApplyExpectedFieldsToAll,
+  onCopyClaimData,
   onEditExpectedData,
   onExpectedFieldsChange,
   onVerifySelected,
@@ -46,10 +47,11 @@ export default function SelectedLabelWorkspace({
         ) : null}
         {selectedItem && selectedItem.status !== 'verifying' && !shouldShowResult && !shouldShowError ? (
           <SelectedExpectedDataState
-            canApplyToAll={canApplyToAll}
+            canCopyClaimData={canCopyClaimData}
+            copyClaimDataDisabledReason={copyClaimDataDisabledReason}
             disabled={isQueueLocked}
             item={selectedItem}
-            onApplyExpectedFieldsToAll={onApplyExpectedFieldsToAll}
+            onCopyClaimData={onCopyClaimData}
             onExpectedFieldsChange={onExpectedFieldsChange}
           />
         ) : null}
@@ -84,21 +86,23 @@ function SelectedLoadingState() {
 }
 
 function SelectedExpectedDataState({
-  canApplyToAll,
+  canCopyClaimData,
+  copyClaimDataDisabledReason,
   disabled,
   item,
-  onApplyExpectedFieldsToAll,
+  onCopyClaimData,
   onExpectedFieldsChange,
 }) {
   return (
     <div className="selected-expected-data-state">
       <ExpectedFieldsForm
-        canApplyToAll={canApplyToAll}
+        canCopyClaimData={canCopyClaimData}
+        copyClaimDataDisabledReason={copyClaimDataDisabledReason}
         contextFilename={item.filename}
         disabled={disabled}
         expectedFields={item.expectedFields}
-        onApplyToAll={onApplyExpectedFieldsToAll}
         onChange={onExpectedFieldsChange}
+        onCopyClaimData={onCopyClaimData}
       />
       {item.result ? <StaleResultNotice isStale={item.isResultStale} /> : null}
     </div>

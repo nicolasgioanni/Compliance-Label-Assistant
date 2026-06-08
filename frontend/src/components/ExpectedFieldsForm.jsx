@@ -2,24 +2,21 @@ import { DEFAULT_GOVERNMENT_WARNING } from '../constants/defaultWarningText';
 import {
   createEmptyExpectedFields,
   EXAMPLE_EXPECTED_FIELDS,
-  hasAnyVisibleExpectedFieldValue,
   VISIBLE_EXPECTED_FIELD_DEFINITIONS,
 } from '../utils/expectedFields';
 import InfoTooltip from './InfoTooltip';
 
 export default function ExpectedFieldsForm({
-  canApplyToAll = false,
+  canCopyClaimData = false,
+  copyClaimDataDisabledReason = '',
   contextFilename,
   disabled = false,
   expectedFields,
-  onApplyToAll,
   onChange,
+  onCopyClaimData,
 }) {
   const isBrandReady = Boolean(expectedFields.brandName?.trim());
-  const isApplyToAllEnabled = !disabled && canApplyToAll && hasAnyVisibleExpectedFieldValue(expectedFields);
-  const applyToAllButtonClassName = isApplyToAllEnabled
-    ? 'primary-button expected-apply-all-button'
-    : 'secondary-button expected-apply-all-button';
+  const isCopyClaimDataEnabled = !disabled && canCopyClaimData;
   const claimStatus = isBrandReady ? 'Ready' : 'Brand name required';
 
   function updateField(fieldName, value) {
@@ -105,12 +102,13 @@ export default function ExpectedFieldsForm({
       </div>
       <div className="form-actions">
         <button
-          className={applyToAllButtonClassName}
-          disabled={!isApplyToAllEnabled}
+          className="primary-button expected-copy-claim-data-button"
+          disabled={!isCopyClaimDataEnabled}
+          title={!isCopyClaimDataEnabled ? copyClaimDataDisabledReason : undefined}
           type="button"
-          onClick={onApplyToAll}
+          onClick={onCopyClaimData}
         >
-          Apply Current Data to All Labels
+          Copy Claim Data
         </button>
       </div>
     </div>

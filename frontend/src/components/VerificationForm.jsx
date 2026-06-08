@@ -1,11 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { verifySingleLabel } from '../api/verificationApi';
+import CopyClaimDataModal from './CopyClaimDataModal';
 import LabelQueue from './LabelQueue';
 import QueueActions from './QueueActions';
 import QueueSummaryBar from './QueueSummaryBar';
 import SelectedLabelWorkspace from './SelectedLabelWorkspace';
 import { downloadQueueResultsCsv, downloadQueueResultsXlsx } from '../utils/resultExport';
 import { createEmptyExpectedFields } from '../utils/expectedFields';
+import {
+  clearCopiedExpectedFields,
+  copyExpectedFields,
+  hasDifferentCopyExpectedFields,
+} from '../utils/expectedFieldCopy';
 import {
   MAX_QUEUE_FILES,
   validateExpectedFields,
@@ -21,12 +27,12 @@ const VERIFY_ALL_CONCURRENCY = 2;
 const QUEUE_REMOVAL_ANIMATION_MS = 160;
 const QUEUE_REMOVAL_SNAP_PAUSE_MS = 35;
 const EMPTY_EXPECTED_FIELDS = createEmptyExpectedFields();
-const EXPECTED_FIELD_NAMES = Object.keys(EMPTY_EXPECTED_FIELDS);
 const CURRENT_RESULT_STATUSES = new Set(['pass', 'fail', 'needs_review']);
 
 export default function VerificationForm({ showError = () => {} }) {
   const [queueItems, setQueueItems] = useState([]);
   const [selectedQueueItemId, setSelectedQueueItemId] = useState(null);
+  const [copyModalSourceId, setCopyModalSourceId] = useState(null);
   const [isVerifyingAll, setIsVerifyingAll] = useState(false);
   const [removingQueueItemIds, setRemovingQueueItemIds] = useState(() => new Set());
   const [selectedQueueFilterIds, setSelectedQueueFilterIds] = useState(createDefaultQueueFilterIds);
@@ -50,6 +56,13 @@ export default function VerificationForm({ showError = () => {} }) {
   const selectedFieldWarning = selectedItem ? validateExpectedFields(selectedItem.expectedFields) : '';
   const isVerifySelectedDisabled = !selectedItem || isQueueLocked || Boolean(selectedFieldWarning);
   const isVerifyReadyDisabled = isQueueLocked || !readyQueueItems.length;
+  const copyModalSourceItem = activeQueueItems.find((item) => item.id === copyModalSourceId) || null;
+  const copyClaimDataDisabledReason = getCopyClaimDataDisabledReason({
+    activeQueueItems,
+    isQueueLocked,
+    selectedItem,
+  });
+  const canCopyClaimData = !copyClaimDataDisabledReason;
 
   useEffect(
     () => () => {
@@ -58,6 +71,12 @@ export default function VerificationForm({ showError = () => {} }) {
     },
     [],
   );
+
+  useEffect(() => {
+    if (copyModalSourceId && !copyModalSourceItem) {
+      setCopyModalSourceId(null);
+    }
+  }, [copyModalSourceId, copyModalSourceItem]);
 
   function handleAddFiles(files) {
     if (isVerificationBlocked()) {
@@ -190,15 +209,48 @@ export default function VerificationForm({ showError = () => {} }) {
     );
   }
 
-  function handleApplyExpectedFieldsToAll() {
-    if (!selectedItem || isVerificationBlocked()) {
+  function handleOpenCopyClaimDataModal() {
+    if (
+      !selectedItem ||
+      isVerificationBlocked() ||
+      activeQueueItems.length < 2 ||
+      !selectedItem.expectedFields.brandName?.trim()
+    ) {
       return;
     }
 
     showError('');
+    setCopyModalSourceId(selectedItem.id);
+  }
+
+  function handleCloseCopyClaimDataModal() {
+    setCopyModalSourceId(null);
+  }
+
+  function handleApplyCopiedExpectedFields({ shouldClearSource, targetIds }) {
+    if (!copyModalSourceItem || isVerificationBlocked()) {
+      return;
+    }
+
+    const sourceId = copyModalSourceItem.id;
+    const sourceExpectedFields = copyModalSourceItem.expectedFields;
+    const targetIdSet = new Set(targetIds);
+
+    showError('');
     setQueueItems((currentItems) =>
-      currentItems.map((item) => applyExpectedFieldsToItem(item, selectedItem.expectedFields)),
+      currentItems.map((item) => {
+        if (targetIdSet.has(item.id)) {
+          return copyExpectedFieldsToQueueItem(item, sourceExpectedFields);
+        }
+
+        if (shouldClearSource && item.id === sourceId) {
+          return clearExpectedFieldsFromQueueItem(item);
+        }
+
+        return item;
+      }),
     );
+    setCopyModalSourceId(null);
   }
 
   function handleEditExpectedData() {
@@ -380,12 +432,13 @@ export default function VerificationForm({ showError = () => {} }) {
             onExportXlsx={() => downloadQueueResultsXlsx(activeQueueItems)}
           />
           <SelectedLabelWorkspace
-            canApplyToAll={activeQueueItems.length > 1}
+            canCopyClaimData={canCopyClaimData}
+            copyClaimDataDisabledReason={copyClaimDataDisabledReason}
             isExpanded={activeQueueItems.length > 0}
             isQueueLocked={isQueueLocked}
             isVerifySelectedDisabled={isVerifySelectedDisabled}
             selectedItem={selectedItem}
-            onApplyExpectedFieldsToAll={handleApplyExpectedFieldsToAll}
+            onCopyClaimData={handleOpenCopyClaimDataModal}
             onEditExpectedData={handleEditExpectedData}
             onExpectedFieldsChange={handleExpectedFieldsChange}
             onVerifySelected={handleVerifySelected}
@@ -399,6 +452,14 @@ export default function VerificationForm({ showError = () => {} }) {
         onVerifyReady={handleVerifyReadyLabels}
         onVerifySelected={handleVerifySelected}
       />
+      {copyModalSourceItem ? (
+        <CopyClaimDataModal
+          queueItems={activeQueueItems}
+          sourceItem={copyModalSourceItem}
+          onApply={handleApplyCopiedExpectedFields}
+          onClose={handleCloseCopyClaimDataModal}
+        />
+      ) : null}
     </section>
   );
 }
@@ -448,25 +509,54 @@ function getQueueStatusForExpectedFields(expectedFields) {
   return validateExpectedFields(expectedFields) ? 'needs_expected_data' : 'ready';
 }
 
-function applyExpectedFieldsToItem(item, expectedFields) {
-  if (areExpectedFieldsEqual(item.expectedFields, expectedFields)) {
+function copyExpectedFieldsToQueueItem(item, sourceExpectedFields) {
+  if (!hasDifferentCopyExpectedFields(item.expectedFields, sourceExpectedFields)) {
     return item;
   }
 
-  const nextExpectedFields = { ...expectedFields };
+  const nextExpectedFields = copyExpectedFields(item.expectedFields, sourceExpectedFields);
 
   return {
     ...item,
     expectedFields: nextExpectedFields,
     errorMessage: null,
-    isResultStale: item.result ? true : item.isResultStale,
+    isResultStale: false,
+    result: null,
     status: getQueueStatusForExpectedFields(nextExpectedFields),
     workspaceView: 'form',
   };
 }
 
-function areExpectedFieldsEqual(leftFields, rightFields) {
-  return EXPECTED_FIELD_NAMES.every((fieldName) => leftFields[fieldName] === rightFields[fieldName]);
+function clearExpectedFieldsFromQueueItem(item) {
+  return {
+    ...item,
+    expectedFields: clearCopiedExpectedFields(item.expectedFields),
+    errorMessage: null,
+    isResultStale: false,
+    result: null,
+    status: 'needs_expected_data',
+    workspaceView: 'form',
+  };
+}
+
+function getCopyClaimDataDisabledReason({ activeQueueItems, isQueueLocked, selectedItem }) {
+  if (!selectedItem) {
+    return 'Select a label first.';
+  }
+
+  if (activeQueueItems.length < 2) {
+    return 'Add another label to copy data.';
+  }
+
+  if (!selectedItem.expectedFields.brandName?.trim()) {
+    return 'Enter a brand name before copying.';
+  }
+
+  if (isQueueLocked) {
+    return 'Wait for verification to finish before copying claim data.';
+  }
+
+  return '';
 }
 
 function hasCurrentResult(item) {
