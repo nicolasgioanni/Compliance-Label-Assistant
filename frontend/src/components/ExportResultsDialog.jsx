@@ -1,6 +1,13 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+
+const EXPORT_FORMATS = [
+  { id: 'xlsx', label: 'Excel workbook (.xlsx)' },
+  { id: 'csv', label: 'CSV file (.csv)' },
+];
 
 export default function ExportResultsDialog({ onClose, onDownloadCsv, onDownloadXlsx }) {
+  const [selectedFormat, setSelectedFormat] = useState('xlsx');
+
   useEffect(() => {
     function handleKeyDown(event) {
       if (event.key === 'Escape') {
@@ -18,12 +25,13 @@ export default function ExportResultsDialog({ onClose, onDownloadCsv, onDownload
     }
   }
 
-  function handleCsvDownload() {
-    onDownloadCsv();
-    onClose();
-  }
+  function handleDownload() {
+    if (selectedFormat === 'csv') {
+      onDownloadCsv();
+      onClose();
+      return;
+    }
 
-  function handleXlsxDownload() {
     Promise.resolve(onDownloadXlsx()).catch((error) => {
       console.error('Excel export failed.', error);
     });
@@ -39,15 +47,34 @@ export default function ExportResultsDialog({ onClose, onDownloadCsv, onDownload
         role="dialog"
       >
         <h2 id="export-dialog-title">Which file type would you like to download?</h2>
-        <div className="export-dialog-actions">
-          <button className="primary-button" type="button" onClick={handleCsvDownload}>
-            Download CSV
-          </button>
-          <button className="primary-button" type="button" onClick={handleXlsxDownload}>
-            Download Excel
-          </button>
-          <button className="secondary-button" type="button" onClick={onClose}>
+        <fieldset className="export-format-list">
+          <legend className="sr-only">Export file type</legend>
+          {EXPORT_FORMATS.map((format) => (
+            <label
+              className={
+                selectedFormat === format.id
+                  ? 'export-format-option export-format-option-selected'
+                  : 'export-format-option'
+              }
+              key={format.id}
+            >
+              <input
+                checked={selectedFormat === format.id}
+                name="export-format"
+                type="radio"
+                value={format.id}
+                onChange={() => setSelectedFormat(format.id)}
+              />
+              <span>{format.label}</span>
+            </label>
+          ))}
+        </fieldset>
+        <div className="export-dialog-footer">
+          <button className="secondary-button export-dialog-back-button" type="button" onClick={onClose}>
             Back
+          </button>
+          <button className="primary-button" type="button" onClick={handleDownload}>
+            Download
           </button>
         </div>
       </div>

@@ -268,22 +268,43 @@ describe('VerificationForm upload queue behavior', () => {
     expect(exportButton).toHaveClass('primary-button');
   });
 
-  it('opens the export dialog and routes CSV and Excel downloads', async () => {
+  it('opens the export dialog with Excel selected by default', async () => {
     await renderVerifiedQueue();
     const exportButton = screen.getByRole('button', { name: 'Export Results' });
 
     fireEvent.click(exportButton);
-    let dialog = screen.getByRole('dialog', { name: 'Which file type would you like to download?' });
-    fireEvent.click(within(dialog).getByRole('button', { name: 'Download CSV' }));
+    const dialog = screen.getByRole('dialog', { name: 'Which file type would you like to download?' });
+
+    expect(within(dialog).getByRole('radio', { name: 'Excel workbook (.xlsx)' })).toBeChecked();
+    expect(within(dialog).getByRole('radio', { name: 'CSV file (.csv)' })).not.toBeChecked();
+    expect(within(dialog).getByRole('button', { name: 'Back' })).toHaveClass('export-dialog-back-button');
+    expect(within(dialog).getByRole('button', { name: 'Download' })).toBeInTheDocument();
+  });
+
+  it('routes CSV downloads after selecting CSV', async () => {
+    await renderVerifiedQueue();
+    const exportButton = screen.getByRole('button', { name: 'Export Results' });
+
+    fireEvent.click(exportButton);
+    const dialog = screen.getByRole('dialog', { name: 'Which file type would you like to download?' });
+    fireEvent.click(within(dialog).getByRole('radio', { name: 'CSV file (.csv)' }));
+    expect(within(dialog).getByRole('radio', { name: 'CSV file (.csv)' })).toBeChecked();
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Download' }));
 
     expect(downloadQueueResultsCsv).toHaveBeenCalledTimes(1);
     expect(downloadQueueResultsXlsx).not.toHaveBeenCalled();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('routes Excel downloads from the default selection', async () => {
+    await renderVerifiedQueue();
+    const exportButton = screen.getByRole('button', { name: 'Export Results' });
 
     fireEvent.click(exportButton);
-    dialog = screen.getByRole('dialog', { name: 'Which file type would you like to download?' });
-    fireEvent.click(within(dialog).getByRole('button', { name: 'Download Excel' }));
+    const dialog = screen.getByRole('dialog', { name: 'Which file type would you like to download?' });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Download' }));
 
+    expect(downloadQueueResultsCsv).not.toHaveBeenCalled();
     expect(downloadQueueResultsXlsx).toHaveBeenCalledTimes(1);
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
