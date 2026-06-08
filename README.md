@@ -1,104 +1,98 @@
 # Compliance Label Assistant
 
-AI-assisted alcohol label verification for comparing label artwork against expected application data.
+Compliance Label Assistant is an AI-powered alcohol label verification prototype. It helps compare uploaded label artwork against expected application fields and is designed as a standalone proof of concept, not a direct COLA integration.
 
-This prototype uses a hybrid AI + deterministic verification approach. A vision-capable model extracts visible text and likely label fields from uploaded alcohol label images. The backend then performs deterministic comparison between extracted values and expected application data. This keeps the AI portion focused on extraction while keeping verification decisions explainable and auditable.
+## Deployed Application
 
-The prototype does not perform final legal compliance review. It assists agents by flagging likely matches, mismatches, missing fields, and review-needed cases. Visual formatting checks such as bold text, exact font size, and label placement are out of scope and documented as limitations.
+- Frontend URL: TBD before submission
+- Backend API URL: TBD before submission
 
-## Current Features
+Update these values before final submission. Do not include private dashboard links or secrets.
 
-- Unified label queue for 1 to 10 uploaded JPG, PNG, WebP, or TIFF labels, with expected application fields stored per label.
-- Per-label verification with AI extraction, deterministic comparison, extracted text, and timing metrics.
-- Controlled batch concurrency with isolated per-file errors.
-- Client-side CSV and Excel export for verified queue results.
-- Backend-only OpenAI API key handling.
-- In-memory upload validation, duplicate filename rejection, image resizing, and JPEG compression before extraction.
+## Key Features
 
-## Repository Structure
+- Upload JPG, PNG, WebP, or TIFF alcohol label images.
+- Queue up to 10 label images in the frontend.
+- Enter expected values for brand name, class/type, alcohol content, net contents, and government warning.
+- Extract visible label fields through the backend OpenAI vision-model integration.
+- Compare extracted fields with expected fields using deterministic backend verification rules.
+- Display field-level pass, normalized match, fail, missing, needs-review, and error results.
+- Verify one selected label or run the frontend queue workflow over ready labels.
+- Export current verification results to CSV or XLSX.
+- Validate file type, file size, image dimensions, and backend availability.
+- Run the frontend and backend locally with repository PowerShell scripts or manual commands.
 
-```text
-label-compliance-verifier/
-|-- README.md
-|-- scripts/
-|-- frontend/
-|-- backend/
-|-- docs/
-`-- sample-data/
+## Stakeholder Problem Addressed
+
+Compliance reviewers manually compare label artwork to application data. This prototype targets routine matching work where a simple, fast UI can help reviewers identify likely matches, mismatches, and items that need manual review. Batch-oriented workflows matter because reviewers may need to process many labels, and slow tools are less likely to be adopted.
+
+## Technical Approach
+
+The React/Vite frontend handles image selection, queue state, expected field entry, API calls, result display, and exports. The FastAPI backend validates uploads, preprocesses images in memory, extracts label fields with an OpenAI vision model, and applies deterministic verification rules for selected fields. Extraction and verification are separate so provider output stays isolated from the comparison rules.
+
+More detail is available in [docs/architecture/data-flow.md](docs/architecture/data-flow.md) and [docs/take-home/project-brief.md](docs/take-home/project-brief.md).
+
+## Tools and Technologies
+
+- Frontend: React 18, Vite 6, JavaScript, CSS, Vitest, Testing Library, ESLint.
+- Backend: Python 3.11, FastAPI, Uvicorn, Pydantic, pytest, Ruff.
+- Provider integration: OpenAI Python SDK.
+- Image processing: Pillow.
+- Export support: `write-excel-file` for XLSX and browser-generated CSV.
+- Intended deployment: Vercel frontend and Render Starter backend.
+
+## Assumptions
+
+- The prototype is standalone and does not integrate with COLA.
+- Uploaded test images should not contain sensitive real applicant data.
+- Human review remains final, especially for ambiguous, low-quality, or unusual labels.
+- The system verifies selected fields only; it does not validate every possible TTB requirement.
+- Uploaded files are processed temporarily and are not persisted by the application code.
+- Provider latency and deployment tier can affect verification speed.
+
+## Trade-Offs and Limitations
+
+- The prototype is not production compliance hardened.
+- It does not include authentication, audit logging, a database, or persistent file storage.
+- OpenAI extraction may be imperfect on glare, blur, poor lighting, tiny text, or unusual layouts.
+- Government warning verification checks extracted text, not label typography, placement, or visual formatting.
+- The UI verifies queued labels by calling the single-label endpoint for each ready item; the backend also exposes a shared expected-field `/verify-batch` endpoint that the current UI does not call.
+- Performance depends on provider response time, image size, preprocessing settings, and deployment tier.
+
+## Local Setup and Run Instructions
+
+Prerequisites:
+
+- Git
+- Node.js compatible with the frontend Vite toolchain
+- Python 3.11
+- PowerShell on Windows for the repository helper scripts
+
+```powershell
+git clone <repository-url>
+cd label-compliance-verifier
+.\scripts\setup-local.ps1
 ```
 
-## Data Flow
+Set the backend provider key in `backend\.env`:
 
-```text
-Frontend queue
--> FastAPI /verify once per queued label
--> backend upload validation
--> in-memory image preprocessing
--> one OpenAI extraction call per image
--> deterministic backend verification
--> structured response with statuses and timing
--> frontend queue summary, selected-label details, extracted text, and results export
+```powershell
+OPENAI_API_KEY=<OPENAI_API_KEY>
 ```
 
-AI extracts visible label text. Backend code verifies fields. A human agent makes the final compliance judgment.
-
-## Running Locally
-
-Recommended Windows one-terminal startup:
+Start both local services:
 
 ```powershell
 .\scripts\start-dev.ps1
 ```
 
-This creates or reuses `backend/.venv`, installs backend requirements only when the venv is missing, incomplete, or `requirements.txt` changed, installs frontend npm dependencies when `frontend/node_modules` is missing, loads `backend/.env` without printing secret values, and runs both servers in one terminal. Press `Ctrl+C` to stop both.
+Local URLs:
 
-Before verifying labels, put your OpenAI key in `backend/.env`:
+- Frontend: `http://localhost:5173`
+- Backend API: `http://127.0.0.1:8000`
+- Health check: `http://127.0.0.1:8000/health`
 
-```powershell
-notepad backend\.env
-```
-
-Set `OPENAI_API_KEY=your-openai-key`. Do not put OpenAI keys in frontend files.
-
-Open `http://localhost:5173`. The backend runs at `http://127.0.0.1:8000`.
-
-Useful script commands:
-
-```powershell
-.\scripts\setup-local.ps1       # install local backend/frontend dependencies
-.\scripts\start-dev.ps1         # run backend and frontend together
-.\scripts\start-backend.ps1     # run only FastAPI
-.\scripts\start-frontend.ps1    # run only Vite
-```
-
-Optional ports:
-
-```powershell
-.\scripts\start-dev.ps1 -BackendPort 8010 -FrontendPort 5174
-```
-
-When custom ports are used, the scripts set the frontend API base URL and include the selected frontend origin in backend CORS settings for that process.
-
-From a nested repo folder, use the repo root path:
-
-```powershell
-& "$((git rev-parse --show-toplevel).Trim())\scripts\start-dev.ps1"
-```
-
-A bare script path like `.\scripts\start-dev.ps1` only works from the repository root because PowerShell resolves `.\` relative to the current directory unless `scripts` is added to your `PATH`.
-
-Manual two-terminal startup still works. Use one terminal for the backend:
-
-```powershell
-cd backend
-python -m pip install -r requirements.txt
-$env:OPENAI_API_KEY="your-openai-key"
-$env:ALLOWED_ORIGINS="http://localhost:5173"
-python -c "from app.main import app; print(app.title)"
-python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
-```
-
-Use another terminal for the frontend:
+Manual frontend startup:
 
 ```powershell
 cd frontend
@@ -107,89 +101,45 @@ $env:VITE_API_BASE_URL="http://127.0.0.1:8000"
 npm run dev -- --host localhost --port 5173
 ```
 
-See [docs/local-development.md](docs/local-development.md) for first-run steps, script parameters, and troubleshooting.
-
-## Environment Variables
-
-Backend variables are centralized in `backend/app/config.py` and documented in `backend/.env.example`:
-
-- `OPENAI_API_KEY`
-- `OPENAI_MODEL`
-- `OPENAI_TIMEOUT_SECONDS`
-- `OPENAI_IMAGE_DETAIL`
-- `OPENAI_MAX_RETRIES`
-- `OPENAI_EXTRACTION_CONCURRENCY`
-- `MAX_FILE_SIZE_MB`
-- `MAX_IMAGE_PIXELS`
-- `MAX_BATCH_SIZE`
-- `BATCH_CONCURRENCY`
-- `MAX_IMAGE_WIDTH`
-- `JPEG_QUALITY`
-- `ALLOWED_ORIGINS`
-
-Frontend variables are documented in `frontend/.env.example`:
-
-- `VITE_API_BASE_URL`
-
-No OpenAI API key belongs in frontend code or frontend environment variables.
-
-The default verification path reuses backend OpenAI clients, sends smaller compressed label images, uses low image
-detail for speed and cost control, asks the model only for fields needed by deterministic comparison, and disables
-hidden retries. If small warning text is missed, test `OPENAI_IMAGE_DETAIL=auto` or `high` against representative
-labels and compare latency.
-
-## API Endpoints
-
-- `GET /health`
-- `POST /warmup`
-- `POST /verify`
-- `POST /verify-batch`
-
-See [docs/api-contract.md](docs/api-contract.md) for request and response details.
-
-## Verification Behavior
-
-- Brand names pass when the only differences are capitalization, repeated whitespace, or clearly harmless punctuation.
-- Class/type values pass when they match after case and whitespace normalization, including line breaks.
-- Alcohol content passes when the parsed ABV and proof values are numerically consistent, regardless of `Alc./Vol.` formatting or casing.
-- Net contents pass when the quantity matches after unit normalization, including `mL`, `ml`, `ML`, and `milliliters`.
-- Government warning heading is case-sensitive: `GOVERNMENT WARNING` must be uppercase, while `Government Warning`, `government warning`, and other casing variants fail.
-- Government warning statement text is compared against the backend regulatory wording; punctuation or body-text uncertainty is marked for review instead of passing automatically.
-
-## Results Export And Future Import
-
-CSV and Excel export are implemented in the frontend for queue results. Exports use timestamped names like `label-compliance-verification-results_YYYY-MM-DD_HH-mm-ss.csv` or `label-compliance-verification-results_YYYY-MM-DD_HH-mm-ss.xlsx`, include one row per verified label, skip unverified queue items, and do not include raw extracted text. The `overall_status` export column reflects the backend verification result shown in the UI.
-
-CSV import is a future scalability improvement. For larger submission batches, reviewers could upload a spreadsheet mapping filenames to expected application data so queued labels can be matched by filename and prefilled before verification.
-
-## Deployment
-
-Vercel frontend:
-
-- Root directory: `frontend`
-- Build command: `npm run build`
-- Output directory: `dist`
-- Environment variable: `VITE_API_BASE_URL=https://your-render-api.onrender.com`
-
-Render backend:
-
-- Root directory: `backend`
-- Build command: `pip install -r requirements.txt`
-- Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-- Environment variables: use the backend variables listed above.
-
-## Checks
-
-Backend:
+Manual backend startup:
 
 ```powershell
 cd backend
-python -m pytest
-python -m ruff check app
-python -c "from app.main import app; print(app.title)"
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+$env:OPENAI_API_KEY="<OPENAI_API_KEY>"
+$env:ALLOWED_ORIGINS="http://localhost:5173"
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
+Basic smoke test:
+
+1. Open `http://localhost:5173`.
+2. Confirm the backend status indicator is online.
+3. Upload a supported label image smaller than 5 MB.
+4. Enter expected field values.
+5. Run verification and review the field-level results.
+6. Try an unsupported file type or oversized file and confirm a user-facing validation error.
+7. Export verified results to CSV or XLSX.
+
+For the longer setup guide, see [docs/take-home/setup-and-run.md](docs/take-home/setup-and-run.md).
+
+## Environment Variables
+
 Frontend:
+
+- `VITE_API_BASE_URL`: backend API base URL used by the browser app.
+
+Backend:
+
+- `OPENAI_API_KEY`: required backend-only provider key.
+- `ALLOWED_ORIGINS`: comma-separated frontend origins allowed by CORS.
+
+Additional backend tuning variables are documented in [docs/backend/environment-variables.md](docs/backend/environment-variables.md) and [docs/deployment/environment-variables.md](docs/deployment/environment-variables.md). Use placeholders only and never commit real `.env` values.
+
+## Testing
+
+Frontend validation:
 
 ```powershell
 cd frontend
@@ -199,17 +149,42 @@ npm test
 npm run build
 ```
 
-## Limitations
+Backend validation:
 
-- No final legal compliance decision.
-- No COLA integration.
-- No database, authentication, admin dashboard, payment, or account system.
-- No persistent uploaded file storage.
-- PDF and HEIC/HEIF uploads are not supported in the MVP; they require additional decoding or rasterization dependencies.
-- Government warning bold type, font size/font, and label placement are not verified.
-- The main frontend queue is limited to 10 labels and calls `/verify` once per queued label.
-- The backend `/verify-batch` endpoint remains available for shared expected-field batch requests.
-- External extraction depends on OpenAI API availability and correct backend configuration.
+```powershell
+cd backend
+.\.venv\Scripts\python.exe -m pytest
+.\.venv\Scripts\python.exe -m ruff check app
+.\.venv\Scripts\python.exe -c "from app.main import app; print(app.title)"
+```
+
+## Documentation Map
+
+- [Documentation index](docs/README.md)
+- [Take-home project brief](docs/take-home/project-brief.md)
+- [Take-home setup and run guide](docs/take-home/setup-and-run.md)
+- [Take-home requirements mapping](docs/take-home/requirements-mapping.md)
+- [Take-home deployment links](docs/take-home/deployment-links.md)
+- [API documentation](docs/api/overview.md)
+- [Frontend documentation](docs/frontend/overview.md)
+- [Backend documentation](docs/backend/overview.md)
+- [Deployment documentation](docs/deployment/overview.md)
+
+## Repository Structure
+
+```text
+backend/      FastAPI app, schemas, routes, services, provider integration, tests
+frontend/     React/Vite app, components, hooks, utilities, tests
+docs/         Take-home, architecture, frontend, backend, API, deployment, and reference docs
+scripts/      Local setup and development PowerShell scripts
+sample-data/  Sample label assets for local testing
+```
+
+## Submission Notes
+
+- Source code is in this repository.
+- Deployed application URLs should be added before final submission.
+- Deep implementation documentation lives in [docs/](docs/README.md).
 
 ## License
 
