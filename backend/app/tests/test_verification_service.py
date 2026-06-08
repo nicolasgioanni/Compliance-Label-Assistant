@@ -1,6 +1,6 @@
 from app.constants import STANDARD_GOVERNMENT_WARNING as STANDARD_WARNING
 from app.schemas import ExpectedFields, ExtractedFields
-from app.services.verification_service import (
+from app.verification.rules import (
     calculate_overall_status,
     verify_alcohol_content,
     verify_brand_name,

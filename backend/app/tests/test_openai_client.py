@@ -1,5 +1,5 @@
 from app.config import Settings
-from app.services import openai_client
+from app.providers.openai import client as openai_client
 
 
 def test_openai_client_is_cached_by_timeout_and_retry_settings(monkeypatch) -> None:

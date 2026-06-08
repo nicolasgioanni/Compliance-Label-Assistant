@@ -8,8 +8,9 @@ Backend:
 
 ```powershell
 cd backend
-python -m pytest
-python -m ruff check app
+.\.venv\Scripts\python.exe -m pytest
+.\.venv\Scripts\python.exe -m ruff check app
+.\.venv\Scripts\python.exe -c "from app.main import app; print(app.title)"
 ```
 
 Frontend:
@@ -30,6 +31,14 @@ Backend tests cover the security-critical upload path before extraction:
 - Rejected metadata: missing filename, blank filename, no extension, double-extension traps, unsupported extensions, unsupported MIME aliases, and empty MIME values.
 - Rejected bytes: empty files, corrupt image bytes, file-size overflow, decoded format mismatch, MIME/content mismatch, and pixel-count overflow.
 - Request safety: invalid uploads return user-facing errors before OpenAI extraction is called.
+
+Backend regression tests also cover:
+
+- API contract stability for `/health`, `/verify`, and `/verify-batch`.
+- Batch request validation, duplicate basename handling, per-file errors, and concurrency limits.
+- OpenAI provider request shape, client caching, missing-key errors, and safe provider error mapping.
+- Image preprocessing defaults, resizing, JPEG quality, and RGB conversion.
+- Deterministic verification rules and text normalization.
 
 Frontend tests cover fast client-side queue decisions before upload:
 

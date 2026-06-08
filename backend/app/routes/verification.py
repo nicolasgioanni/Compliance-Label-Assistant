@@ -7,16 +7,16 @@ and response construction to service modules.
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 
 from app.constants import STANDARD_GOVERNMENT_WARNING
-from app.schemas import BatchVerificationResponse, ExpectedFields, SingleVerificationResponse
-from app.services.batch_service import BatchRequestValidationError, verify_batch_labels
-from app.services.image_preprocessor import ImagePreprocessingError
-from app.services.openai_extraction_service import (
+from app.image_processing.preprocessor import ImagePreprocessingError
+from app.image_processing.validation import UploadValidationError
+from app.providers.openai.extraction import (
     ExtractionConfigurationError,
     ExtractionServiceError,
     InvalidExtractionResponseError,
 )
+from app.schemas import BatchVerificationResponse, ExpectedFields, SingleVerificationResponse
+from app.services.batch_service import BatchRequestValidationError, verify_batch_labels
 from app.services.single_verification_service import verify_single_label
-from app.utils.file_validation import UploadValidationError
 
 router = APIRouter()
 

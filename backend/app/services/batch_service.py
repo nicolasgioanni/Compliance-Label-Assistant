@@ -12,6 +12,13 @@ import asyncio
 from fastapi import UploadFile
 
 from app.config import Settings, get_settings
+from app.image_processing.preprocessor import ImagePreprocessingError
+from app.image_processing.validation import UploadValidationError
+from app.providers.openai.extraction import (
+    ExtractionConfigurationError,
+    ExtractionServiceError,
+    InvalidExtractionResponseError,
+)
 from app.schemas import (
     BatchVerificationItem,
     BatchVerificationResponse,
@@ -19,15 +26,8 @@ from app.schemas import (
     ExtractedFields,
     OverallStatus,
 )
-from app.services.image_preprocessor import ImagePreprocessingError
-from app.services.openai_extraction_service import (
-    ExtractionConfigurationError,
-    ExtractionServiceError,
-    InvalidExtractionResponseError,
-)
 from app.services.single_verification_service import process_single_label
 from app.services.timing_service import get_elapsed_ms, start_timer
-from app.utils.file_validation import UploadValidationError
 
 
 MIN_BATCH_SIZE = 2

@@ -3,7 +3,7 @@ from io import BytesIO
 from PIL import Image
 
 from app.config import Settings
-from app.services.image_preprocessor import preprocess_image_for_extraction
+from app.image_processing.preprocessor import preprocess_image_for_extraction
 
 
 def _image_bytes(mode: str = "RGBA", size: tuple[int, int] = (2000, 400)) -> bytes:

@@ -23,6 +23,7 @@ The frontend calls only the backend API. Do not configure an OpenAI API key in V
   - `OPENAI_MAX_RETRIES`
   - `OPENAI_EXTRACTION_CONCURRENCY`
   - `MAX_FILE_SIZE_MB`
+  - `MAX_IMAGE_PIXELS`
   - `MAX_BATCH_SIZE`
   - `BATCH_CONCURRENCY`
   - `MAX_IMAGE_WIDTH`

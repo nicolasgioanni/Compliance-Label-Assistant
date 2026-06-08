@@ -5,9 +5,9 @@ from fastapi import UploadFile
 from starlette.datastructures import Headers
 
 from app.config import Settings
+from app.image_processing.validation import UploadValidationError
 from app.schemas import ExpectedFields, ExtractedFields, SingleVerificationResponse
 from app.services import batch_service
-from app.utils.file_validation import UploadValidationError
 
 
 EXPECTED_FIELDS = ExpectedFields(

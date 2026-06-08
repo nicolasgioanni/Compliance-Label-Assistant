@@ -29,10 +29,17 @@ User
 
 ## Backend
 
-- Routes parse multipart inputs, build `ExpectedFields`, call service functions, and return structured responses.
-- Services keep responsibilities separate: single-label orchestration, batch orchestration, OpenAI extraction, image preprocessing, timing, and deterministic verification.
-- Utilities handle file validation, text normalization, response helpers, and safe logging.
+- Routes parse multipart inputs, build `ExpectedFields`, map known service/provider errors to HTTP responses, and return structured response models.
+- `backend/app/services` owns workflow orchestration only: single-label processing, batch processing, and timing.
+- `backend/app/providers/openai` owns OpenAI-specific extraction concerns: client reuse, prompt text, image payload formatting, structured response parsing, provider errors, and extraction concurrency.
+- `backend/app/image_processing` owns upload validation and in-memory preprocessing: metadata/content checks, size and pixel limits, EXIF orientation handling, RGB conversion, resize, and JPEG compression.
+- `backend/app/verification` owns deterministic field comparison and response field-result construction.
+- `backend/app/utils` holds generic helpers such as text normalization and logging setup.
+- `backend/app/config.py` is the only backend environment/configuration source used by routes and services.
 - Uploaded images are processed in memory and are not permanently stored.
+- There is no extraction result cache in this MVP. With a Vercel frontend and Render backend, avoiding persistent
+  extraction storage keeps deployment simple, avoids retention questions, and fits Render's default ephemeral
+  filesystem behavior. OpenAI client objects are still cached in memory to avoid repeated SDK setup overhead.
 
 ## Product Framing
 

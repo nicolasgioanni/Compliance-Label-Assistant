@@ -1,6 +1,6 @@
 """Handles image resizing and compression before OpenAI extraction.
 
-This service only prepares uploaded image bytes for fast, lower-cost model
+This module only prepares uploaded image bytes for fast, lower-cost model
 input. It does not validate business fields, call OpenAI, store files, or make
 compliance decisions. All processing is in memory.
 """
@@ -10,7 +10,7 @@ from io import BytesIO
 
 from PIL import Image, ImageOps, UnidentifiedImageError
 
-from app.utils.file_validation import SUPPORTED_IMAGE_DESCRIPTION
+from app.image_processing.validation import SUPPORTED_IMAGE_DESCRIPTION
 
 
 class ImagePreprocessingError(ValueError):

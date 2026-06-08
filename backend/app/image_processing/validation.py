@@ -1,8 +1,8 @@
 """Validates uploaded files before image preprocessing.
 
-This module handles file type, size, batch-limit scaffolding, and image
-openability checks. It does not store uploads or inspect label compliance
-content. Backend validation is required even when the frontend shows warnings.
+This module handles file type, size, and image openability checks. It does not
+store uploads or inspect label compliance content. Backend validation is
+required even when the frontend shows warnings.
 """
 
 from __future__ import annotations
@@ -39,11 +39,6 @@ class UploadValidationError(ValueError):
 
 def _max_size_bytes(max_file_size_mb: int) -> int:
     return max_file_size_mb * 1024 * 1024
-
-
-def validate_batch_size(file_count: int, max_batch_size: int) -> None:
-    if file_count > max_batch_size:
-        raise UploadValidationError(f"Batch size limit exceeded. Upload {max_batch_size} files or fewer.")
 
 
 def validate_upload_metadata(file: UploadFile) -> tuple[str, str]:

@@ -1,6 +1,6 @@
 """Handles OpenAI vision extraction only.
 
-This service extracts visible text and likely alcohol label fields from a
+This provider extracts visible text and likely alcohol label fields from a
 preprocessed image. It does not decide whether a label passes review; later
 deterministic verification remains separate so comparison decisions are
 auditable. The OpenAI API key stays backend-only.
@@ -15,8 +15,8 @@ from openai import APIConnectionError, APIStatusError, APITimeoutError, OpenAIEr
 from pydantic import BaseModel, ValidationError
 
 from app.config import Settings, get_settings
+from app.providers.openai.client import get_openai_client
 from app.schemas import ExtractedFields
-from app.services.openai_client import get_openai_client
 
 
 EXTRACTION_PROMPT = """You are extracting visible text from an alcohol beverage label image.

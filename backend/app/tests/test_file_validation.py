@@ -6,7 +6,7 @@ from fastapi import UploadFile
 from PIL import Image
 from starlette.datastructures import Headers
 
-from app.utils.file_validation import UploadValidationError, validate_batch_size, validate_upload_file
+from app.image_processing.validation import UploadValidationError, validate_upload_file
 
 
 def _image_bytes(image_format: str, size: tuple[int, int] = (12, 12)) -> bytes:
@@ -98,8 +98,3 @@ def test_mismatched_content_type_rejected() -> None:
 def test_image_pixel_count_overflow_rejected() -> None:
     with pytest.raises(UploadValidationError, match="Image dimensions too large"):
         _validate(_upload("label.png", "image/png", _image_bytes("PNG", size=(20, 20))), max_image_pixels=399)
-
-
-def test_batch_too_large_rejected() -> None:
-    with pytest.raises(UploadValidationError, match="Batch size limit exceeded"):
-        validate_batch_size(file_count=11, max_batch_size=10)

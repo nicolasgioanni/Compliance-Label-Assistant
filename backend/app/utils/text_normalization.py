@@ -1,8 +1,8 @@
 """Pure text cleanup and parsing helpers for deterministic verification.
 
 These helpers normalize extracted and expected label text without making any
-field-level compliance decisions. Verification rules live in
-verification_service.py so parsing and comparison remain easy to test.
+field-level compliance decisions. Verification rules live in app.verification
+so parsing and comparison remain easy to test.
 """
 
 from __future__ import annotations

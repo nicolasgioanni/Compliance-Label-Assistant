@@ -18,8 +18,11 @@ The app does not make final legal compliance determinations, integrate with COLA
 
 - FastAPI exposes `GET /health`, `POST /verify`, and `POST /verify-batch`.
 - Routes stay thin: they parse multipart form inputs, build expected fields, call services, and return structured responses.
-- Services separate single-label orchestration, batch orchestration, OpenAI extraction, image preprocessing, deterministic verification, and timing.
-- Utilities handle file validation, text normalization, response building, and safe logging.
+- Services own workflow orchestration: single-label verification, batch verification, and timing.
+- `backend/app/providers/openai` owns OpenAI extraction, client reuse, prompt text, provider payloads, response parsing, and provider error mapping.
+- `backend/app/image_processing` owns upload validation and in-memory image preprocessing.
+- `backend/app/verification` owns deterministic field comparison and field-result construction.
+- Utilities handle generic helpers such as text normalization and safe logging.
 - Configuration is centralized in `backend/app/config.py`.
 
 ## Verification Pipeline
@@ -43,8 +46,9 @@ Backend:
 
 ```powershell
 cd backend
-python -m pytest
-python -m ruff check app
+.\.venv\Scripts\python.exe -m pytest
+.\.venv\Scripts\python.exe -m ruff check app
+.\.venv\Scripts\python.exe -c "from app.main import app; print(app.title)"
 ```
 
 Frontend:

@@ -1,6 +1,6 @@
 """Deterministic field verification after AI extraction.
 
-The OpenAI service extracts visible label text only. This module compares that
+The OpenAI provider extracts visible label text only. This module compares that
 extracted text against expected application values using deterministic rules so
 the resulting field statuses are explainable and auditable. It does not call
 OpenAI, process image bytes, or make final legal compliance decisions.
@@ -8,7 +8,6 @@ OpenAI, process image bytes, or make final legal compliance decisions.
 
 from app.constants import STANDARD_GOVERNMENT_WARNING
 from app.schemas import ExpectedFields, ExtractedFields, FieldResult, OverallStatus
-from app.utils.response_builders import build_field_result
 from app.utils.text_normalization import (
     calculate_similarity,
     extract_abv,
@@ -23,6 +22,7 @@ from app.utils.text_normalization import (
     normalize_quotes,
     remove_extra_whitespace,
 )
+from app.verification.results import build_field_result
 
 
 BRAND_REVIEW_THRESHOLD = 0.88

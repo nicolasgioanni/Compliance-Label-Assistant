@@ -72,7 +72,3 @@ class BatchVerificationResponse(BaseModel):
     status_counts: dict[str, int]
     total_processing_time_ms: int
     results: list[BatchVerificationItem]
-
-
-class ErrorResponse(BaseModel):
-    detail: str

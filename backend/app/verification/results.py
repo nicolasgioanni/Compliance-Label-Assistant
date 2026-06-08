@@ -1,4 +1,4 @@
-"""Helpers for building consistent API response objects."""
+"""Helpers for building deterministic verification result objects."""
 
 from app.schemas import FieldResult, FieldStatus
 
@@ -19,4 +19,3 @@ def build_field_result(
         reason=reason,
         confidence=confidence,
     )
-

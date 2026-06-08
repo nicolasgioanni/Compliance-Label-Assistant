@@ -1,19 +1,19 @@
 """Coordinates single-label verification processing.
 
 This service validates and preprocesses one uploaded image, sends it to the
-extraction service, and then delegates deterministic field comparison to
-verification_service.py.
+extraction provider, and then delegates deterministic field comparison to the
+verification package.
 """
 
 from fastapi import UploadFile
 
 from app.config import Settings, get_settings
+from app.image_processing.preprocessor import preprocess_image_for_extraction
+from app.image_processing.validation import validate_upload_file
+from app.providers.openai.extraction import extract_label_fields
 from app.schemas import ExpectedFields, SingleVerificationResponse
-from app.services.image_preprocessor import preprocess_image_for_extraction
-from app.services.openai_extraction_service import extract_label_fields
 from app.services.timing_service import get_elapsed_ms, start_timer
-from app.services.verification_service import calculate_overall_status, verify_expected_fields
-from app.utils.file_validation import validate_upload_file
+from app.verification.rules import calculate_overall_status, verify_expected_fields
 
 
 async def verify_single_label(

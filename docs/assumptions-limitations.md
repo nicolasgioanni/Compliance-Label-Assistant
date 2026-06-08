@@ -8,6 +8,7 @@
 - CSV and Excel export are implemented for queue results; CSV import by filename mapping is deferred.
 - `sample-data/labels` may contain manually added or generated label images for local testing.
 - Deployment URLs are not fixed until the frontend and backend are deployed.
+- The planned deployment is a Vercel frontend calling a Render FastAPI backend.
 - If `OPENAI_API_KEY` is missing, verification returns a user-facing setup/configuration error.
 
 ## Limitations
@@ -15,8 +16,16 @@
 - The app does not make final legal compliance decisions.
 - There is no COLA integration.
 - There is no database, authentication, admin dashboard, or persistent uploaded file storage.
+- There is no extraction result cache. Repeated verification of the same image calls OpenAI again by design.
 - PDF and HEIC/HEIF uploads are not supported in the MVP.
 - Government warning bold type, font size/font, and label placement are not verified.
 - Extraction quality depends on label image quality and OpenAI API availability.
 - The frontend queue is limited to 10 labels.
 - Backend batch uploads are limited by `MAX_BATCH_SIZE`, defaulting to 10 files.
+
+## Deferred Improvements
+
+- Extraction result caching is intentionally deferred. It could reduce cost for repeated-image workloads, but it would
+  require explicit choices about cache keys, expiration, privacy, invalidation, and Render storage behavior.
+- For this prototype, stateless request processing is the safer tradeoff: uploaded images are temporary, extraction
+  text is not retained, and Render redeploys/restarts do not need to preserve application data.

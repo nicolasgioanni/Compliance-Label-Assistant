@@ -4,7 +4,7 @@ import pytest
 from openai import OpenAIError
 
 from app.config import Settings
-from app.services.openai_extraction_service import (
+from app.providers.openai.extraction import (
     ExtractionConfigurationError,
     ExtractionServiceError,
     _extract_label_fields_sync,
@@ -41,7 +41,7 @@ def test_parse_uses_fast_field_only_responses_parameters(monkeypatch) -> None:
         captured["client_settings"] = settings
         return FakeClient()
 
-    monkeypatch.setattr("app.services.openai_extraction_service.get_openai_client", fake_get_openai_client)
+    monkeypatch.setattr("app.providers.openai.extraction.get_openai_client", fake_get_openai_client)
 
     settings = Settings(
         openai_api_key="test-key",
@@ -77,7 +77,7 @@ def test_openai_errors_are_mapped_to_safe_user_messages(monkeypatch) -> None:
     class FakeClient:
         responses = FakeResponses()
 
-    monkeypatch.setattr("app.services.openai_extraction_service.get_openai_client", lambda settings: FakeClient())
+    monkeypatch.setattr("app.providers.openai.extraction.get_openai_client", lambda settings: FakeClient())
 
     with pytest.raises(ExtractionServiceError) as exc_info:
         _extract_label_fields_sync(b"image bytes", Settings(openai_api_key="test-key"))
