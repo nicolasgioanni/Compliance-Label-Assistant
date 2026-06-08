@@ -47,7 +47,7 @@ def validate_batch_size(file_count: int, max_batch_size: int) -> None:
 
 
 def validate_upload_metadata(file: UploadFile) -> tuple[str, str]:
-    filename = file.filename or ""
+    filename = (file.filename or "").strip()
     extension = Path(filename).suffix.lower()
     content_type = (file.content_type or "").lower()
 
@@ -73,12 +73,14 @@ def validate_file_size(file_bytes: bytes, max_file_size_mb: int) -> None:
         raise UploadValidationError(f"File too large. Upload an image smaller than {max_file_size_mb} MB.")
 
 
-def validate_image_can_open(file_bytes: bytes, extension: str, content_type: str) -> None:
+def validate_image_can_open(file_bytes: bytes, extension: str, content_type: str, max_image_pixels: int) -> None:
     try:
         with Image.open(BytesIO(file_bytes)) as image:
             image_format = image.format
+            pixel_count = image.width * image.height
+            validate_image_pixel_count(pixel_count, max_image_pixels)
             image.verify()
-    except (OSError, UnidentifiedImageError) as exc:
+    except (OSError, UnidentifiedImageError, Image.DecompressionBombError) as exc:
         raise UploadValidationError(
             "The uploaded file could not be opened as an image. "
             f"Please upload a readable {SUPPORTED_IMAGE_DESCRIPTION} label image."
@@ -101,9 +103,16 @@ def validate_image_can_open(file_bytes: bytes, extension: str, content_type: str
         )
 
 
-async def validate_upload_file(file: UploadFile, max_file_size_mb: int) -> bytes:
+def validate_image_pixel_count(pixel_count: int, max_image_pixels: int) -> None:
+    if max_image_pixels > 0 and pixel_count > max_image_pixels:
+        raise UploadValidationError(
+            f"Image dimensions too large. Upload an image with {max_image_pixels:,} pixels or fewer."
+        )
+
+
+async def validate_upload_file(file: UploadFile, max_file_size_mb: int, max_image_pixels: int) -> bytes:
     extension, content_type = validate_upload_metadata(file)
     file_bytes = await file.read()
     validate_file_size(file_bytes, max_file_size_mb)
-    validate_image_can_open(file_bytes, extension, content_type)
+    validate_image_can_open(file_bytes, extension, content_type, max_image_pixels)
     return file_bytes

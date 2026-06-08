@@ -31,7 +31,11 @@ async def process_single_label(
 ) -> SingleVerificationResponse:
     processing_start = start_timer()
 
-    original_image_bytes = await validate_upload_file(file, settings.max_file_size_mb)
+    original_image_bytes = await validate_upload_file(
+        file,
+        max_file_size_mb=settings.max_file_size_mb,
+        max_image_pixels=settings.max_image_pixels,
+    )
     preprocessed_image_bytes = preprocess_image_for_extraction(
         original_image_bytes,
         max_width=settings.max_image_width,

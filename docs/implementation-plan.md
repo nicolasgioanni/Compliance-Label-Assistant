@@ -22,7 +22,7 @@
 - `POST /verify-batch` accepts `files[]` plus the same expected fields; supports 2-10 files, shared expected values, concurrency `3`, partial per-file errors, and total timing.
 - Single response shape: `filename`, `overall_status`, `expected_fields`, `extracted_fields`, `field_results`, `processing_time_ms`, `extraction_time_ms`, `verification_time_ms`, and optional `error`.
 - Batch response shape: `total_labels`, `status_counts`, `total_processing_time_ms`, and `results` using the same per-file shape as single verification.
-- File validation rejects empty files, oversized files, bad extensions, bad MIME types, decoded format mismatches, duplicate batch filenames, excessive batch size, and images Pillow cannot open.
+- File validation rejects empty files, oversized files, excessive pixel counts, bad extensions, bad MIME types, decoded format mismatches, duplicate batch basenames, excessive batch size, and images Pillow cannot open.
 
 ## Verification Rules
 
@@ -33,9 +33,10 @@
 
 ## Test Plan
 
-- Backend unit tests for text normalization, brand/class matching, ABV/proof equivalence, net contents conversion, government warning checks, file validation, and API contract.
+- Backend unit tests for text normalization, brand/class matching, ABV/proof equivalence, net contents conversion, government warning checks, file validation, duplicate batch handling, and API contract.
 - API tests mock the extraction service so no test requires a real OpenAI API call.
-- Frontend verification: run `npm run build`; manually smoke test health check, one-label queue verification, multi-label queue verification, item selection, extracted text rendering, errors, and CSV export.
+- Frontend automated tests cover upload controls, file metadata validation, queue duplicate planning, and mixed upload warning behavior. Build verification remains `npm run build`.
+- Manual frontend smoke tests cover browser folder picker behavior, health check, one-label queue verification, multi-label queue verification, item selection, extracted text rendering, errors, and CSV export.
 - Final self-audit: confirm route thinness, backend-only API key, configurable CORS/limits/model, image compression, batch concurrency, no sensitive logging, no permanent storage, and docs matching implemented behavior.
 
 ## Assumptions

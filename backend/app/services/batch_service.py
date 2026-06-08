@@ -156,7 +156,9 @@ def _build_status_counts(results: list[BatchVerificationItem]) -> dict[str, int]
 
 
 def _normalize_filename(filename: str | None) -> str:
-    return (filename or "").strip().casefold()
+    trimmed_filename = (filename or "").strip()
+    basename = trimmed_filename.replace("\\", "/").rsplit("/", maxsplit=1)[-1]
+    return basename.strip().casefold()
 
 
 def _build_duplicate_files_message(duplicate_count: int) -> str:

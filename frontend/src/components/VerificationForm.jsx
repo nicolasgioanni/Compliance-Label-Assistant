@@ -7,10 +7,9 @@ import { downloadQueueResultsCsv } from '../utils/csvExport';
 import { createEmptyExpectedFields } from '../utils/expectedFields';
 import {
   MAX_QUEUE_FILES,
-  normalizeFilename,
   validateExpectedFields,
-  validateSingleFile,
 } from '../utils/fileValidation';
+import { buildUploadWarningMessage, planQueueFileAddition } from '../utils/queueFileValidation';
 
 const MAX_QUEUE_SIZE = MAX_QUEUE_FILES;
 const VERIFY_ALL_CONCURRENCY = 2;
@@ -62,48 +61,24 @@ export default function VerificationForm({ showError = () => {} }) {
       return;
     }
 
-    const filesToAdd = [];
-    const existingFileKeys = new Set(activeQueueItems.map((item) => normalizeFilename(getQueueItemFileKey(item))));
-    const selectedFileKeys = new Set();
-    let duplicateCount = 0;
-    let invalidCount = 0;
-    let excludedForLimitCount = 0;
-
-    files.forEach((file) => {
-      const normalizedFileKey = normalizeFilename(getFileQueueKey(file));
-      if (normalizedFileKey && (existingFileKeys.has(normalizedFileKey) || selectedFileKeys.has(normalizedFileKey))) {
-        duplicateCount += 1;
-        return;
-      }
-
-      const fileWarning = validateSingleFile(file);
-      if (fileWarning) {
-        invalidCount += 1;
-        return;
-      }
-
-      if (activeQueueItems.length + filesToAdd.length >= MAX_QUEUE_SIZE) {
-        excludedForLimitCount += 1;
-        return;
-      }
-
-      if (normalizedFileKey) {
-        selectedFileKeys.add(normalizedFileKey);
-      }
-
-      filesToAdd.push(createQueueItem(file));
+    const fileAdditionPlan = planQueueFileAddition({
+      activeQueueItems,
+      files,
+      maxQueueSize: MAX_QUEUE_SIZE,
     });
+    const queueItemsToAdd = fileAdditionPlan.filesToAdd.map(createQueueItem);
 
-    if (filesToAdd.length) {
-      setQueueItems((currentItems) => [...currentItems, ...filesToAdd]);
-      setSelectedQueueItemId((currentSelectedId) => currentSelectedId || filesToAdd[0].id);
+    if (queueItemsToAdd.length) {
+      setQueueItems((currentItems) => [...currentItems, ...queueItemsToAdd]);
+      setSelectedQueueItemId((currentSelectedId) => currentSelectedId || queueItemsToAdd[0].id);
     }
 
     const uploadErrorMessage = buildUploadWarningMessage({
-      addedCount: filesToAdd.length,
-      duplicateCount,
-      excludedForLimitCount,
-      invalidCount,
+      addedCount: queueItemsToAdd.length,
+      duplicateCount: fileAdditionPlan.duplicateCount,
+      excludedForLimitCount: fileAdditionPlan.excludedForLimitCount,
+      invalidCount: fileAdditionPlan.invalidCount,
+      maxQueueSize: MAX_QUEUE_SIZE,
     });
 
     if (uploadErrorMessage) {
@@ -401,39 +376,6 @@ function buildQueueFullMessage() {
   return 'Queue is full. Clear Queue before adding more labels.';
 }
 
-function buildUploadWarningMessage({ addedCount, duplicateCount, excludedForLimitCount, invalidCount }) {
-  const warningParts = [];
-
-  if (invalidCount > 0) {
-    warningParts.push(`Skipped ${invalidCount} unsupported or oversized ${pluralizeFile(invalidCount)}.`);
-  }
-
-  if (duplicateCount > 0) {
-    warningParts.push(`Skipped ${duplicateCount} duplicate ${pluralizeFile(duplicateCount)}.`);
-  }
-
-  if (excludedForLimitCount > 0) {
-    warningParts.push(
-      `Skipped ${excludedForLimitCount} ${pluralizeFile(excludedForLimitCount)} because the queue limit is ${MAX_QUEUE_SIZE} labels.`,
-    );
-  }
-
-  if (!warningParts.length) {
-    return '';
-  }
-
-  const addedMessage =
-    addedCount > 0
-      ? `Added ${addedCount} label ${addedCount === 1 ? 'image' : 'images'}.`
-      : 'No label images were added.';
-
-  return [addedMessage, ...warningParts].join(' ');
-}
-
-function pluralizeFile(count) {
-  return count === 1 ? 'file' : 'files';
-}
-
 function createQueueItem(file) {
   const relativePath = getFileRelativePath(file);
 
@@ -449,14 +391,6 @@ function createQueueItem(file) {
     errorMessage: null,
     workspaceView: 'form',
   };
-}
-
-function getQueueItemFileKey(item) {
-  return item.relativePath || item.filename;
-}
-
-function getFileQueueKey(file) {
-  return getFileRelativePath(file) || file.name;
 }
 
 function getFileRelativePath(file) {

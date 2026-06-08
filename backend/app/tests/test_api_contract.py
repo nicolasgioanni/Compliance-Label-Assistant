@@ -183,6 +183,27 @@ def test_verify_rejects_invalid_file_before_extraction(monkeypatch) -> None:
     assert "Unsupported file extension" in response.json()["detail"]
 
 
+def test_verify_rejects_pixel_overflow_before_extraction(monkeypatch) -> None:
+    async def fail_if_called(image_bytes: bytes, settings):
+        raise AssertionError("Extraction should not run for invalid uploads.")
+
+    monkeypatch.setattr(single_verification_service, "extract_label_fields", fail_if_called)
+    monkeypatch.setattr(
+        single_verification_service,
+        "get_settings",
+        lambda: Settings(openai_api_key="test-key", max_image_pixels=399),
+    )
+
+    response = client.post(
+        "/verify",
+        data=_expected_form_data(),
+        files={"file": ("old-tom.png", _image_bytes(), "image/png")},
+    )
+
+    assert response.status_code == 400
+    assert "Image dimensions too large" in response.json()["detail"]
+
+
 def test_verify_missing_api_key_returns_setup_error(monkeypatch) -> None:
     monkeypatch.setattr(single_verification_service, "get_settings", lambda: Settings(openai_api_key=""))
 
@@ -258,6 +279,51 @@ def test_verify_batch_rejects_duplicate_filenames(monkeypatch) -> None:
 
     assert response.status_code == 400
     assert "1 duplicate file was detected and not uploaded." in response.json()["detail"]
+
+
+def test_verify_batch_rejects_path_prefixed_duplicate_filenames(monkeypatch) -> None:
+    response = _post_verify_batch_with_extracted(
+        monkeypatch,
+        ExtractedFields(),
+        [
+            ("files", ("old-tom.png", _image_bytes(), "image/png")),
+            ("files", ("images/old-tom.png", _image_bytes(), "image/png")),
+        ],
+    )
+
+    assert response.status_code == 400
+    assert "1 duplicate file was detected and not uploaded." in response.json()["detail"]
+
+
+def test_verify_batch_rejects_windows_path_prefixed_duplicate_filenames(monkeypatch) -> None:
+    response = _post_verify_batch_with_extracted(
+        monkeypatch,
+        ExtractedFields(),
+        [
+            ("files", ("old-tom.png", _image_bytes(), "image/png")),
+            ("files", ("folder\\old-tom.png", _image_bytes(), "image/png")),
+        ],
+    )
+
+    assert response.status_code == 400
+    assert "1 duplicate file was detected and not uploaded." in response.json()["detail"]
+
+
+def test_verify_batch_reports_multiple_duplicate_filename_count(monkeypatch) -> None:
+    response = _post_verify_batch_with_extracted(
+        monkeypatch,
+        ExtractedFields(),
+        [
+            ("files", ("old-tom.png", _image_bytes(), "image/png")),
+            ("files", ("Old-Tom.PNG", _image_bytes(), "image/png")),
+            ("files", ("images/old-tom.png", _image_bytes(), "image/png")),
+            ("files", ("front-label.png", _image_bytes(), "image/png")),
+            ("files", ("folder\\front-label.png", _image_bytes(), "image/png")),
+        ],
+    )
+
+    assert response.status_code == 400
+    assert "3 duplicate files were detected and not uploaded." in response.json()["detail"]
 
 
 def test_verify_batch_returns_one_result_per_valid_file(monkeypatch) -> None:

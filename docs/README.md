@@ -4,6 +4,7 @@ This folder documents the current prototype implementation and the approved road
 
 - [Architecture](architecture.md)
 - [Security](security.md)
+- [Testing](testing.md)
 - [Performance](performance.md)
 - [API Contract](api-contract.md)
 - [Local Development](local-development.md)

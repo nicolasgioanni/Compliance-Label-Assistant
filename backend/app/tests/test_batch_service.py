@@ -67,6 +67,41 @@ def test_validate_batch_filenames_rejects_duplicates() -> None:
         raise AssertionError("Expected duplicate filename validation error.")
 
 
+def test_validate_batch_filenames_rejects_path_prefixed_duplicates() -> None:
+    try:
+        batch_service.validate_batch_filenames([_upload_file("label.png"), _upload_file("images/label.png")])
+    except batch_service.BatchRequestValidationError as exc:
+        assert "1 duplicate file was detected and not uploaded." in str(exc)
+    else:
+        raise AssertionError("Expected duplicate filename validation error.")
+
+
+def test_validate_batch_filenames_rejects_windows_path_prefixed_duplicates() -> None:
+    try:
+        batch_service.validate_batch_filenames([_upload_file("label.png"), _upload_file("folder\\label.png")])
+    except batch_service.BatchRequestValidationError as exc:
+        assert "1 duplicate file was detected and not uploaded." in str(exc)
+    else:
+        raise AssertionError("Expected duplicate filename validation error.")
+
+
+def test_validate_batch_filenames_counts_multiple_duplicate_repeats() -> None:
+    try:
+        batch_service.validate_batch_filenames(
+            [
+                _upload_file("label.png"),
+                _upload_file("Label.PNG"),
+                _upload_file("images/label.png"),
+                _upload_file("other.png"),
+                _upload_file("nested/other.png"),
+            ]
+        )
+    except batch_service.BatchRequestValidationError as exc:
+        assert "3 duplicate files were detected and not uploaded." in str(exc)
+    else:
+        raise AssertionError("Expected duplicate filename validation error.")
+
+
 async def _run_partial_failure_test(monkeypatch) -> None:
     async def fake_process_single_label(file, expected_fields, settings):
         if file.filename == "bad.png":

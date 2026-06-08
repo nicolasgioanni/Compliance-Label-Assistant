@@ -115,6 +115,7 @@ Backend variables are centralized in `backend/app/config.py` and documented in `
 - `OPENAI_MODEL`
 - `OPENAI_TIMEOUT_SECONDS`
 - `MAX_FILE_SIZE_MB`
+- `MAX_IMAGE_PIXELS`
 - `MAX_BATCH_SIZE`
 - `BATCH_CONCURRENCY`
 - `MAX_IMAGE_WIDTH`
@@ -171,6 +172,7 @@ Frontend:
 
 ```powershell
 cd frontend
+npm test
 npm run build
 ```
 
