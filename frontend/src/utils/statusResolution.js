@@ -1,7 +1,5 @@
 import { getStatusLabel } from './statusStyles';
 
-export const MANUAL_DECISION_STATUSES = ['pass', 'fail', 'needs_review'];
-
 const QUEUE_STATUS_LABELS = {
   needs_expected_data: 'Needs Expected Data',
   ready: 'Ready',
@@ -23,7 +21,6 @@ const DEFAULT_QUEUE_SUMMARY = {
   failCount: 0,
   needsReviewCount: 0,
   errorCount: 0,
-  manualDecisionCount: 0,
 };
 
 export function hasCurrentResult(queueItem) {
@@ -38,34 +35,6 @@ export function getAutomatedStatus(queueItem) {
   return queueItem?.status || 'needs_expected_data';
 }
 
-export function getManualDecision(queueItem) {
-  return queueItem?.manualDecision || null;
-}
-
-export function hasManualDecision(queueItem) {
-  return Boolean(getManualDecision(queueItem));
-}
-
-export function getEffectiveStatus(queueItem) {
-  const automatedStatus = getAutomatedStatus(queueItem);
-
-  if (!hasCurrentResult(queueItem)) {
-    return automatedStatus;
-  }
-
-  return getManualDecision(queueItem)?.status || automatedStatus;
-}
-
-export function getAllowedManualDecisionStatuses(queueItem) {
-  return getAutomatedStatus(queueItem) === 'error'
-    ? MANUAL_DECISION_STATUSES.filter((status) => status !== 'pass')
-    : MANUAL_DECISION_STATUSES;
-}
-
-export function canSetManualDecision(queueItem) {
-  return hasCurrentResult(queueItem) && getAllowedManualDecisionStatuses(queueItem).length > 0;
-}
-
 export function getQueueStatusCounts(queueItems) {
   return queueItems.reduce((summary, item) => {
     summary.totalLabels += 1;
@@ -77,12 +46,7 @@ export function getQueueStatusCounts(queueItems) {
     if (hasCurrentResult(item)) {
       summary.checkedCount += 1;
       summary.verifiedLabels += 1;
-
-      if (hasManualDecision(item)) {
-        summary.manualDecisionCount += 1;
-      }
-
-      applyFinalStatusCount(summary, getEffectiveStatus(item));
+      applyStatusCount(summary, getAutomatedStatus(item));
       return summary;
     }
 
@@ -97,15 +61,15 @@ export function getQueueStatusCounts(queueItems) {
 }
 
 export function getQueueItemStatusLabel(queueItem) {
-  const status = getEffectiveStatus(queueItem);
+  const status = getAutomatedStatus(queueItem);
   return QUEUE_STATUS_LABELS[status] || getStatusLabel(status);
 }
 
 export function getQueueItemStatusClass(queueItem) {
-  return `queue-status queue-status-${formatStatusClassSuffix(getEffectiveStatus(queueItem))}`;
+  return `queue-status queue-status-${formatStatusClassSuffix(getAutomatedStatus(queueItem))}`;
 }
 
-function applyFinalStatusCount(summary, status) {
+function applyStatusCount(summary, status) {
   if (status === 'pass') {
     summary.passedCount += 1;
     summary.passCount += 1;

@@ -1,11 +1,11 @@
-import CopyClaimDataModal from './CopyClaimDataModal';
-import HumanReviewDecisionModal from './HumanReviewDecisionModal';
-import LabelQueue from './LabelQueue';
-import QueueActions from './QueueActions';
-import QueueSummaryBar from './QueueSummaryBar';
-import SelectedLabelWorkspace from './SelectedLabelWorkspace';
-import { useQueueItems } from '../hooks/useQueueItems';
-import { downloadQueueResultsCsv, downloadQueueResultsXlsx } from '../utils/resultExport';
+import CopyClaimDataModal from '../dialogs/CopyClaimDataModal';
+import LabelPreviewDialog from '../dialogs/LabelPreviewDialog';
+import LabelQueue from '../queue/LabelQueue';
+import QueueActions from '../queue/QueueActions';
+import QueueSummaryBar from '../queue/QueueSummaryBar';
+import SelectedLabelWorkspace from '../queue/SelectedLabelWorkspace';
+import { useQueueItems } from '../../hooks/useQueueItems';
+import { downloadQueueResultsCsv, downloadQueueResultsXlsx } from '../../utils/resultExport';
 
 export default function VerificationForm({ showError = () => {} }) {
   const {
@@ -15,16 +15,14 @@ export default function VerificationForm({ showError = () => {} }) {
     copyModalSourceItem,
     handleAddFiles,
     handleApplyCopiedExpectedFields,
-    handleApplyManualDecision,
     handleBackToResults,
-    handleClearManualDecision,
     handleClearQueue,
     handleCloseCopyClaimDataModal,
-    handleCloseManualDecisionModal,
+    handleCloseLabelPreview,
     handleEditExpectedData,
     handleExpectedFieldsChange,
     handleOpenCopyClaimDataModal,
-    handleOpenManualDecisionModal,
+    handleOpenLabelPreview,
     handleRemoveItem,
     handleSelectQueueItem,
     handleToggleQueueFilter,
@@ -34,8 +32,8 @@ export default function VerificationForm({ showError = () => {} }) {
     isQueueLocked,
     isVerifyReadyDisabled,
     isVerifySelectedDisabled,
-    manualDecisionModalItem,
     maxQueueSize,
+    previewQueueItem,
     queueSummary,
     removingQueueItemIds,
     selectedItem,
@@ -60,6 +58,7 @@ export default function VerificationForm({ showError = () => {} }) {
             onAddFiles={handleAddFiles}
             onClearQueue={handleClearQueue}
             onRemoveItem={handleRemoveItem}
+            onPreviewItem={handleOpenLabelPreview}
             onSelectItem={handleSelectQueueItem}
             onToggleFilter={handleToggleQueueFilter}
           />
@@ -84,7 +83,6 @@ export default function VerificationForm({ showError = () => {} }) {
             onCopyClaimData={handleOpenCopyClaimDataModal}
             onEditExpectedData={handleEditExpectedData}
             onExpectedFieldsChange={handleExpectedFieldsChange}
-            onSetFinalDecision={handleOpenManualDecisionModal}
             onVerifySelected={handleVerifySelected}
           />
         </div>
@@ -104,12 +102,10 @@ export default function VerificationForm({ showError = () => {} }) {
           onClose={handleCloseCopyClaimDataModal}
         />
       ) : null}
-      {manualDecisionModalItem ? (
-        <HumanReviewDecisionModal
-          item={manualDecisionModalItem}
-          onApply={handleApplyManualDecision}
-          onClear={handleClearManualDecision}
-          onClose={handleCloseManualDecisionModal}
+      {previewQueueItem ? (
+        <LabelPreviewDialog
+          item={previewQueueItem}
+          onClose={handleCloseLabelPreview}
         />
       ) : null}
     </section>

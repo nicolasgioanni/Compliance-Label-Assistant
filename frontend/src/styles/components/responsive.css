@@ -65,7 +65,7 @@
   }
 
   .export-dialog-overlay,
-  .human-review-dialog-overlay,
+  .label-preview-dialog-overlay,
   .copy-data-dialog-overlay,
   .copy-data-blank-warning,
   .selected-workspace-panel-collapsed .selected-workspace-scroll,
@@ -134,10 +134,13 @@
     padding: 0.95rem;
   }
 
-  .human-review-dialog {
+  .label-preview-dialog {
     max-height: calc(100vh - 1rem);
-    overflow-y: auto;
     padding: 0.95rem;
+  }
+
+  .label-preview-image {
+    max-height: calc(100vh - 11rem);
   }
 
   .copy-data-toolbar,
@@ -162,15 +165,11 @@
     width: 100%;
   }
 
-  .human-review-dialog-footer,
-  .human-review-dialog-actions,
   .result-header-actions {
     align-items: stretch;
     flex-direction: column;
   }
 
-  .human-review-dialog-footer .primary-button,
-  .human-review-dialog-footer .secondary-button,
   .result-header-actions .link-button {
     width: 100%;
   }

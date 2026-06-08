@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('../api/verificationApi', () => ({
+vi.mock('../../api/verificationApi', () => ({
   verifySingleLabel: vi.fn(),
 }));
 
-vi.mock('../utils/resultExport', () => ({
+vi.mock('../../utils/resultExport', () => ({
   downloadQueueResultsCsv: vi.fn(),
   downloadQueueResultsXlsx: vi.fn(),
 }));
@@ -23,7 +23,6 @@ import {
   VerificationForm,
   verifySingleLabel,
   waitFor,
-  within,
 } from './VerificationForm.testUtils';
 describe('VerificationForm.resultNavigation', () => {
   beforeEach(() => {
@@ -65,7 +64,6 @@ describe('VerificationForm.resultNavigation', () => {
     });
 
     expect(screen.getByRole('button', { name: 'Edit Selected Label' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Edit Final Decision' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Export Results' })).toBeDisabled();
 
     await act(async () => {
@@ -76,7 +74,6 @@ describe('VerificationForm.resultNavigation', () => {
     await waitFor(() => {
       expect(screen.getByRole('button', { name: 'Edit Selected Label' })).not.toBeDisabled();
     });
-    expect(screen.getByRole('button', { name: 'Edit Final Decision' })).not.toBeDisabled();
     expect(screen.getByRole('button', { name: 'Export Results' })).not.toBeDisabled();
     expect(verifySingleLabel).toHaveBeenCalledTimes(2);
   });
@@ -107,23 +104,13 @@ describe('VerificationForm.resultNavigation', () => {
     const resultHeader = container.querySelector('.result-detail-header');
     expect(resultHeader.querySelector('.status-pill')).toBeNull();
 
-    expect(screen.getByRole('button', { name: 'Edit Final Decision' })).toBeInTheDocument();
-    expect(within(container.querySelector('.result-claim-context')).getByRole('button', { name: 'Edit Final Decision' })).toBeInTheDocument();
-    expect(within(resultHeader).queryByRole('button', { name: 'Edit Final Decision' })).not.toBeInTheDocument();
-
     expect(Array.from(container.querySelectorAll('.result-meta-grid dt')).map((node) => node.textContent)).toEqual([
-      'Final Decision',
-      'Automated Status',
+      'Overall Status',
       'Processing Time',
     ]);
 
-    const automatedStatusGroup = screen.getByText('Automated Status').closest('div');
-    const automatedStatusValue = within(automatedStatusGroup).getByText('Pass');
-    expect(automatedStatusValue).toHaveClass('status-text', 'status-text-pass');
-    expect(automatedStatusValue).not.toHaveClass('status-pill');
-
-    const finalDecisionGroup = screen.getByText('Final Decision').closest('div');
-    expect(within(finalDecisionGroup).getByText('Pass')).toHaveClass('status-text', 'status-text-pass');
+    expect(screen.getByText('Overall Status').nextElementSibling).toHaveClass('status-text', 'status-text-pass');
+    expect(screen.getByText('Overall Status').nextElementSibling).not.toHaveClass('status-pill');
   });
 
   it('returns from selected label editing to current results without re-verification', async () => {
@@ -146,7 +133,7 @@ describe('VerificationForm.resultNavigation', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Back to Results' }));
 
     expect(screen.getByText(hasExactText('Selected Label: back-to-results-label.png'))).toBeInTheDocument();
-    expect(screen.getByText('Final Decision')).toBeInTheDocument();
+    expect(screen.getByText('Overall Status')).toBeInTheDocument();
     expect(verifySingleLabel).toHaveBeenCalledTimes(1);
   });
 

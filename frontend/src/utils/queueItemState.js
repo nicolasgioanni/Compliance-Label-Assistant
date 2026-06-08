@@ -20,7 +20,6 @@ export function createQueueItem(file, id = createClientId()) {
     expectedFields: { ...EMPTY_EXPECTED_FIELDS },
     result: null,
     isResultStale: false,
-    manualDecision: null,
     status: 'needs_expected_data',
     errorMessage: null,
     workspaceView: 'form',
@@ -33,7 +32,6 @@ export function applyExpectedFieldsChange(item, nextExpectedFields) {
     expectedFields: nextExpectedFields,
     errorMessage: null,
     isResultStale: item.result ? true : item.isResultStale,
-    manualDecision: null,
     status: getQueueStatusForExpectedFields(nextExpectedFields),
     workspaceView: 'form',
   };
@@ -44,7 +42,6 @@ export function applyVerificationStarted(item) {
     ...item,
     errorMessage: null,
     isResultStale: item.result ? true : item.isResultStale,
-    manualDecision: null,
     status: 'verifying',
   };
 }
@@ -54,7 +51,6 @@ export function applyVerificationSuccess(item, result) {
     ...item,
     errorMessage: null,
     isResultStale: false,
-    manualDecision: null,
     result,
     status: result.overall_status,
     workspaceView: 'result',
@@ -66,23 +62,8 @@ export function applyVerificationError(item, errorMessage) {
     ...item,
     errorMessage,
     isResultStale: item.result ? true : item.isResultStale,
-    manualDecision: null,
     status: 'error',
     workspaceView: 'error',
-  };
-}
-
-export function applyManualDecision(item, manualDecision) {
-  return {
-    ...item,
-    manualDecision,
-  };
-}
-
-export function clearManualDecision(item) {
-  return {
-    ...item,
-    manualDecision: null,
   };
 }
 
@@ -109,7 +90,6 @@ export function copyExpectedFieldsToQueueItem(item, sourceExpectedFields) {
     expectedFields: nextExpectedFields,
     errorMessage: null,
     isResultStale: false,
-    manualDecision: null,
     result: null,
     status: getQueueStatusForExpectedFields(nextExpectedFields),
     workspaceView: 'form',
@@ -122,7 +102,6 @@ export function clearExpectedFieldsFromQueueItem(item) {
     expectedFields: clearCopiedExpectedFields(item.expectedFields),
     errorMessage: null,
     isResultStale: false,
-    manualDecision: null,
     result: null,
     status: 'needs_expected_data',
     workspaceView: 'form',

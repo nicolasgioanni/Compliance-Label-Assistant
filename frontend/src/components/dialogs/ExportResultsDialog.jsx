@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useDismissibleDialog } from '../hooks/useDismissibleDialog';
-import InfoTooltip from './InfoTooltip';
+import { useDismissibleDialog } from '../../hooks/useDismissibleDialog';
+import InfoTooltip from '../shared/InfoTooltip';
 
 const EXPORT_FORMATS = [
   { id: 'xlsx', label: 'Excel workbook (.xlsx)' },
@@ -44,8 +44,7 @@ export default function ExportResultsDialog({ onClose, onDownloadCsv, onDownload
             <span className="export-dialog-tooltip-copy">
               <span>Export Results downloads one results file for labels that have a current verification result.</span>
               <span>
-                It includes the filename, final overall status, automated status, manual decision fields, automated
-                field statuses, and processing time.
+                It includes the filename, overall status, field statuses, and processing time.
               </span>
               <span>
                 Labels without a current result are not included. Stale results are not included until you verify that

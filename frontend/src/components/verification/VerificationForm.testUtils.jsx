@@ -1,7 +1,7 @@
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { expect, vi } from 'vitest';
-import { verifySingleLabel } from '../api/verificationApi';
-import { downloadQueueResultsCsv, downloadQueueResultsXlsx } from '../utils/resultExport';
+import { verifySingleLabel } from '../../api/verificationApi';
+import { downloadQueueResultsCsv, downloadQueueResultsXlsx } from '../../utils/resultExport';
 import VerificationForm from './VerificationForm';
 
 export {
@@ -86,6 +86,25 @@ export function successfulVerificationResult(overrides = {}) {
   };
 }
 
+export function mockObjectUrl(objectUrl = 'blob:test-object-url') {
+  const originalCreateObjectURL = URL.createObjectURL;
+  const originalRevokeObjectURL = URL.revokeObjectURL;
+
+  Object.defineProperty(URL, 'createObjectURL', {
+    configurable: true,
+    value: vi.fn(() => objectUrl),
+  });
+  Object.defineProperty(URL, 'revokeObjectURL', {
+    configurable: true,
+    value: vi.fn(),
+  });
+
+  return () => {
+    restoreUrlObjectMethod('createObjectURL', originalCreateObjectURL);
+    restoreUrlObjectMethod('revokeObjectURL', originalRevokeObjectURL);
+  };
+}
+
 export async function renderVerifiedQueue(filename = 'verified-label.png') {
   verifySingleLabel.mockResolvedValueOnce(successfulVerificationResult());
   const showError = vi.fn();
@@ -101,4 +120,16 @@ export async function renderVerifiedQueue(filename = 'verified-label.png') {
   });
 
   return { ...rendered, showError };
+}
+
+function restoreUrlObjectMethod(methodName, originalMethod) {
+  if (originalMethod) {
+    Object.defineProperty(URL, methodName, {
+      configurable: true,
+      value: originalMethod,
+    });
+    return;
+  }
+
+  delete URL[methodName];
 }

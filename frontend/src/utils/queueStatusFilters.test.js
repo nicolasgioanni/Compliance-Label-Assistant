@@ -47,26 +47,24 @@ describe('queue status filters', () => {
     ]);
   });
 
-  it('filters verified queue items by manual final decision when one exists', () => {
+  it('filters verified queue items by backend result status', () => {
     const queueItems = [
       {
-        id: 'manual-pass',
-        status: 'fail',
-        isResultStale: false,
-        manualDecision: { status: 'pass', note: '', updatedAt: '2026-06-08T10:00:00.000Z' },
-        result: { overall_status: 'fail' },
-      },
-      {
-        id: 'manual-fail',
+        id: 'backend-pass',
         status: 'pass',
         isResultStale: false,
-        manualDecision: { status: 'fail', note: '', updatedAt: '2026-06-08T10:00:00.000Z' },
         result: { overall_status: 'pass' },
+      },
+      {
+        id: 'backend-fail',
+        status: 'fail',
+        isResultStale: false,
+        result: { overall_status: 'fail' },
       },
     ];
 
-    expect(filterQueueItemsByStatus(queueItems, new Set(['pass'])).map((item) => item.id)).toEqual(['manual-pass']);
-    expect(filterQueueItemsByStatus(queueItems, new Set(['fail'])).map((item) => item.id)).toEqual(['manual-fail']);
+    expect(filterQueueItemsByStatus(queueItems, new Set(['pass'])).map((item) => item.id)).toEqual(['backend-pass']);
+    expect(filterQueueItemsByStatus(queueItems, new Set(['fail'])).map((item) => item.id)).toEqual(['backend-fail']);
   });
 
   it('returns no queue items when every filter is off', () => {

@@ -6,7 +6,6 @@
 - The backend `/verify-batch` endpoint uses one shared expected application dataset for every uploaded label.
 - Users provide expected application fields manually.
 - CSV and Excel export are implemented for queue results; CSV import by filename mapping is deferred.
-- Human final decisions are frontend-only and stored in React memory for the current page session. They are not persisted and are not audit logging or review history.
 - `sample-data/labels` may contain manually added or generated label images for local testing.
 - Deployment URLs are not fixed until the frontend and backend are deployed.
 - If `OPENAI_API_KEY` is missing, verification returns a user-facing setup/configuration error.

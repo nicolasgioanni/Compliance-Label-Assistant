@@ -1,8 +1,5 @@
-import { getStatusLabel, getStatusTextClassName } from '../utils/statusStyles';
-import {
-  getAutomatedStatus,
-  getEffectiveStatus,
-} from '../utils/statusResolution';
+import { getStatusLabel, getStatusTextClassName } from '../../utils/statusStyles';
+import { getAutomatedStatus } from '../../utils/statusResolution';
 import ExtractedTextPanel from './ExtractedTextPanel';
 import FieldResultCard from './FieldResultCard';
 
@@ -12,7 +9,6 @@ export default function SelectedResultDetail({
   areActionsDisabled = false,
   item,
   onEditExpectedData,
-  onSetFinalDecision,
 }) {
   const result = item?.result;
   if (!item || !result) {
@@ -20,7 +16,6 @@ export default function SelectedResultDetail({
   }
 
   const automatedStatus = getAutomatedStatus(item);
-  const effectiveStatus = getEffectiveStatus(item);
   const fieldResults = result.field_results || [];
   const governmentWarningResult = fieldResults.find((fieldResult) => fieldResult.field_name === GOVERNMENT_WARNING_FIELD);
   const standardFieldResults = fieldResults.filter((fieldResult) => fieldResult.field_name !== GOVERNMENT_WARNING_FIELD);
@@ -46,21 +41,10 @@ export default function SelectedResultDetail({
         <span className="claim-context-label">
           Selected Label: <strong>{item.filename}</strong>
         </span>
-        <span className="claim-context-actions">
-          <button
-            className="link-button"
-            disabled={areActionsDisabled}
-            type="button"
-            onClick={onSetFinalDecision}
-          >
-            Edit Final Decision
-          </button>
-        </span>
       </p>
 
       <ResultMetaGrid
         automatedStatus={automatedStatus}
-        effectiveStatus={effectiveStatus}
         processingTimeMs={result.processing_time_ms}
       />
 
@@ -87,15 +71,11 @@ export default function SelectedResultDetail({
   );
 }
 
-function ResultMetaGrid({ automatedStatus, effectiveStatus, processingTimeMs }) {
+function ResultMetaGrid({ automatedStatus, processingTimeMs }) {
   return (
     <dl className="result-meta-grid">
       <div>
-        <dt>Final Decision</dt>
-        <dd className={getStatusTextClassName(effectiveStatus)}>{getStatusLabel(effectiveStatus)}</dd>
-      </div>
-      <div>
-        <dt>Automated Status</dt>
+        <dt>Overall Status</dt>
         <dd className={getStatusTextClassName(automatedStatus)}>{getStatusLabel(automatedStatus)}</dd>
       </div>
       <div>

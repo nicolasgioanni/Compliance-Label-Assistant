@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { FILE_INPUT_ACCEPT } from '../utils/fileValidation';
+import { FILE_INPUT_ACCEPT } from '../../utils/fileValidation';
 import ImageUploadDropzone from './ImageUploadDropzone';
 
 function makeFile(name, type = 'image/png') {

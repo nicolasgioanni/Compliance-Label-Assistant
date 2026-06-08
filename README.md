@@ -11,7 +11,7 @@ The prototype does not perform final legal compliance review. It assists agents 
 - Unified label queue for 1 to 10 uploaded JPG, PNG, WebP, or TIFF labels, with expected application fields stored per label.
 - Per-label verification with AI extraction, deterministic comparison, extracted text, and timing metrics.
 - Controlled batch concurrency with isolated per-file errors.
-- Client-side CSV and Excel export for verified queue results, including frontend-only human final decisions when applied.
+- Client-side CSV and Excel export for verified queue results.
 - Backend-only OpenAI API key handling.
 - In-memory upload validation, duplicate filename rejection, image resizing, and JPEG compression before extraction.
 
@@ -146,7 +146,7 @@ See [docs/api-contract.md](docs/api-contract.md) for request and response detail
 
 ## Results Export And Future Import
 
-CSV and Excel export are implemented in the frontend for queue results. Exports use timestamped names like `label-compliance-verification-results_YYYY-MM-DD_HH-mm-ss.csv` or `label-compliance-verification-results_YYYY-MM-DD_HH-mm-ss.xlsx`, include one row per verified label, skip unverified queue items, and do not include raw extracted text. The `overall_status` export column reflects the final effective status shown in the UI. When a reviewer applies a frontend-only human final decision, exports also include the original automated status, the manual decision, and the optional manual decision note. Manual decisions are kept in browser memory for the current session only; this prototype does not implement audit logging or persistent review history.
+CSV and Excel export are implemented in the frontend for queue results. Exports use timestamped names like `label-compliance-verification-results_YYYY-MM-DD_HH-mm-ss.csv` or `label-compliance-verification-results_YYYY-MM-DD_HH-mm-ss.xlsx`, include one row per verified label, skip unverified queue items, and do not include raw extracted text. The `overall_status` export column reflects the backend verification result shown in the UI.
 
 CSV import is a future scalability improvement. For larger submission batches, reviewers could upload a spreadsheet mapping filenames to expected application data so queued labels can be matched by filename and prefilled before verification.
 

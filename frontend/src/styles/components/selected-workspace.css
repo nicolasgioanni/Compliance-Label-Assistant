@@ -175,21 +175,6 @@
   color: var(--color-muted);
 }
 
-.queue-summary-manual-pill {
-  align-items: center;
-  background: #eef6ff;
-  border: 1px solid #a9bed2;
-  border-radius: 999px;
-  color: var(--color-primary-strong);
-  display: inline-flex;
-  font-size: 0.78rem;
-  font-weight: 900;
-  gap: 0.35rem;
-  line-height: 1;
-  padding: 0.35rem 0.65rem;
-  white-space: nowrap;
-}
-
 .workspace-error-state {
   background: #fff4f2;
   border: 1px solid #efb4ad;

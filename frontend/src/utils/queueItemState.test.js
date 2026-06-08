@@ -2,12 +2,10 @@ import { describe, expect, it, vi } from 'vitest';
 import { DEFAULT_GOVERNMENT_WARNING } from '../constants/defaultWarningText';
 import {
   applyExpectedFieldsChange,
-  applyManualDecision,
   applyVerificationError,
   applyVerificationStarted,
   applyVerificationSuccess,
   clearExpectedFieldsFromQueueItem,
-  clearManualDecision,
   copyExpectedFieldsToQueueItem,
   createQueueItem,
   showFormView,
@@ -35,7 +33,6 @@ function makeQueueItem(overrides = {}) {
     },
     result: null,
     isResultStale: false,
-    manualDecision: null,
     status: 'ready',
     errorMessage: null,
     workspaceView: 'form',
@@ -70,7 +67,6 @@ describe('queue item state transitions', () => {
       relativePath: 'labels/new-label.png',
       result: null,
       isResultStale: false,
-      manualDecision: null,
       status: 'needs_expected_data',
       workspaceView: 'form',
     });
@@ -81,7 +77,6 @@ describe('queue item state transitions', () => {
   it('marks current results stale when expected fields change', () => {
     const item = makeQueueItem({
       errorMessage: 'Old error.',
-      manualDecision: { status: 'pass', note: '', updatedAt: '2026-06-08T10:00:00.000Z' },
       result: makeResult(),
       status: 'pass',
       workspaceView: 'result',
@@ -92,15 +87,13 @@ describe('queue item state transitions', () => {
       expectedFields: nextExpectedFields,
       errorMessage: null,
       isResultStale: true,
-      manualDecision: null,
       status: 'ready',
       workspaceView: 'form',
     });
   });
 
-  it('clears manual decisions and marks existing evidence stale when verification starts', () => {
+  it('marks existing evidence stale when verification starts', () => {
     const item = makeQueueItem({
-      manualDecision: { status: 'pass', note: '', updatedAt: '2026-06-08T10:00:00.000Z' },
       result: makeResult(),
       status: 'fail',
     });
@@ -108,7 +101,6 @@ describe('queue item state transitions', () => {
     expect(applyVerificationStarted(item)).toMatchObject({
       errorMessage: null,
       isResultStale: true,
-      manualDecision: null,
       status: 'verifying',
     });
   });
@@ -118,14 +110,12 @@ describe('queue item state transitions', () => {
     const item = makeQueueItem({
       errorMessage: 'Old error.',
       isResultStale: true,
-      manualDecision: { status: 'pass', note: '', updatedAt: '2026-06-08T10:00:00.000Z' },
       status: 'verifying',
     });
 
     expect(applyVerificationSuccess(item, result)).toMatchObject({
       errorMessage: null,
       isResultStale: false,
-      manualDecision: null,
       result,
       status: 'fail',
       workspaceView: 'result',
@@ -135,7 +125,6 @@ describe('queue item state transitions', () => {
   it('keeps old evidence but marks it stale on verification error', () => {
     const result = makeResult();
     const item = makeQueueItem({
-      manualDecision: { status: 'pass', note: '', updatedAt: '2026-06-08T10:00:00.000Z' },
       result,
       status: 'verifying',
       workspaceView: 'result',
@@ -144,26 +133,10 @@ describe('queue item state transitions', () => {
     expect(applyVerificationError(item, 'Request failed.')).toMatchObject({
       errorMessage: 'Request failed.',
       isResultStale: true,
-      manualDecision: null,
       result,
       status: 'error',
       workspaceView: 'error',
     });
-  });
-
-  it('applies and clears manual decisions without touching automated evidence', () => {
-    const result = makeResult({ overall_status: 'fail' });
-    const item = makeQueueItem({ result, status: 'fail' });
-    const manualDecision = {
-      status: 'pass',
-      note: 'Reviewer checked label.',
-      updatedAt: '2026-06-08T10:00:00.000Z',
-    };
-
-    const withManualDecision = applyManualDecision(item, manualDecision);
-
-    expect(withManualDecision).toMatchObject({ manualDecision, result, status: 'fail' });
-    expect(clearManualDecision(withManualDecision)).toMatchObject({ manualDecision: null, result, status: 'fail' });
   });
 
   it('switches between form and result views without mutating data', () => {
@@ -187,7 +160,6 @@ describe('queue item state transitions', () => {
       expectedFields: sourceExpectedFields,
       errorMessage: null,
       isResultStale: false,
-      manualDecision: null,
       result: null,
       status: 'ready',
       workspaceView: 'form',
@@ -203,7 +175,6 @@ describe('queue item state transitions', () => {
   it('clears copied expected fields and previous result state', () => {
     const item = makeQueueItem({
       result: makeResult(),
-      manualDecision: { status: 'pass', note: '', updatedAt: '2026-06-08T10:00:00.000Z' },
       status: 'pass',
     });
 
@@ -212,7 +183,6 @@ describe('queue item state transitions', () => {
     expect(clearedItem).toMatchObject({
       errorMessage: null,
       isResultStale: false,
-      manualDecision: null,
       result: null,
       status: 'needs_expected_data',
       workspaceView: 'form',

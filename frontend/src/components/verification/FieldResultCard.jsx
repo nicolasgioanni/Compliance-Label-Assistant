@@ -1,4 +1,4 @@
-import { getStatusClassName, getStatusLabel } from '../utils/statusStyles';
+import { getStatusClassName, getStatusLabel } from '../../utils/statusStyles';
 
 export default function FieldResultCard({ result }) {
   return (

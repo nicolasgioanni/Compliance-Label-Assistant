@@ -127,7 +127,7 @@
   outline: none;
 }
 
-.human-review-dialog-overlay {
+.label-preview-dialog-overlay {
   align-items: center;
   animation: export-dialog-fade 140ms ease-out;
   background: rgba(7, 29, 51, 0.42);
@@ -136,143 +136,67 @@
   justify-content: center;
   padding: 1rem;
   position: fixed;
-  z-index: 90;
+  z-index: 82;
 }
 
-.human-review-dialog {
+.label-preview-dialog {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
-  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  max-height: min(760px, calc(100vh - 2rem));
+  max-width: 760px;
+  overflow: hidden;
   padding: 1.1rem;
-  width: min(460px, 100%);
+  width: min(760px, 100%);
 }
 
-.human-review-dialog-header {
-  display: grid;
-  gap: 0.3rem;
-}
-
-.human-review-dialog h2 {
+.label-preview-dialog-header h2 {
   color: var(--color-text);
   font-size: 1.05rem;
   line-height: 1.25;
   margin: 0;
-}
-
-.human-review-dialog-header p {
-  color: var(--color-muted);
-  font-size: 0.88rem;
-  font-weight: 800;
-  margin: 0;
   overflow-wrap: anywhere;
 }
 
-.human-review-status-list {
-  border: 0;
-  display: grid;
-  gap: 0.6rem;
-  margin: 1rem 0 0;
-  min-width: 0;
-  padding: 0;
-}
-
-.human-review-status-list legend {
-  color: var(--color-muted);
-  font-size: 0.82rem;
-  font-weight: 900;
-  margin-bottom: 0.45rem;
-  padding: 0;
-}
-
-.human-review-status-option {
+.label-preview-dialog-body {
   align-items: center;
-  background: #ffffff;
+  background: var(--color-surface-muted);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-control);
-  cursor: pointer;
   display: flex;
-  gap: 0.65rem;
+  justify-content: center;
+  margin-top: 1rem;
+  min-height: 12rem;
+  overflow: auto;
+  padding: 0.75rem;
+}
+
+.label-preview-image {
+  display: block;
+  max-height: min(560px, calc(100vh - 12rem));
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.label-preview-empty {
+  color: var(--color-muted);
+  font-weight: 750;
+  margin: 0;
+  text-align: center;
+}
+
+.label-preview-dialog-footer {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 1rem;
+}
+
+.label-preview-dialog-footer .secondary-button {
   min-height: 2.85rem;
-  padding: 0.68rem 0.8rem;
-  transition:
-    background 120ms ease,
-    border-color 120ms ease,
-    box-shadow 120ms ease;
-}
-
-.human-review-status-option:hover {
-  border-color: var(--color-primary);
-}
-
-.human-review-status-option:focus-within {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(31, 92, 151, 0.16);
-}
-
-.human-review-status-option-selected {
-  background: #eef6ff;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(31, 92, 151, 0.12);
-}
-
-.human-review-status-option input {
-  accent-color: var(--color-primary);
-  flex-shrink: 0;
-}
-
-.human-review-status-option span {
-  font-weight: 850;
-}
-
-.human-review-note-field {
-  display: grid;
-  gap: 0.45rem;
-  margin-top: 1rem;
-}
-
-.human-review-note-field > span {
-  color: var(--color-muted);
-  font-size: 0.82rem;
-  font-weight: 900;
-}
-
-.human-review-note-field textarea {
-  background: #ffffff;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-control);
-  color: var(--color-text);
-  font: inherit;
-  min-height: 6rem;
-  padding: 0.7rem 0.8rem;
-  resize: vertical;
-}
-
-.human-review-note-field textarea:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(31, 92, 151, 0.12);
-  outline: none;
-}
-
-.human-review-dialog-footer {
-  align-items: center;
-  display: flex;
-  gap: 0.7rem;
-  justify-content: space-between;
-  margin-top: 1rem;
-}
-
-.human-review-dialog-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.65rem;
-  justify-content: flex-end;
-  min-width: 0;
-}
-
-.human-review-clear-button {
-  min-width: 0;
+  min-width: 7rem;
 }
 
 @keyframes export-dialog-fade {

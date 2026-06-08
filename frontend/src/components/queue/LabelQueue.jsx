@@ -1,5 +1,5 @@
-import ImageUploadDropzone from './ImageUploadDropzone';
-import InfoTooltip from './InfoTooltip';
+import ImageUploadDropzone from '../upload/ImageUploadDropzone';
+import InfoTooltip from '../shared/InfoTooltip';
 import QueueItemCard from './QueueItemCard';
 import QueueStatusFilters from './QueueStatusFilters';
 
@@ -14,6 +14,7 @@ export default function LabelQueue({
   filtersDisabled = false,
   onAddFiles,
   onClearQueue,
+  onPreviewItem = () => {},
   onSelectItem,
   onRemoveItem,
   onToggleFilter,
@@ -66,6 +67,7 @@ export default function LabelQueue({
                   key={item.id}
                   removeDisabled={isLocked || isRemoving || item.status === 'verifying'}
                   onRemove={() => onRemoveItem(item.id)}
+                  onPreview={() => onPreviewItem(item.id)}
                   onSelect={() => onSelectItem(item.id)}
                 />
               );

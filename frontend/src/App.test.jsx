@@ -7,15 +7,15 @@ vi.mock('./api/verificationApi', () => ({
   checkHealth: vi.fn(),
 }));
 
-vi.mock('./components/Header', () => ({
+vi.mock('./components/shared/Header', () => ({
   default: () => <header>Header</header>,
 }));
 
-vi.mock('./components/AppFooter', () => ({
+vi.mock('./components/shared/AppFooter', () => ({
   default: () => <footer>Footer</footer>,
 }));
 
-vi.mock('./components/VerificationForm', () => ({
+vi.mock('./components/verification/VerificationForm', () => ({
   default: ({ showError }) => (
     <section>
       <button

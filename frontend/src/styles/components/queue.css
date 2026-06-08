@@ -172,6 +172,12 @@
   transform: translateX(-0.5rem);
 }
 
+.queue-item-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
 .queue-item-main {
   align-items: center;
   background: transparent;
@@ -181,8 +187,9 @@
   gap: 0.7rem;
   justify-content: space-between;
   min-width: 0;
-  padding: 0.75rem 0.8rem;
+  padding: 0.72rem 0.8rem 0.36rem;
   text-align: left;
+  width: 100%;
 }
 
 .queue-item-main:disabled {
@@ -196,8 +203,7 @@
   min-width: 0;
 }
 
-.queue-filename,
-.queue-file-path {
+.queue-filename {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -207,9 +213,36 @@
   font-weight: 800;
 }
 
-.queue-file-path {
+.queue-preview-button {
+  align-self: flex-start;
+  background: transparent;
+  border: 0;
   color: var(--color-muted);
-  font-size: 0.76rem;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 850;
+  line-height: 1.2;
+  margin: 0 0 0.68rem 0.8rem;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 0.14rem;
+}
+
+.queue-preview-button:hover:not(:disabled) {
+  color: var(--color-primary);
+}
+
+.queue-preview-button:focus-visible {
+  border-radius: 0.2rem;
+  box-shadow: 0 0 0 3px rgba(31, 92, 151, 0.16);
+  color: var(--color-primary);
+  outline: none;
+}
+
+.queue-preview-button:disabled {
+  color: #9aa6b2;
+  cursor: default;
 }
 
 .queue-remove-button {
@@ -234,6 +267,7 @@
 }
 
 .queue-item.removing .queue-item-main,
+.queue-item.removing .queue-preview-button,
 .queue-item.removing .queue-remove-button {
   pointer-events: none;
 }

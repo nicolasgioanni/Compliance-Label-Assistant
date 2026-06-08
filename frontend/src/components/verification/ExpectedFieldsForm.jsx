@@ -1,10 +1,10 @@
-import { DEFAULT_GOVERNMENT_WARNING } from '../constants/defaultWarningText';
+import { DEFAULT_GOVERNMENT_WARNING } from '../../constants/defaultWarningText';
 import {
   createEmptyExpectedFields,
   EXAMPLE_EXPECTED_FIELDS,
   VISIBLE_EXPECTED_FIELD_DEFINITIONS,
-} from '../utils/expectedFields';
-import InfoTooltip from './InfoTooltip';
+} from '../../utils/expectedFields';
+import InfoTooltip from '../shared/InfoTooltip';
 
 export default function ExpectedFieldsForm({
   canBackToResults = false,

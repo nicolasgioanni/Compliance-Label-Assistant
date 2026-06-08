@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('../api/verificationApi', () => ({
+vi.mock('../../api/verificationApi', () => ({
   verifySingleLabel: vi.fn(),
 }));
 
-vi.mock('../utils/resultExport', () => ({
+vi.mock('../../utils/resultExport', () => ({
   downloadQueueResultsCsv: vi.fn(),
   downloadQueueResultsXlsx: vi.fn(),
 }));
@@ -16,6 +16,7 @@ import {
   hasExactText,
   makeFile,
   makeFolderFile,
+  mockObjectUrl,
   queueFilenames,
   render,
   renderVerifiedQueue,
@@ -25,13 +26,19 @@ import {
   VerificationForm,
   verifySingleLabel,
   waitFor,
+  within,
 } from './VerificationForm.testUtils';
+
 describe('VerificationForm.queue', () => {
+  let restoreObjectUrl;
+
   beforeEach(() => {
     vi.clearAllMocks();
+    restoreObjectUrl = null;
   });
 
   afterEach(() => {
+    restoreObjectUrl?.();
     cleanup();
     vi.useRealTimers();
   });
@@ -67,6 +74,86 @@ describe('VerificationForm.queue', () => {
 
     expect(queueFilenames(container)).toHaveLength(1);
     expect(showError).toHaveBeenCalledWith('No label images were added. Skipped 1 duplicate file.');
+  });
+
+  it('hides folder paths in the queue and shows preview actions', () => {
+    const showError = vi.fn();
+    const { container } = render(<VerificationForm showError={showError} />);
+    const [fileInput] = fileInputs(container);
+
+    fireEvent.change(fileInput, {
+      target: {
+        files: [
+          makeFolderFile('folder-label.png', 'parent/folder-label.png'),
+          makeFile('plain-label.png'),
+        ],
+      },
+    });
+
+    expect(screen.getAllByText('folder-label.png')).toHaveLength(2);
+    expect(screen.queryByText('parent/folder-label.png')).not.toBeInTheDocument();
+    expect(screen.queryByLabelText(/parent\/folder-label\.png/i)).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Preview folder-label.png' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Preview plain-label.png' })).toBeInTheDocument();
+  });
+
+  it('previews a queued label without changing the selected label and closes from Back, outside click, or Escape', () => {
+    restoreObjectUrl = mockObjectUrl('blob:label-preview');
+    const showError = vi.fn();
+    const { container } = render(<VerificationForm showError={showError} />);
+    const [fileInput] = fileInputs(container);
+    const firstFile = makeFile('first-label.png');
+    const secondFile = makeFile('second-label.png');
+
+    fireEvent.change(fileInput, { target: { files: [firstFile, secondFile] } });
+    expect(screen.getByText(hasExactText('Editing selected label: first-label.png'))).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Preview second-label.png' }));
+
+    let dialog = screen.getByRole('dialog', { name: 'Preview: second-label.png' });
+    expect(URL.createObjectURL).toHaveBeenCalledWith(secondFile);
+    expect(within(dialog).getByRole('img', { name: 'Preview of second-label.png' })).toHaveAttribute(
+      'src',
+      'blob:label-preview',
+    );
+    expect(screen.getByText(hasExactText('Editing selected label: first-label.png'))).toBeInTheDocument();
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Back' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:label-preview');
+    expect(screen.getByText(hasExactText('Editing selected label: first-label.png'))).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Preview second-label.png' }));
+    fireEvent.mouseDown(container.querySelector('.label-preview-dialog-overlay'));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Preview second-label.png' }));
+    dialog = screen.getByRole('dialog', { name: 'Preview: second-label.png' });
+    expect(dialog).toBeInTheDocument();
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.getByText(hasExactText('Editing selected label: first-label.png'))).toBeInTheDocument();
+  });
+
+  it('closes the preview safely when the previewed label leaves the queue', async () => {
+    restoreObjectUrl = mockObjectUrl('blob:label-preview');
+    const showError = vi.fn();
+    const { container } = render(<VerificationForm showError={showError} />);
+    const [fileInput] = fileInputs(container);
+
+    fireEvent.change(fileInput, {
+      target: { files: [makeFile('first-label.png'), makeFile('second-label.png')] },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Preview second-label.png' }));
+    expect(screen.getByRole('dialog', { name: 'Preview: second-label.png' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Clear Labels' }));
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    });
+    expect(queueFilenames(container)).toHaveLength(0);
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:label-preview');
   });
 
   it('defaults all queue status filters on and toggles Needs Review visibility', () => {
@@ -125,8 +212,6 @@ describe('VerificationForm.queue', () => {
 
     expect(screen.getByRole('heading', { name: 'Selected Label Review' })).toBeInTheDocument();
     expect(screen.getByText(hasExactText('Editing selected label: edit-label.png'))).toBeInTheDocument();
-    expect(screen.queryByText('Verify this label before setting a final decision.')).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Edit Final Decision' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Back to Results' })).not.toBeInTheDocument();
     expect(screen.queryByText('Expected Application Data')).not.toBeInTheDocument();
   });

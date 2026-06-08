@@ -21,7 +21,8 @@ User
 - Hooks coordinate queue orchestration, verification locking, remove animations, and shared dialog dismissal behavior.
 - Reusable frontend logic stays in `frontend/src/utils`, including file validation, queue-item transitions, status selectors, status styling, and results export.
 - Component styles are split into ordered partials under `frontend/src/styles/components` and bundled through `frontend/src/styles/components.css`.
-- Backend verification responses are stored as automated evidence on queue items. Frontend manual decisions are stored separately in browser memory, and final/effective status is derived from those two sources.
+- Label preview is client-side only. It renders the existing in-memory `File` through a temporary browser object URL and revokes that URL when the preview closes or changes.
+- Backend verification responses are stored as evidence on queue items. Queue badges, summary counts, selected-label status, and exports use the backend `overall_status`.
 - CSV and Excel export are client-side only, skip unverified queue items, and do not include raw extracted text. Export rows are derived at download time from the current queue state.
 - Future CSV import can populate each queue item's expected fields by matching spreadsheet rows to queued files by filename.
 
@@ -34,6 +35,4 @@ User
 
 ## Product Framing
 
-AI extracts visible label text. Backend code verifies fields deterministically. A human agent makes the final compliance judgment.
-
-The frontend can record a per-label human final decision in React memory for the current page session. This decision changes queue badges, summary counts, selected-label final status, and exports, but it does not change backend verification evidence or create persistent review history.
+AI extracts visible label text. Backend code verifies fields deterministically. The app assists label review but does not make final legal compliance determinations.

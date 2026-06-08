@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import ExportResultsDialog from './ExportResultsDialog';
-import InfoTooltip from './InfoTooltip';
+import ExportResultsDialog from '../dialogs/ExportResultsDialog';
+import InfoTooltip from '../shared/InfoTooltip';
 
 const SUMMARY_ITEMS = [
   ['checkedCount', 'Checked'],
@@ -52,9 +52,6 @@ export default function QueueSummaryBar({ canExport = false, onExportCsv, onExpo
           <span>{status.label}</span>
           <InfoTooltip label={status.tooltipLabel}>{status.tooltipText}</InfoTooltip>
         </span>
-        {summary.manualDecisionCount > 0 ? (
-          <span className="queue-summary-manual-pill">Manual decisions: {summary.manualDecisionCount}</span>
-        ) : null}
       </div>
       {isExportDialogOpen ? (
         <ExportResultsDialog

@@ -9,21 +9,19 @@ import {
   filterQueueItemsByStatus,
 } from '../utils/queueStatusFilters';
 import {
-  canSetManualDecision,
   getQueueStatusCounts,
   hasCurrentResult,
 } from '../utils/statusResolution';
 import {
   applyExpectedFieldsChange,
-  applyManualDecision,
   clearExpectedFieldsFromQueueItem,
-  clearManualDecision,
   copyExpectedFieldsToQueueItem,
   createQueueItem,
   showFormView,
   showResultView,
 } from '../utils/queueItemState';
 import { useQueueRemovalAnimation } from './useQueueRemovalAnimation';
+import { useQueueItemPreview } from './useQueueItemPreview';
 import { useQueueVerification } from './useQueueVerification';
 import {
   STALE_RESULT_CHANGED_MESSAGE,
@@ -36,7 +34,6 @@ export function useQueueItems({ showError = () => {} } = {}) {
   const [queueItems, setQueueItems] = useState([]);
   const [selectedQueueItemId, setSelectedQueueItemId] = useState(null);
   const [copyModalSourceId, setCopyModalSourceId] = useState(null);
-  const [manualDecisionModalItemId, setManualDecisionModalItemId] = useState(null);
   const [selectedQueueFilterIds, setSelectedQueueFilterIds] = useState(createDefaultQueueFilterIds);
   const {
     clearRemovalState,
@@ -79,7 +76,11 @@ export function useQueueItems({ showError = () => {} } = {}) {
   const isVerifySelectedDisabled = !selectedItem || isQueueLocked || Boolean(selectedFieldWarning);
   const isVerifyReadyDisabled = isQueueLocked || !readyQueueItems.length;
   const copyModalSourceItem = activeQueueItems.find((item) => item.id === copyModalSourceId) || null;
-  const manualDecisionModalItem = activeQueueItems.find((item) => item.id === manualDecisionModalItemId) || null;
+  const {
+    handleCloseLabelPreview,
+    handleOpenLabelPreview,
+    previewQueueItem,
+  } = useQueueItemPreview(activeQueueItems);
   const copyClaimDataDisabledReason = getCopyClaimDataDisabledReason({
     activeQueueItems,
     isQueueLocked,
@@ -92,12 +93,6 @@ export function useQueueItems({ showError = () => {} } = {}) {
       setCopyModalSourceId(null);
     }
   }, [copyModalSourceId, copyModalSourceItem]);
-
-  useEffect(() => {
-    if (manualDecisionModalItemId && !manualDecisionModalItem) {
-      setManualDecisionModalItemId(null);
-    }
-  }, [manualDecisionModalItemId, manualDecisionModalItem]);
 
   function handleAddFiles(files) {
     if (isVerificationBlocked()) {
@@ -248,36 +243,6 @@ export function useQueueItems({ showError = () => {} } = {}) {
     updateQueueItem(selectedItem.id, showResultView);
   }
 
-  function handleOpenManualDecisionModal() {
-    if (!canSetManualDecision(selectedItem) || isVerificationBlocked()) {
-      return;
-    }
-
-    setManualDecisionModalItemId(selectedItem.id);
-  }
-
-  function handleCloseManualDecisionModal() {
-    setManualDecisionModalItemId(null);
-  }
-
-  function handleApplyManualDecision(manualDecision) {
-    if (!manualDecisionModalItem) {
-      return;
-    }
-
-    updateQueueItem(manualDecisionModalItem.id, (item) => applyManualDecision(item, manualDecision));
-    setManualDecisionModalItemId(null);
-  }
-
-  function handleClearManualDecision() {
-    if (!manualDecisionModalItem) {
-      return;
-    }
-
-    updateQueueItem(manualDecisionModalItem.id, clearManualDecision);
-    setManualDecisionModalItemId(null);
-  }
-
   function updateQueueItem(itemId, transition) {
     setQueueItems((currentItems) =>
       currentItems.map((item) =>
@@ -300,16 +265,14 @@ export function useQueueItems({ showError = () => {} } = {}) {
     copyModalSourceItem,
     handleAddFiles,
     handleApplyCopiedExpectedFields,
-    handleApplyManualDecision,
     handleBackToResults,
-    handleClearManualDecision,
     handleClearQueue,
     handleCloseCopyClaimDataModal,
-    handleCloseManualDecisionModal,
+    handleCloseLabelPreview,
     handleEditExpectedData,
     handleExpectedFieldsChange,
     handleOpenCopyClaimDataModal,
-    handleOpenManualDecisionModal,
+    handleOpenLabelPreview,
     handleRemoveItem,
     handleSelectQueueItem: setSelectedQueueItemId,
     handleToggleQueueFilter,
@@ -319,8 +282,8 @@ export function useQueueItems({ showError = () => {} } = {}) {
     isQueueLocked,
     isVerifyReadyDisabled,
     isVerifySelectedDisabled,
-    manualDecisionModalItem,
     maxQueueSize: MAX_QUEUE_SIZE,
+    previewQueueItem,
     queueSummary,
     removingQueueItemIds,
     selectedItem,

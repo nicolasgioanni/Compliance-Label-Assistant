@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('../api/verificationApi', () => ({
+vi.mock('../../api/verificationApi', () => ({
   verifySingleLabel: vi.fn(),
 }));
 
-vi.mock('../utils/resultExport', () => ({
+vi.mock('../../utils/resultExport', () => ({
   downloadQueueResultsCsv: vi.fn(),
   downloadQueueResultsXlsx: vi.fn(),
 }));

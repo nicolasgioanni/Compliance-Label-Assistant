@@ -1,9 +1,9 @@
-import { getStatusClassName } from '../utils/statusStyles';
-import { hasCurrentResult } from '../utils/statusResolution';
-import ExpectedFieldsForm from './ExpectedFieldsForm';
-import InfoTooltip from './InfoTooltip';
-import LoadingState from './LoadingState';
-import SelectedResultDetail from './SelectedResultDetail';
+import { getStatusClassName } from '../../utils/statusStyles';
+import { hasCurrentResult } from '../../utils/statusResolution';
+import ExpectedFieldsForm from '../verification/ExpectedFieldsForm';
+import InfoTooltip from '../shared/InfoTooltip';
+import LoadingState from '../shared/LoadingState';
+import SelectedResultDetail from '../verification/SelectedResultDetail';
 
 export default function SelectedLabelWorkspace({
   canCopyClaimData = false,
@@ -13,7 +13,6 @@ export default function SelectedLabelWorkspace({
   isVerifySelectedDisabled = true,
   selectedItem,
   onBackToResults,
-  onSetFinalDecision,
   onCopyClaimData,
   onEditExpectedData,
   onExpectedFieldsChange,
@@ -41,7 +40,6 @@ export default function SelectedLabelWorkspace({
             areActionsDisabled={isQueueLocked}
             item={selectedItem}
             onEditExpectedData={onEditExpectedData}
-            onSetFinalDecision={onSetFinalDecision}
           />
         ) : null}
         {shouldShowError ? (

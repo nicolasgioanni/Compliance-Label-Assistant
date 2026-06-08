@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useDismissibleDialog } from '../hooks/useDismissibleDialog';
-import { hasAnyVisibleExpectedFieldValue } from '../utils/expectedFields';
+import { useDismissibleDialog } from '../../hooks/useDismissibleDialog';
+import { hasAnyVisibleExpectedFieldValue } from '../../utils/expectedFields';
 import {
   hasBlankCopyExpectedField,
   hasDifferentCopyExpectedFields,
-} from '../utils/expectedFieldCopy';
-import { getQueueItemStatusClass, getQueueItemStatusLabel } from '../utils/statusResolution';
-import InfoTooltip from './InfoTooltip';
+} from '../../utils/expectedFieldCopy';
+import { getQueueItemStatusClass, getQueueItemStatusLabel } from '../../utils/statusResolution';
+import InfoTooltip from '../shared/InfoTooltip';
 
 export default function CopyClaimDataModal({ queueItems, sourceItem, onApply, onClose }) {
   const [selectedTargetIds, setSelectedTargetIds] = useState(() => new Set());

@@ -1,5 +1,5 @@
-import { QUEUE_FILTERS } from '../utils/queueStatusFilters';
-import InfoTooltip from './InfoTooltip';
+import { QUEUE_FILTERS } from '../../utils/queueStatusFilters';
+import InfoTooltip from '../shared/InfoTooltip';
 
 export default function QueueStatusFilters({
   filtersDisabled = false,

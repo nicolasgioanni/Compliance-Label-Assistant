@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { checkHealth } from './api/verificationApi';
-import AppFooter from './components/AppFooter';
-import Header from './components/Header';
-import VerificationForm from './components/VerificationForm';
-import ErrorBanner from './components/ErrorBanner';
+import AppFooter from './components/shared/AppFooter';
+import Header from './components/shared/Header';
+import VerificationForm from './components/verification/VerificationForm';
+import ErrorBanner from './components/shared/ErrorBanner';
 
 export default function App() {
   const [health, setHealth] = useState(null);

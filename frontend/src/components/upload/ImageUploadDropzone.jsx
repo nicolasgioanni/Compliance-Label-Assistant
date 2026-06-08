@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { FILE_INPUT_ACCEPT, SUPPORTED_IMAGE_DESCRIPTION } from '../utils/fileValidation';
+import { FILE_INPUT_ACCEPT, SUPPORTED_IMAGE_DESCRIPTION } from '../../utils/fileValidation';
 
 export default function ImageUploadDropzone({
   disabled,
