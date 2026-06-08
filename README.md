@@ -135,6 +135,14 @@ No OpenAI API key belongs in frontend code or frontend environment variables.
 
 See [docs/api-contract.md](docs/api-contract.md) for request and response details.
 
+## Verification Behavior
+
+- Brand names pass when the only differences are capitalization, repeated whitespace, or clearly harmless punctuation.
+- Class/type values pass when they match after case and whitespace normalization, including line breaks.
+- Alcohol content passes when the parsed ABV and proof values are numerically consistent, regardless of `Alc./Vol.` formatting or casing.
+- Net contents pass when the quantity matches after unit normalization, including `mL`, `ml`, `ML`, and `milliliters`.
+- Government warning text is strict: `GOVERNMENT WARNING` must be uppercase, and wording and punctuation must match the backend standard warning text.
+
 ## CSV Export And Future Import
 
 CSV export is implemented in the frontend for queue results. It exports `queue-verification-results.csv`, includes one row per verified label, skips unverified queue items, and does not include raw extracted text. The existing shared-field batch result CSV helper remains available for batch result data.

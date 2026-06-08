@@ -102,6 +102,27 @@ def test_verify_extraction_backed_contract(monkeypatch) -> None:
     assert body["message"].startswith("AI extraction completed and deterministic")
 
 
+def test_verify_returns_pass_when_all_fields_match_after_normalization(monkeypatch) -> None:
+    response = _post_verify_with_extracted(
+        monkeypatch,
+        ExtractedFields(
+            brand_name="Old Tom Distillery",
+            class_type="kentucky   straight\nbourbon whiskey",
+            alcohol_content="45 % alc/vol (90 proof)",
+            net_contents="750 ml",
+            government_warning_text=STANDARD_WARNING,
+            raw_text="Old Tom Distillery\nkentucky straight bourbon whiskey\n750 ml",
+        ),
+    )
+
+    body = response.json()
+
+    assert response.status_code == 200
+    assert body["overall_status"] == "pass"
+    assert [field["status"] for field in body["field_results"]] == ["pass", "pass", "pass", "pass", "pass"]
+    assert body["field_results"][0]["reason"] == "Brand name matches after capitalization normalization."
+
+
 def test_verify_uses_backend_standard_warning_when_client_submits_stale_text(monkeypatch) -> None:
     response = _post_verify_with_extracted(
         monkeypatch,

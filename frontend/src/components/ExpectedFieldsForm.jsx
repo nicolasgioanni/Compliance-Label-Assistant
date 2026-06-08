@@ -34,11 +34,11 @@ export default function ExpectedFieldsForm({
       <div className="section-heading">
         <div className="expected-form-heading-row">
           <div className="section-title-row">
-            <h2>Expected Application Data</h2>
-            <InfoTooltip label="About expected application data">
-              Enter the product application values the selected label should match. Brand name is required to verify a
-              label; the other visible fields are optional and only checked when provided. The standard government
-              warning is applied automatically.
+            <h2>Selected Label Review</h2>
+            <InfoTooltip label="About selected label review">
+              Enter the product values the selected label should match. Brand name is required to verify a label; the
+              other visible fields are optional and only checked when provided. The standard government warning is
+              applied automatically.
             </InfoTooltip>
           </div>
           <span
@@ -54,7 +54,7 @@ export default function ExpectedFieldsForm({
         {contextFilename ? (
           <p className={isBrandReady ? 'claim-context claim-context-ready' : 'claim-context claim-context-incomplete'}>
             <span className="claim-context-label">
-              Editing claim for: <strong>{contextFilename}</strong>
+              Editing selected label: <strong>{contextFilename}</strong>
             </span>
             <span className="claim-context-actions">
               <button

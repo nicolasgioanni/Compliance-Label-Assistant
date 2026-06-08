@@ -25,6 +25,7 @@ QUOTE_TRANSLATION = str.maketrans(
     }
 )
 
+
 def remove_extra_whitespace(value: str | None) -> str:
     if value is None:
         return ""
@@ -54,9 +55,41 @@ def normalize_for_display(value: str | None) -> str:
     return remove_extra_whitespace(normalize_quotes(value))
 
 
+def normalize_case_and_whitespace(value: str | None) -> str:
+    return normalize_for_display(value).casefold()
+
+
 def normalize_for_comparison(value: str | None) -> str:
-    normalized_value = normalize_punctuation(value).lower()
+    normalized_value = normalize_punctuation(value).casefold()
     return remove_extra_whitespace(normalized_value)
+
+
+def matches_after_case_normalization(expected: str | None, found: str | None) -> bool:
+    expected_normalized = normalize_quotes(expected).casefold()
+    found_normalized = normalize_quotes(found).casefold()
+    return bool(expected_normalized and found_normalized and expected_normalized == found_normalized)
+
+
+def matches_after_spacing_normalization(expected: str | None, found: str | None) -> bool:
+    expected_normalized = normalize_for_display(expected)
+    found_normalized = normalize_for_display(found)
+    return bool(expected_normalized and found_normalized and expected_normalized == found_normalized)
+
+
+def matches_after_case_and_spacing_normalization(expected: str | None, found: str | None) -> bool:
+    expected_normalized = normalize_case_and_whitespace(expected)
+    found_normalized = normalize_case_and_whitespace(found)
+    return bool(expected_normalized and found_normalized and expected_normalized == found_normalized)
+
+
+def has_ambiguous_in_word_quote_difference(expected: str | None, found: str | None) -> bool:
+    """Detect apostrophe removal that can collapse distinct brand words."""
+    return _has_in_word_quote(expected) != _has_in_word_quote(found)
+
+
+def _has_in_word_quote(value: str | None) -> bool:
+    normalized_value = normalize_quotes(value)
+    return bool(re.search(r"[A-Za-z0-9]['\"][A-Za-z0-9]", normalized_value))
 
 
 def calculate_similarity(expected: str | None, found: str | None) -> float:
@@ -85,12 +118,16 @@ def extract_proof(value: str | None) -> float | None:
 
 def normalize_net_contents(value: str | None) -> float | None:
     normalized_value = normalize_quotes(value)
-    match = re.search(r"(\d+(?:\.\d+)?)\s*(ml|mL|ML|l|L)\b", normalized_value)
+    match = re.search(
+        r"(\d+(?:\.\d+)?)\s*(milliliters?|millilitres?|mls?|liters?|litres?|l)\b",
+        normalized_value,
+        flags=re.IGNORECASE,
+    )
     if not match:
         return None
 
     amount = float(match.group(1))
-    unit = match.group(2).lower()
-    if unit == "l":
+    unit = match.group(2).casefold()
+    if unit in {"l", "liter", "liters", "litre", "litres"}:
         return amount * 1000
     return amount

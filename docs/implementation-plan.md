@@ -12,7 +12,7 @@
 - Backend: FastAPI app with thin routes for `GET /health`, `POST /verify`, and `POST /verify-batch`; centralized settings in `config.py`; CORS from `ALLOWED_ORIGINS`; no file persistence.
 - Backend services: isolate image preprocessing, OpenAI extraction, deterministic verification, batch orchestration, timing, response building, file validation, logging, and text normalization. Add one small shared label-processing helper if needed to keep routes thin.
 - OpenAI extraction: use backend-only OpenAI SDK with one vision call per image, base64 image input, short extraction-only prompt, structured JSON output, timeout, and one retry. Use the current OpenAI Python SDK syntax for Responses API image input and Structured Outputs. Prefer schema-enforced structured output with a Pydantic model when practical. Verify the exact SDK syntax during implementation instead of relying on stale examples.
-- Verification: expose lowercase API status values: `pass`, `normalized_match`, `fail`, `missing`, `needs_review`, `error`; roll any `fail` to overall `fail`, errors to `error`, and normalized/unclear/missing cases to `needs_review`.
+- Verification: expose lowercase API status values: `pass`, `normalized_match`, `fail`, `missing`, `needs_review`, `error`; roll any `fail` to overall `fail`, errors to `error`, unclear/missing cases to `needs_review`, and harmless normalized matches to `pass`.
 - Frontend: React/Vite one-page UI with a unified label queue, upload control, per-label expected fields form, standard warning button, API client, queue summary, field cards, selected detail view, raw extracted text panel, CSV export, and friendly error banner.
 - Future CSV import: allow a spreadsheet with `filename`, `brand_name`, `class_type`, `alcohol_content`, `net_contents`, and `government_warning` to prefill queued labels by exact filename match before verification.
 
@@ -26,10 +26,10 @@
 
 ## Verification Rules
 
-- Brand/class: exact match is `pass`; safe normalization is `normalized_match`; high similarity is `needs_review`; clear conflict is `fail`; absent found value is `missing`.
+- Brand/class: exact and harmless normalized case, whitespace, line-break, and safe punctuation matches are `pass`; ambiguous punctuation or high similarity is reviewable; clear conflict is `fail`; absent found value is `missing`.
 - Alcohol content: parse ABV and proof; treat `45%`, `45% ABV`, `45% Alc./Vol.`, and `90 Proof` as equivalent; wrong ABV/proof fails.
-- Net contents: normalize `750 mL`, `750ml`, and `0.75 L` to the same milliliter value; different quantities fail.
-- Government warning: require `GOVERNMENT WARNING` uppercase and compare against the backend standard warning wording; title-case heading fails; missing warning is missing; bold/font/placement checks are documented as limitations.
+- Net contents: normalize `750 mL`, `750ml`, `750 milliliters`, and `0.75 L` to the same milliliter value; different quantities fail.
+- Government warning: require `GOVERNMENT WARNING` uppercase and compare strictly against the backend standard warning wording and punctuation; title-case heading fails; missing warning is missing; bold/font/placement checks are documented as limitations.
 
 ## Test Plan
 

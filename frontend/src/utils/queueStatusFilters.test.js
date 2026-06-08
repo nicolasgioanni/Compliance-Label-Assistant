@@ -19,7 +19,7 @@ describe('queue status filters', () => {
     expect(getQueueFilterIdForStatus(status)).toBe(expectedFilterId);
   });
 
-  it('maps unknown statuses to Needs Work', () => {
+  it('maps unknown statuses to Needs Review filter', () => {
     expect(getQueueFilterIdForStatus('unexpected_status')).toBe('needs_work');
   });
 

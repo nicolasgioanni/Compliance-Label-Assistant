@@ -251,7 +251,7 @@ export default function VerificationForm({ showError = () => {} }) {
 
     const verificationQueue = activeQueueItems.filter((item) => item.status === 'ready');
     if (!verificationQueue.length) {
-      showError('Please complete expected application data for at least one label before verifying ready labels.');
+      showError('Please complete selected label review data for at least one label before verifying ready labels.');
       return;
     }
 

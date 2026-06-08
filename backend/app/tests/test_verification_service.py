@@ -21,9 +21,25 @@ OLD_UNNUMBERED_WARNING = (
 def test_brand_exact_match() -> None:
     result = verify_brand_name("OLD TOM DISTILLERY", "OLD TOM DISTILLERY")
     assert result.status == "pass"
+    assert result.reason == "Brand name matches exactly."
+    assert result.confidence == 1.0
 
 
-def test_brand_normalized_match() -> None:
+def test_brand_case_normalization_passes() -> None:
+    result = verify_brand_name("OLD TOM DISTILLERY", "Old Tom Distillery")
+    assert result.status == "pass"
+    assert result.reason == "Brand name matches after capitalization normalization."
+    assert result.confidence == 1.0
+
+
+def test_brand_safe_punctuation_normalization_passes() -> None:
+    result = verify_brand_name("OLD TOM DISTILLERY", "OLD TOM DISTILLERY.")
+    assert result.status == "pass"
+    assert result.reason == "Brand name matches after punctuation normalization."
+    assert result.confidence == 1.0
+
+
+def test_brand_ambiguous_punctuation_remains_reviewable() -> None:
     result = verify_brand_name("STONE'S THROW", "Stones Throw")
     assert result.status == "normalized_match"
 
@@ -49,8 +65,10 @@ def test_class_exact_match() -> None:
 
 
 def test_class_normalized_match() -> None:
-    result = verify_class_type("Kentucky Straight Bourbon Whiskey", "kentucky-straight bourbon whiskey")
-    assert result.status == "normalized_match"
+    result = verify_class_type("Kentucky Straight Bourbon Whiskey", "kentucky   straight\nbourbon whiskey")
+    assert result.status == "pass"
+    assert result.reason == "Class/type matches exactly."
+    assert result.confidence == 1.0
 
 
 def test_class_mismatch() -> None:
@@ -69,8 +87,10 @@ def test_class_partial_match_needs_review() -> None:
 
 
 def test_alcohol_same_abv_passes() -> None:
-    result = verify_alcohol_content("45% ABV", "45% Alc./Vol.")
+    result = verify_alcohol_content("45% Alc./Vol. (90 Proof)", "45 % alc/vol (90 proof)")
     assert result.status == "pass"
+    assert result.reason == "Alcohol content matches."
+    assert result.confidence == 1.0
 
 
 def test_alcohol_abv_and_proof_equivalence_passes() -> None:
@@ -83,6 +103,11 @@ def test_alcohol_wrong_abv_fails() -> None:
     assert result.status == "fail"
 
 
+def test_alcohol_conflicting_explicit_proof_fails() -> None:
+    result = verify_alcohol_content("45% Alc./Vol. (90 Proof)", "45% Alc./Vol. (80 Proof)")
+    assert result.status == "fail"
+
+
 def test_alcohol_missing_value() -> None:
     result = verify_alcohol_content("45%", None)
     assert result.status == "missing"
@@ -90,6 +115,8 @@ def test_alcohol_missing_value() -> None:
 
 def test_net_contents_equivalent_ml_values() -> None:
     assert verify_net_contents("750 mL", "750ml").status == "pass"
+    assert verify_net_contents("750 mL", "750 ML").status == "pass"
+    assert verify_net_contents("750 mL", "750 milliliters").status == "pass"
     assert verify_net_contents("0.75 L", "750 mL").status == "pass"
 
 
@@ -106,6 +133,7 @@ def test_net_contents_missing_value() -> None:
 def test_government_warning_exact_uppercase_passes() -> None:
     result = verify_government_warning(STANDARD_WARNING, STANDARD_WARNING)
     assert result.status == "pass"
+    assert result.confidence == 1.0
 
 
 def test_government_warning_title_case_heading_fails() -> None:
@@ -123,6 +151,13 @@ def test_government_warning_changed_wording_fails() -> None:
     found = "GOVERNMENT WARNING: Consumption of alcoholic beverages is risky."
     result = verify_government_warning(STANDARD_WARNING, found)
     assert result.status == "fail"
+
+
+def test_government_warning_changed_punctuation_does_not_pass() -> None:
+    found = STANDARD_WARNING.replace("GOVERNMENT WARNING:", "GOVERNMENT WARNING")
+    result = verify_government_warning(STANDARD_WARNING, found)
+    assert result.status != "pass"
+    assert result.reason == "Government warning punctuation does not match the standard warning text."
 
 
 def test_government_warning_without_numbered_clauses_fails() -> None:
@@ -161,6 +196,28 @@ def test_verify_expected_fields_returns_field_results() -> None:
     results = verify_expected_fields(expected, extracted)
 
     assert [result.status for result in results] == ["pass", "pass", "pass", "pass", "pass"]
+
+
+def test_verify_expected_fields_normalized_matches_return_overall_pass() -> None:
+    expected = ExpectedFields(
+        brand_name="OLD TOM DISTILLERY",
+        class_type="Kentucky Straight Bourbon Whiskey",
+        alcohol_content="45% Alc./Vol. (90 Proof)",
+        net_contents="750 mL",
+        government_warning=STANDARD_WARNING,
+    )
+    extracted = ExtractedFields(
+        brand_name="Old Tom Distillery",
+        class_type="kentucky   straight\nbourbon whiskey",
+        alcohol_content="45 % alc/vol (90 proof)",
+        net_contents="750 ml",
+        government_warning_text=STANDARD_WARNING,
+    )
+
+    results = verify_expected_fields(expected, extracted)
+
+    assert [result.status for result in results] == ["pass", "pass", "pass", "pass", "pass"]
+    assert calculate_overall_status(results) == "pass"
 
 
 def test_verify_expected_fields_uses_canonical_government_warning() -> None:

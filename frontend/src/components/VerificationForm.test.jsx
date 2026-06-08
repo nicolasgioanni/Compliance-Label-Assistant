@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { verifySingleLabel } from '../api/verificationApi';
 import VerificationForm from './VerificationForm';
@@ -30,6 +30,38 @@ function queueFilenames(container) {
 
 function addBrandName(value) {
   fireEvent.change(screen.getByLabelText(/Brand Name/i), { target: { value } });
+}
+
+function hasExactText(text) {
+  return (_, node) =>
+    node?.textContent === text && Array.from(node.children).every((child) => child.textContent !== text);
+}
+
+function successfulVerificationResult(overrides = {}) {
+  return {
+    overall_status: 'pass',
+    processing_time_ms: 42,
+    message: 'AI extraction completed and deterministic field verification was applied.',
+    field_results: [
+      {
+        field_name: 'brand_name',
+        status: 'pass',
+        expected: 'Review Brand',
+        found: 'Review Brand',
+        reason: 'The brand name matches the selected label.',
+        confidence: 0.99,
+      },
+    ],
+    extracted_fields: {
+      brand_name: 'Review Brand',
+      class_type: 'Whiskey',
+      alcohol_content: '40%',
+      net_contents: '750 mL',
+      government_warning_text: 'GOVERNMENT WARNING',
+      raw_text: 'Review Brand Whiskey 40% 750 mL',
+    },
+    ...overrides,
+  };
 }
 
 describe('VerificationForm upload queue behavior', () => {
@@ -74,14 +106,14 @@ describe('VerificationForm upload queue behavior', () => {
     expect(showError).toHaveBeenCalledWith('No label images were added. Skipped 1 duplicate file.');
   });
 
-  it('defaults all queue status filters on and toggles Needs Work visibility', () => {
+  it('defaults all queue status filters on and toggles Needs Review visibility', () => {
     const showError = vi.fn();
     const { container } = render(<VerificationForm showError={showError} />);
     const [fileInput] = fileInputs(container);
 
     fireEvent.change(fileInput, { target: { files: [makeFile('filter-label.png')] } });
 
-    const needsWorkFilter = screen.getByRole('button', { name: 'Needs Work' });
+    const needsWorkFilter = screen.getByRole('button', { name: 'Needs Review' });
     const passFilter = screen.getByRole('button', { name: 'Pass' });
     const failFilter = screen.getByRole('button', { name: 'Fail' });
 
@@ -109,12 +141,74 @@ describe('VerificationForm upload queue behavior', () => {
 
     fireEvent.change(fileInput, { target: { files: [makeFile('all-off-label.png')] } });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Needs Work' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Needs Review' }));
     fireEvent.click(screen.getByRole('button', { name: 'Pass' }));
     fireEvent.click(screen.getByRole('button', { name: 'Fail' }));
 
     expect(queueFilenames(container)).toHaveLength(0);
     expect(screen.getByText('No labels match the selected filters.')).toBeInTheDocument();
+  });
+
+  it('shows selected label review copy in the empty and edit states', () => {
+    const showError = vi.fn();
+    const { container } = render(<VerificationForm showError={showError} />);
+    const [fileInput] = fileInputs(container);
+
+    expect(screen.getByRole('heading', { name: 'Selected Label Review' })).toBeInTheDocument();
+    expect(screen.getByText('Add a label image to start a selected label review.')).toBeInTheDocument();
+    expect(screen.queryByText('Expected Application Data')).not.toBeInTheDocument();
+
+    fireEvent.change(fileInput, { target: { files: [makeFile('edit-label.png')] } });
+
+    expect(screen.getByRole('heading', { name: 'Selected Label Review' })).toBeInTheDocument();
+    expect(screen.getByText(hasExactText('Editing selected label: edit-label.png'))).toBeInTheDocument();
+    expect(screen.queryByText('Expected Application Data')).not.toBeInTheDocument();
+  });
+
+  it('keeps selected label review visible after verification and uses text status metadata', async () => {
+    verifySingleLabel.mockResolvedValueOnce(successfulVerificationResult());
+    const showError = vi.fn();
+    const { container } = render(<VerificationForm showError={showError} />);
+    const [fileInput] = fileInputs(container);
+
+    fireEvent.change(fileInput, { target: { files: [makeFile('verified-label.png')] } });
+    addBrandName('Review Brand');
+    fireEvent.click(screen.getByRole('button', { name: 'Verify Selected Label' }));
+
+    await waitFor(() => {
+      expect(screen.getByText(hasExactText('Selected Label: verified-label.png'))).toBeInTheDocument();
+    });
+
+    expect(screen.getByRole('heading', { name: 'Selected Label Review' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Edit Selected Label' })).toBeInTheDocument();
+    expect(screen.queryByText(/AI extraction completed/i)).not.toBeInTheDocument();
+
+    const resultHeader = container.querySelector('.result-detail-header');
+    expect(resultHeader.querySelector('.status-pill')).toBeNull();
+
+    const overallStatusGroup = screen.getByText('Overall Status').closest('div');
+    const overallStatusValue = within(overallStatusGroup).getByText('Pass');
+    expect(overallStatusValue).toHaveClass('status-text', 'status-text-pass');
+    expect(overallStatusValue).not.toHaveClass('status-pill');
+  });
+
+  it('uses selected label review copy in the verification error state', async () => {
+    verifySingleLabel.mockRejectedValueOnce(new Error('Verification failed.'));
+    const showError = vi.fn();
+    const { container } = render(<VerificationForm showError={showError} />);
+    const [fileInput] = fileInputs(container);
+
+    fireEvent.change(fileInput, { target: { files: [makeFile('error-label.png')] } });
+    addBrandName('Review Brand');
+    fireEvent.click(screen.getByRole('button', { name: 'Verify Selected Label' }));
+
+    await waitFor(() => {
+      expect(screen.getByText(hasExactText('File claim: error-label.png'))).toBeInTheDocument();
+    });
+
+    expect(screen.getByRole('heading', { name: 'Selected Label Review' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Edit Selected Label' })).toBeInTheDocument();
+    expect(screen.getByText('Verification failed.')).toBeInTheDocument();
   });
 
   it('disables queue status filters while verification is in progress', () => {
@@ -128,7 +222,7 @@ describe('VerificationForm upload queue behavior', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Verify Selected Label' }));
 
     expect(screen.getByText('Verifying')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Needs Work' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Needs Review' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Pass' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Fail' })).toBeDisabled();
     expect(queueFilenames(container)).toHaveLength(1);

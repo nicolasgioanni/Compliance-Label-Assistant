@@ -13,8 +13,11 @@ from app.utils.text_normalization import (
     calculate_similarity,
     extract_abv,
     extract_proof,
+    has_ambiguous_in_word_quote_difference,
+    matches_after_case_and_spacing_normalization,
+    matches_after_case_normalization,
+    matches_after_spacing_normalization,
     normalize_for_comparison,
-    normalize_for_display,
     normalize_net_contents,
     normalize_punctuation,
     normalize_quotes,
@@ -31,24 +34,78 @@ NET_CONTENTS_TOLERANCE_ML = 0.5
 
 
 def _is_missing(value: str | None) -> bool:
-    return not normalize_for_display(value)
+    return not remove_extra_whitespace(value)
 
 
-def _exact_display_match(expected: str, found: str) -> bool:
-    return normalize_for_display(expected) == normalize_for_display(found)
+def _exact_text_match(expected: str, found: str) -> bool:
+    return normalize_quotes(expected).strip() == normalize_quotes(found).strip()
 
 
 def _normalized_match(expected: str, found: str) -> bool:
     return normalize_for_comparison(expected) == normalize_for_comparison(found)
 
 
+def _safe_punctuation_match(expected: str, found: str) -> bool:
+    return _normalized_match(expected, found) and not has_ambiguous_in_word_quote_difference(
+        expected,
+        found,
+    )
+
+
 def verify_brand_name(expected: str, found: str | None) -> FieldResult:
     if _is_missing(found):
-        return build_field_result("brand_name", expected, found, "missing", "Brand name was not found on the label.", 0.6)
+        return build_field_result(
+            "brand_name",
+            expected,
+            found,
+            "missing",
+            "Brand name was not found on the label.",
+            0.6,
+        )
 
     found_value = found or ""
-    if _exact_display_match(expected, found_value):
+    if _exact_text_match(expected, found_value):
         return build_field_result("brand_name", expected, found, "pass", "Brand name matches exactly.", 1.0)
+
+    if matches_after_case_normalization(expected, found_value):
+        return build_field_result(
+            "brand_name",
+            expected,
+            found,
+            "pass",
+            "Brand name matches after capitalization normalization.",
+            1.0,
+        )
+
+    if matches_after_spacing_normalization(expected, found_value):
+        return build_field_result(
+            "brand_name",
+            expected,
+            found,
+            "pass",
+            "Brand name matches after spacing normalization.",
+            1.0,
+        )
+
+    if matches_after_case_and_spacing_normalization(expected, found_value):
+        return build_field_result(
+            "brand_name",
+            expected,
+            found,
+            "pass",
+            "Brand name matches after capitalization and spacing normalization.",
+            1.0,
+        )
+
+    if _safe_punctuation_match(expected, found_value):
+        return build_field_result(
+            "brand_name",
+            expected,
+            found,
+            "pass",
+            "Brand name matches after punctuation normalization.",
+            1.0,
+        )
 
     if _normalized_match(expected, found_value):
         return build_field_result(
@@ -56,7 +113,7 @@ def verify_brand_name(expected: str, found: str | None) -> FieldResult:
             expected,
             found,
             "normalized_match",
-            "Brand name matches after capitalization, spacing, quote, or punctuation normalization.",
+            "Brand name punctuation creates ambiguity and should be reviewed by a human.",
             0.95,
         )
 
@@ -84,20 +141,40 @@ def _has_token_containment(expected: str, found: str) -> bool:
 
 def verify_class_type(expected: str, found: str | None) -> FieldResult:
     if _is_missing(found):
-        return build_field_result("class_type", expected, found, "missing", "Class/type was not found on the label.", 0.6)
+        return build_field_result(
+            "class_type",
+            expected,
+            found,
+            "missing",
+            "Class/type was not found on the label.",
+            0.6,
+        )
 
     found_value = found or ""
-    if _exact_display_match(expected, found_value):
+    if _exact_text_match(expected, found_value) or matches_after_case_and_spacing_normalization(
+        expected,
+        found_value,
+    ):
         return build_field_result("class_type", expected, found, "pass", "Class/type matches exactly.", 1.0)
+
+    if _safe_punctuation_match(expected, found_value):
+        return build_field_result(
+            "class_type",
+            expected,
+            found,
+            "pass",
+            "Class/type matches exactly.",
+            1.0,
+        )
 
     if _normalized_match(expected, found_value):
         return build_field_result(
             "class_type",
             expected,
             found,
-            "normalized_match",
-            "Class/type matches after safe text normalization.",
-            0.95,
+            "needs_review",
+            "Class/type punctuation creates ambiguity and should be reviewed by a human.",
+            0.9,
         )
 
     similarity = calculate_similarity(expected, found_value)
@@ -124,6 +201,42 @@ def _has_alcohol_value(value: str | None) -> bool:
     return extract_abv(value) is not None or extract_proof(value) is not None
 
 
+def _alcohol_values_conflict(
+    expected_abv: float | None,
+    found_abv: float | None,
+    expected_proof: float | None,
+    found_proof: float | None,
+) -> bool:
+    expected_abv_as_proof = expected_abv * 2 if expected_abv is not None else None
+    found_abv_as_proof = found_abv * 2 if found_abv is not None else None
+    comparisons = (
+        (expected_abv, found_abv, ABV_TOLERANCE),
+        (expected_proof, found_proof, PROOF_TOLERANCE),
+        (expected_abv_as_proof, found_proof, PROOF_TOLERANCE),
+        (expected_proof, found_abv_as_proof, PROOF_TOLERANCE),
+    )
+    return any(
+        left is not None and right is not None and not _values_match(left, right, tolerance)
+        for left, right, tolerance in comparisons
+    )
+
+
+def _alcohol_values_match(
+    expected_abv: float | None,
+    found_abv: float | None,
+    expected_proof: float | None,
+    found_proof: float | None,
+) -> bool:
+    expected_abv_as_proof = expected_abv * 2 if expected_abv is not None else None
+    found_abv_as_proof = found_abv * 2 if found_abv is not None else None
+    return (
+        _values_match(expected_abv, found_abv, ABV_TOLERANCE)
+        or _values_match(expected_proof, found_proof, PROOF_TOLERANCE)
+        or _values_match(expected_abv_as_proof, found_proof, PROOF_TOLERANCE)
+        or _values_match(expected_proof, found_abv_as_proof, PROOF_TOLERANCE)
+    )
+
+
 def verify_alcohol_content(expected: str, found: str | None) -> FieldResult:
     if _is_missing(found) or not _has_alcohol_value(found):
         return build_field_result(
@@ -140,16 +253,17 @@ def verify_alcohol_content(expected: str, found: str | None) -> FieldResult:
     expected_proof = extract_proof(expected)
     found_proof = extract_proof(found)
 
-    # Proof is defined as twice the ABV percentage, so 45% ABV is equivalent to 90 proof.
-    expected_abv_as_proof = expected_abv * 2 if expected_abv is not None else None
-    found_abv_as_proof = found_abv * 2 if found_abv is not None else None
+    if _alcohol_values_conflict(expected_abv, found_abv, expected_proof, found_proof):
+        return build_field_result(
+            "alcohol_content",
+            expected,
+            found,
+            "fail",
+            "Alcohol content conflicts with expected value.",
+            0.95,
+        )
 
-    if (
-        _values_match(expected_abv, found_abv, ABV_TOLERANCE)
-        or _values_match(expected_proof, found_proof, PROOF_TOLERANCE)
-        or _values_match(expected_abv_as_proof, found_proof, PROOF_TOLERANCE)
-        or _values_match(expected_proof, found_abv_as_proof, PROOF_TOLERANCE)
-    ):
+    if _alcohol_values_match(expected_abv, found_abv, expected_proof, found_proof):
         return build_field_result("alcohol_content", expected, found, "pass", "Alcohol content matches.", 1.0)
 
     return build_field_result("alcohol_content", expected, found, "fail", "Alcohol content conflicts with expected value.", 0.95)
@@ -158,25 +272,35 @@ def verify_alcohol_content(expected: str, found: str | None) -> FieldResult:
 def verify_net_contents(expected: str, found: str | None) -> FieldResult:
     found_ml = normalize_net_contents(found)
     if _is_missing(found) or found_ml is None:
-        return build_field_result("net_contents", expected, found, "missing", "Net contents were not found on the label.", 0.6)
+        return build_field_result(
+            "net_contents",
+            expected,
+            found,
+            "missing",
+            "Net contents were not found on the label.",
+            0.6,
+        )
 
     expected_ml = normalize_net_contents(expected)
     if expected_ml is not None and abs(expected_ml - found_ml) <= NET_CONTENTS_TOLERANCE_ML:
-        return build_field_result("net_contents", expected, found, "pass", "Net contents match after unit normalization.", 1.0)
+        return build_field_result(
+            "net_contents",
+            expected,
+            found,
+            "pass",
+            "Net contents match after unit normalization.",
+            1.0,
+        )
 
     return build_field_result("net_contents", expected, found, "fail", "Net contents conflict with expected value.", 0.95)
 
 
 def _warning_heading_is_uppercase(found: str) -> bool:
-    return "GOVERNMENT WARNING" in found
+    return remove_extra_whitespace(found).startswith("GOVERNMENT WARNING")
 
 
 def _warning_text_for_exact_match(value: str | None) -> str:
     return remove_extra_whitespace(normalize_quotes(value))
-
-
-def _warning_text_for_safe_match(value: str | None) -> str:
-    return normalize_for_comparison(normalize_punctuation(value))
 
 
 def verify_government_warning(expected: str, found: str | None) -> FieldResult:
@@ -211,13 +335,23 @@ def verify_government_warning(expected: str, found: str | None) -> FieldResult:
             1.0,
         )
 
-    if _warning_text_for_safe_match(expected) == _warning_text_for_safe_match(found_value):
+    if normalize_punctuation(expected) == normalize_punctuation(found_value):
         return build_field_result(
             "government_warning",
             expected,
             found,
-            "normalized_match",
-            "Government warning matches after safe punctuation, case, quote, or whitespace normalization.",
+            "needs_review",
+            "Government warning punctuation does not match the standard warning text.",
+            0.95,
+        )
+
+    if _normalized_match(expected, found_value):
+        return build_field_result(
+            "government_warning",
+            expected,
+            found,
+            "needs_review",
+            "Government warning capitalization or punctuation does not match the standard warning text.",
             0.95,
         )
 
@@ -271,6 +405,8 @@ def verify_expected_fields(expected_fields: ExpectedFields, extracted_fields: Ex
     if not _is_missing(expected_fields.net_contents):
         field_results.append(verify_net_contents(expected_fields.net_contents, extracted_fields.net_contents))
 
-    field_results.append(verify_government_warning(STANDARD_GOVERNMENT_WARNING, extracted_fields.government_warning_text))
+    field_results.append(
+        verify_government_warning(STANDARD_GOVERNMENT_WARNING, extracted_fields.government_warning_text),
+    )
 
     return field_results

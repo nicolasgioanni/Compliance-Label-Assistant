@@ -27,11 +27,11 @@ export default function LabelQueue({
           <div className="section-title-row">
             <h2>Label Queue</h2>
             <InfoTooltip label="About the label queue">
-              Add up to {maxQueueSize} label images here. Each file becomes its own queue item with its own expected
-              application data, verification status, result, and error state. Select a label in the queue to edit that
-              label's expected fields, review its result, or remove it with the X button. One queued label works like a
-              single verification; multiple queued labels let you verify several ready labels without sharing expected
-              data between them.
+              Add up to {maxQueueSize} label images here. Each file becomes its own queue item with its own review data,
+              verification status, result, and error state. Select a label in the queue to edit that label's review
+              fields, review its result, or remove it with the X button. One queued label works like a single
+              verification; multiple queued labels let you verify several ready labels without sharing review data
+              between them.
             </InfoTooltip>
           </div>
           {totalQueueItemCount ? (
@@ -45,7 +45,7 @@ export default function LabelQueue({
             </button>
           ) : null}
         </div>
-        <p>Add label images, then select a label to edit its expected application data.</p>
+        <p>Add label images, then select one to review.</p>
       </div>
       <QueueStatusFilters
         filtersDisabled={filtersDisabled}

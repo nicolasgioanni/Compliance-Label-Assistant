@@ -1,5 +1,5 @@
 export const QUEUE_FILTERS = [
-  { id: 'needs_work', label: 'Needs Work' },
+  { id: 'needs_work', label: 'Needs Review' },
   { id: 'pass', label: 'Pass' },
   { id: 'fail', label: 'Fail' },
 ];

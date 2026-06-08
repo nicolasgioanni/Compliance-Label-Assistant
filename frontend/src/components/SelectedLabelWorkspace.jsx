@@ -62,15 +62,15 @@ function NoSelectedLabelState() {
   return (
     <div className="workspace-empty-state">
       <div className="section-title-row">
-        <h2>Expected Application Data</h2>
-        <InfoTooltip label="About expected application data before adding labels">
+        <h2>Selected Label Review</h2>
+        <InfoTooltip label="About selected label review before adding labels">
           This panel becomes editable after you add a label image to the queue. Start by using the upload control in the
-          Label Queue, then select the queued label you want to prepare. Once selected, this section will show the fields
-          that describe what the label should match. Brand name is required; the standard government warning is applied
+          Label Queue, then select the queued label you want to prepare. Once selected, this section will show the
+          values the label should match. Brand name is required; the standard government warning is applied
           automatically.
         </InfoTooltip>
       </div>
-      <p>Add a label image to enter expected application data.</p>
+      <p>Add a label image to start a selected label review.</p>
     </div>
   );
 }
@@ -110,7 +110,7 @@ function StaleResultNotice({ isStale }) {
     <div className={isStale ? 'stale-result-notice stale-result-notice-active' : 'stale-result-notice'}>
       {isStale
         ? 'Previous verification result is stale. Re-run verification to refresh it.'
-        : 'Changing expected data will mark the previous verification result stale.'}
+        : 'Changing selected label data will mark the previous verification result stale.'}
     </div>
   );
 }
@@ -126,17 +126,21 @@ function SelectedErrorState({
     <div className="workspace-error-state">
       <div className="result-detail-header">
         <div className="result-title-block">
-          <p className="summary-label">Selected Label</p>
-          <h2>{filename}</h2>
+          <h2>Selected Label Review</h2>
         </div>
         <span className={getStatusClassName('error')}>Error</span>
       </div>
+      <p className="claim-context result-claim-context">
+        <span className="claim-context-label">
+          File claim: <strong>{filename}</strong>
+        </span>
+      </p>
       <p className="workspace-error-message">
         {errorMessage || 'The verification request could not be completed.'}
       </p>
       <div className="workspace-inline-actions">
         <button className="secondary-button" type="button" onClick={onEditExpectedData}>
-          Edit Expected Data
+          Edit Selected Label
         </button>
         <button className="primary-button" disabled={isVerifySelectedDisabled} type="button" onClick={onVerifySelected}>
           Re-run Verification
