@@ -1,10 +1,9 @@
 import { getStatusClassName } from '../utils/statusStyles';
+import { hasCurrentResult } from '../utils/statusResolution';
 import ExpectedFieldsForm from './ExpectedFieldsForm';
 import InfoTooltip from './InfoTooltip';
 import LoadingState from './LoadingState';
 import SelectedResultDetail from './SelectedResultDetail';
-
-const RESULT_STATUSES = new Set(['pass', 'fail', 'needs_review']);
 
 export default function SelectedLabelWorkspace({
   canCopyClaimData = false,
@@ -13,17 +12,19 @@ export default function SelectedLabelWorkspace({
   isQueueLocked = false,
   isVerifySelectedDisabled = true,
   selectedItem,
+  onBackToResults,
+  onSetFinalDecision,
   onCopyClaimData,
   onEditExpectedData,
   onExpectedFieldsChange,
   onVerifySelected,
 }) {
   const shouldShowResult =
-    selectedItem?.result &&
-    !selectedItem.isResultStale &&
+    hasCurrentResult(selectedItem) &&
     selectedItem.workspaceView !== 'form' &&
-    RESULT_STATUSES.has(selectedItem.status);
-  const shouldShowError = selectedItem?.status === 'error' && selectedItem.workspaceView !== 'form';
+    selectedItem.status !== 'verifying';
+  const shouldShowError =
+    selectedItem?.status === 'error' && !hasCurrentResult(selectedItem) && selectedItem.workspaceView !== 'form';
   const panelClassName = [
     'panel',
     'selected-workspace-panel',
@@ -35,7 +36,14 @@ export default function SelectedLabelWorkspace({
       <div className="selected-workspace-scroll">
         {!selectedItem ? <NoSelectedLabelState /> : null}
         {selectedItem?.status === 'verifying' ? <SelectedLoadingState /> : null}
-        {shouldShowResult ? <SelectedResultDetail item={selectedItem} onEditExpectedData={onEditExpectedData} /> : null}
+        {shouldShowResult ? (
+          <SelectedResultDetail
+            areActionsDisabled={isQueueLocked}
+            item={selectedItem}
+            onEditExpectedData={onEditExpectedData}
+            onSetFinalDecision={onSetFinalDecision}
+          />
+        ) : null}
         {shouldShowError ? (
           <SelectedErrorState
             errorMessage={selectedItem.errorMessage}
@@ -51,6 +59,7 @@ export default function SelectedLabelWorkspace({
             copyClaimDataDisabledReason={copyClaimDataDisabledReason}
             disabled={isQueueLocked}
             item={selectedItem}
+            onBackToResults={onBackToResults}
             onCopyClaimData={onCopyClaimData}
             onExpectedFieldsChange={onExpectedFieldsChange}
           />
@@ -90,31 +99,25 @@ function SelectedExpectedDataState({
   copyClaimDataDisabledReason,
   disabled,
   item,
+  onBackToResults,
   onCopyClaimData,
   onExpectedFieldsChange,
 }) {
+  const canBackToResults = hasCurrentResult(item);
+
   return (
     <div className="selected-expected-data-state">
       <ExpectedFieldsForm
+        canBackToResults={canBackToResults}
         canCopyClaimData={canCopyClaimData}
         copyClaimDataDisabledReason={copyClaimDataDisabledReason}
         contextFilename={item.filename}
         disabled={disabled}
         expectedFields={item.expectedFields}
+        onBackToResults={onBackToResults}
         onChange={onExpectedFieldsChange}
         onCopyClaimData={onCopyClaimData}
       />
-      {item.result ? <StaleResultNotice isStale={item.isResultStale} /> : null}
-    </div>
-  );
-}
-
-function StaleResultNotice({ isStale }) {
-  return (
-    <div className={isStale ? 'stale-result-notice stale-result-notice-active' : 'stale-result-notice'}>
-      {isStale
-        ? 'Previous verification result is stale. Re-run verification to refresh it.'
-        : 'Changing selected label data will mark the previous verification result stale.'}
     </div>
   );
 }

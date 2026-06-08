@@ -11,7 +11,7 @@ The prototype does not perform final legal compliance review. It assists agents 
 - Unified label queue for 1 to 10 uploaded JPG, PNG, WebP, or TIFF labels, with expected application fields stored per label.
 - Per-label verification with AI extraction, deterministic comparison, extracted text, and timing metrics.
 - Controlled batch concurrency with isolated per-file errors.
-- Client-side CSV and Excel export for verified queue results, with unverified labels skipped.
+- Client-side CSV and Excel export for verified queue results, including frontend-only human final decisions when applied.
 - Backend-only OpenAI API key handling.
 - In-memory upload validation, duplicate filename rejection, image resizing, and JPEG compression before extraction.
 
@@ -141,11 +141,12 @@ See [docs/api-contract.md](docs/api-contract.md) for request and response detail
 - Class/type values pass when they match after case and whitespace normalization, including line breaks.
 - Alcohol content passes when the parsed ABV and proof values are numerically consistent, regardless of `Alc./Vol.` formatting or casing.
 - Net contents pass when the quantity matches after unit normalization, including `mL`, `ml`, `ML`, and `milliliters`.
-- Government warning text is strict: `GOVERNMENT WARNING` must be uppercase, and wording and punctuation must match the backend standard warning text.
+- Government warning heading is case-sensitive: `GOVERNMENT WARNING` must be uppercase, while `Government Warning`, `government warning`, and other casing variants fail.
+- Government warning statement text is compared against the backend regulatory wording; punctuation or body-text uncertainty is marked for review instead of passing automatically.
 
 ## Results Export And Future Import
 
-CSV and Excel export are implemented in the frontend for queue results. Exports use timestamped names like `label-compliance-verification-results_YYYY-MM-DD_HH-mm-ss.csv` or `label-compliance-verification-results_YYYY-MM-DD_HH-mm-ss.xlsx`, include one row per verified label, skip unverified queue items, and do not include raw extracted text.
+CSV and Excel export are implemented in the frontend for queue results. Exports use timestamped names like `label-compliance-verification-results_YYYY-MM-DD_HH-mm-ss.csv` or `label-compliance-verification-results_YYYY-MM-DD_HH-mm-ss.xlsx`, include one row per verified label, skip unverified queue items, and do not include raw extracted text. The `overall_status` export column reflects the final effective status shown in the UI. When a reviewer applies a frontend-only human final decision, exports also include the original automated status, the manual decision, and the optional manual decision note. Manual decisions are kept in browser memory for the current session only; this prototype does not implement audit logging or persistent review history.
 
 CSV import is a future scalability improvement. For larger submission batches, reviewers could upload a spreadsheet mapping filenames to expected application data so queued labels can be matched by filename and prefilled before verification.
 
@@ -191,7 +192,7 @@ npm run build
 - No database, authentication, admin dashboard, payment, or account system.
 - No persistent uploaded file storage.
 - PDF and HEIC/HEIF uploads are not supported in the MVP; they require additional decoding or rasterization dependencies.
-- Government warning bold text, font size, and placement are not verified.
+- Government warning bold type, font size/font, and label placement are not verified.
 - The main frontend queue is limited to 10 labels and calls `/verify` once per queued label.
 - The backend `/verify-batch` endpoint remains available for shared expected-field batch requests.
 - External extraction depends on OpenAI API availability and correct backend configuration.

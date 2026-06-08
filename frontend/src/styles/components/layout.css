@@ -1,0 +1,77 @@
+.verification-workflow {
+  --workflow-panel-height: 38.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.verification-layout {
+  display: grid;
+  gap: 1.1rem;
+  grid-template-columns: minmax(0, 0.44fr) minmax(0, 0.56fr);
+}
+
+.form-column,
+.results-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.results-column {
+  height: var(--workflow-panel-height);
+  min-height: 0;
+}
+
+.panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-soft);
+  padding: 1rem;
+}
+
+.section-heading h2 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.queue-panel .section-heading h2,
+.expected-fields-form .section-heading h2 {
+  font-size: 1.18rem;
+  line-height: 1.2;
+}
+
+.section-title-row {
+  align-items: center;
+  display: flex;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.queue-card-header {
+  align-items: flex-start;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.clear-queue-button {
+  white-space: nowrap;
+}
+
+.section-heading p {
+  color: var(--color-muted);
+  font-size: 0.88rem;
+  margin: 0.25rem 0 0.85rem;
+}
+
+.queue-panel .section-heading p::after {
+  background: #c49a3a;
+  border-radius: 999px;
+  content: "";
+  display: block;
+  height: 0.14rem;
+  margin-top: 0.55rem;
+  width: 100%;
+}

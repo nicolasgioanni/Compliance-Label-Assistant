@@ -1,0 +1,67 @@
+.status-pill {
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.8rem;
+  font-weight: 800;
+  padding: 0.3rem 0.55rem;
+}
+.status-pass {
+  background: #ddf7eb;
+  color: var(--color-success);
+}
+
+.status-normalized-match {
+  background: #dfeeff;
+  color: #245780;
+}
+
+.status-needs-review {
+  background: #fff3cf;
+  color: var(--color-warning);
+}
+
+.status-missing {
+  background: #edf0f2;
+  color: var(--color-muted);
+}
+
+.status-fail {
+  background: #ffe1dc;
+  color: var(--color-danger);
+}
+
+.status-error {
+  background: #ffd7d2;
+  color: var(--color-danger);
+}
+
+.status-text {
+  font-weight: 900;
+}
+
+.status-text-pass {
+  color: var(--color-success);
+}
+
+.status-text-normalized-match {
+  color: #245780;
+}
+
+.status-text-needs-review {
+  color: var(--color-warning);
+}
+
+.status-text-missing {
+  color: var(--color-muted);
+}
+
+.status-text-fail,
+.status-text-error {
+  color: var(--color-danger);
+}
+
+.result-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}

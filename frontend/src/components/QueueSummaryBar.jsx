@@ -8,7 +8,7 @@ const SUMMARY_ITEMS = [
   ['failedCount', 'Failed'],
 ];
 
-export default function QueueSummaryBar({ canExport = false, onExportCsv, onExportXlsx, summary }) {
+export default function QueueSummaryBar({ canExport = false, onExportCsv, onExportError, onExportXlsx, summary }) {
   const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
 
   if (!summary) {
@@ -52,11 +52,15 @@ export default function QueueSummaryBar({ canExport = false, onExportCsv, onExpo
           <span>{status.label}</span>
           <InfoTooltip label={status.tooltipLabel}>{status.tooltipText}</InfoTooltip>
         </span>
+        {summary.manualDecisionCount > 0 ? (
+          <span className="queue-summary-manual-pill">Manual decisions: {summary.manualDecisionCount}</span>
+        ) : null}
       </div>
       {isExportDialogOpen ? (
         <ExportResultsDialog
           onClose={() => setIsExportDialogOpen(false)}
           onDownloadCsv={onExportCsv}
+          onDownloadError={onExportError}
           onDownloadXlsx={onExportXlsx}
         />
       ) : null}

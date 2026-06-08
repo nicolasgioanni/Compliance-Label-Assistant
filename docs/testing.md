@@ -36,6 +36,14 @@ Frontend tests cover fast client-side queue decisions before upload:
 - Queue planning: single-file then folder duplicate, folder then single-file duplicate, duplicate basenames in different folders, duplicates within one folder selection, mixed valid/duplicate/invalid/over-limit selections, full queue, and active queue filtering.
 - Upload controls: Add Files and Add Folder inputs expose the same accept list, with folder-specific attributes on the folder input.
 
+Frontend workflow tests are split by user flow:
+
+- Queue basics: add, remove, select, filter, and queue lock behavior.
+- Verification and result navigation: selected-label verification, ready-label verification, stale-result handling, and Back to Results.
+- Copy expected data: target selection, source clearing, overwrite warnings, and result clearing when copied fields change.
+- Manual final decisions: apply, clear, badges, selected-label display, and summary counts.
+- Export dialogs: CSV and Excel routing, dialog dismissal, export rows, and Excel failure banner handling.
+
 ## Manual Smoke Tests
 
 Run these after major UI upload changes:

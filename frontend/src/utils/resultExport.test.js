@@ -100,8 +100,35 @@ describe('result export utilities', () => {
 
     expect(csv).toBe(
       [
-        'filename,overall_status,brand_name_status,class_type_status,alcohol_content_status,net_contents_status,government_warning_status,processing_time_ms',
-        'label-one.png,pass,pass,fail,needs_review,missing,pass,123',
+        'filename,overall_status,automated_status,manual_decision,manual_decision_note,brand_name_status,class_type_status,alcohol_content_status,net_contents_status,government_warning_status,processing_time_ms',
+        'label-one.png,pass,pass,,,pass,fail,needs_review,missing,pass,123',
+      ].join('\n'),
+    );
+  });
+
+  it('exports effective final status while preserving automated and manual decision fields', () => {
+    const csv = buildQueueResultsCsv([
+      makeQueueItem({
+        manualDecision: {
+          status: 'pass',
+          note: 'Reviewer confirmed, capitalization issue only.',
+          updatedAt: '2026-06-08T10:00:00.000Z',
+        },
+        result: {
+          overall_status: 'fail',
+          processing_time_ms: 321,
+          field_results: [
+            { field_name: 'brand_name', status: 'fail' },
+            { field_name: 'class_type', status: 'pass' },
+          ],
+        },
+      }),
+    ]);
+
+    expect(csv).toBe(
+      [
+        'filename,overall_status,automated_status,manual_decision,manual_decision_note,brand_name_status,class_type_status,alcohol_content_status,net_contents_status,government_warning_status,processing_time_ms',
+        'label-one.png,pass,fail,pass,"Reviewer confirmed, capitalization issue only.",fail,pass,,,,321',
       ].join('\n'),
     );
   });
@@ -122,6 +149,9 @@ describe('result export utilities', () => {
         [
           'filename',
           'overall_status',
+          'automated_status',
+          'manual_decision',
+          'manual_decision_note',
           'brand_name_status',
           'class_type_status',
           'alcohol_content_status',
@@ -129,7 +159,7 @@ describe('result export utilities', () => {
           'government_warning_status',
           'processing_time_ms',
         ],
-        ['label-one.png', 'pass', 'pass', 'fail', 'needs_review', 'missing', 'pass', 123],
+        ['label-one.png', 'pass', 'pass', '', '', 'pass', 'fail', 'needs_review', 'missing', 'pass', 123],
       ],
       { sheet: 'Verification Results' },
     );
@@ -152,6 +182,9 @@ describe('result export utilities', () => {
       [
         'filename',
         'overall_status',
+        'automated_status',
+        'manual_decision',
+        'manual_decision_note',
         'brand_name_status',
         'class_type_status',
         'alcohol_content_status',
@@ -159,7 +192,7 @@ describe('result export utilities', () => {
         'government_warning_status',
         'processing_time_ms',
       ],
-      ['label-one.png', 'pass', 'pass', 'fail', 'needs_review', 'missing', 'pass', 123],
+      ['label-one.png', 'pass', 'pass', '', '', 'pass', 'fail', 'needs_review', 'missing', 'pass', 123],
     ]);
   });
 });

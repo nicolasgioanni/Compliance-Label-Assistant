@@ -32,6 +32,7 @@ export default function App() {
       id: nextErrorIdRef.current + 1,
       message,
       onDismiss: options.onDismiss,
+      tone: options.tone || 'error',
     };
 
     nextErrorIdRef.current = nextError.id;
@@ -70,6 +71,7 @@ export default function App() {
         <ErrorBanner
           key={activeError.id}
           message={activeError.message}
+          tone={activeError.tone}
           onDismiss={dismissActiveError}
         />
       ) : null}

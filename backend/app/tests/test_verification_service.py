@@ -142,6 +142,25 @@ def test_government_warning_title_case_heading_fails() -> None:
     assert result.status == "fail"
 
 
+def test_government_warning_lowercase_heading_fails() -> None:
+    found = STANDARD_WARNING.replace("GOVERNMENT WARNING", "government warning")
+    result = verify_government_warning(STANDARD_WARNING, found)
+    assert result.status == "fail"
+
+
+def test_government_warning_mixed_case_heading_fails() -> None:
+    found = STANDARD_WARNING.replace("GOVERNMENT WARNING", "GOVERNMENT Warning")
+    result = verify_government_warning(STANDARD_WARNING, found)
+    assert result.status == "fail"
+
+
+def test_government_warning_body_capitalization_does_not_pass() -> None:
+    found = STANDARD_WARNING.replace("According to the Surgeon General", "according to the surgeon general")
+    result = verify_government_warning(STANDARD_WARNING, found)
+    assert result.status == "needs_review"
+    assert result.reason == "Government warning capitalization or punctuation does not match the standard warning text."
+
+
 def test_government_warning_missing_value() -> None:
     result = verify_government_warning(STANDARD_WARNING, None)
     assert result.status == "missing"

@@ -1,16 +1,8 @@
-const QUEUE_STATUS_LABELS = {
-  needs_expected_data: 'Needs Expected Data',
-  ready: 'Ready',
-  verifying: 'Verifying',
-  pass: 'Pass',
-  fail: 'Fail',
-  needs_review: 'Needs Review',
-  error: 'Error',
-};
+import { getQueueItemStatusClass, getQueueItemStatusLabel } from '../utils/statusResolution';
 
 export default function QueueItemCard({ item, isRemoving = false, isSelected, removeDisabled = false, onSelect, onRemove }) {
-  const statusLabel = QUEUE_STATUS_LABELS[item.status] || 'Needs Expected Data';
-  const statusClassName = getQueueStatusClassName(item.status);
+  const statusLabel = getQueueItemStatusLabel(item);
+  const statusClassName = getQueueItemStatusClass(item);
   const queueItemClassName = ['queue-item', isSelected ? 'selected' : '', isRemoving ? 'removing' : '']
     .filter(Boolean)
     .join(' ');
@@ -49,8 +41,4 @@ export default function QueueItemCard({ item, isRemoving = false, isSelected, re
       </button>
     </div>
   );
-}
-
-function getQueueStatusClassName(status) {
-  return `queue-status queue-status-${status?.replaceAll('_', '-') || 'needs-expected-data'}`;
 }

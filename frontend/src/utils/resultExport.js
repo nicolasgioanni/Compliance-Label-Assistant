@@ -1,8 +1,18 @@
+import {
+  getAutomatedStatus,
+  getEffectiveStatus,
+  getManualDecision,
+  hasCurrentResult,
+} from './statusResolution';
+
 export const EXPORT_FILE_BASENAME = 'label-compliance-verification-results';
 
 export const EXPORT_COLUMNS = [
   ['filename', 'filename'],
   ['overall_status', 'overall_status'],
+  ['automated_status', 'automated_status'],
+  ['manual_decision', 'manual_decision'],
+  ['manual_decision_note', 'manual_decision_note'],
   ['brand_name_status', 'brand_name'],
   ['class_type_status', 'class_type'],
   ['alcohol_content_status', 'alcohol_content'],
@@ -24,13 +34,20 @@ export function buildExportTimestamp(date) {
 
 export function buildQueueExportRows(queueItems) {
   return queueItems
-    .filter((item) => item.result && !item.isResultStale)
-    .map((item) => ({
-      filename: item.filename,
-      overall_status: item.result.overall_status,
-      field_results: item.result.field_results || [],
-      processing_time_ms: item.result.processing_time_ms ?? '',
-    }));
+    .filter(hasCurrentResult)
+    .map((item) => {
+      const manualDecision = getManualDecision(item);
+
+      return {
+        filename: item.filename,
+        overall_status: getEffectiveStatus(item),
+        automated_status: getAutomatedStatus(item),
+        manual_decision: manualDecision?.status || '',
+        manual_decision_note: manualDecision?.note || '',
+        field_results: item.result.field_results || [],
+        processing_time_ms: item.result.processing_time_ms ?? '',
+      };
+    });
 }
 
 export function buildQueueResultsCsv(queueItems) {
@@ -83,6 +100,18 @@ function getColumnValue(result, fieldName) {
     return result.overall_status;
   }
 
+  if (fieldName === 'automated_status') {
+    return result.automated_status;
+  }
+
+  if (fieldName === 'manual_decision') {
+    return result.manual_decision;
+  }
+
+  if (fieldName === 'manual_decision_note') {
+    return result.manual_decision_note;
+  }
+
   if (fieldName === 'processing_time_ms') {
     return result.processing_time_ms;
   }
@@ -91,7 +120,7 @@ function getColumnValue(result, fieldName) {
 }
 
 function getFieldStatus(result, fieldName) {
-  if (result.overall_status === 'error') {
+  if (result.automated_status === 'error') {
     return 'error';
   }
 

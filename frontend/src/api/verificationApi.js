@@ -38,18 +38,3 @@ export async function verifySingleLabel(file, expectedFields) {
 
   return parseApiResponse(response);
 }
-
-export async function verifyBatchLabels(files, expectedFields) {
-  const formData = new FormData();
-  files.forEach((file) => {
-    formData.append('files', file);
-  });
-  appendExpectedFields(formData, expectedFields);
-
-  const response = await fetch(`${API_BASE_URL}/verify-batch`, {
-    method: 'POST',
-    body: formData,
-  });
-
-  return parseApiResponse(response);
-}

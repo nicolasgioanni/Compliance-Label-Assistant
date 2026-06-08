@@ -1,3 +1,5 @@
+import { getEffectiveStatus } from './statusResolution';
+
 export const QUEUE_FILTERS = [
   { id: 'needs_work', label: 'Needs Review' },
   { id: 'pass', label: 'Pass' },
@@ -25,5 +27,5 @@ export function getQueueFilterIdForStatus(status) {
 }
 
 export function filterQueueItemsByStatus(queueItems, selectedFilterIds) {
-  return queueItems.filter((item) => selectedFilterIds.has(getQueueFilterIdForStatus(item.status)));
+  return queueItems.filter((item) => selectedFilterIds.has(getQueueFilterIdForStatus(getEffectiveStatus(item))));
 }

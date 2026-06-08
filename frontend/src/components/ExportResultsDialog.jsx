@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useDismissibleDialog } from '../hooks/useDismissibleDialog';
 import InfoTooltip from './InfoTooltip';
 
 const EXPORT_FORMATS = [
@@ -6,25 +7,11 @@ const EXPORT_FORMATS = [
   { id: 'csv', label: 'CSV file (.csv)' },
 ];
 
-export default function ExportResultsDialog({ onClose, onDownloadCsv, onDownloadXlsx }) {
+const XLSX_EXPORT_ERROR_MESSAGE = 'Excel export could not be completed. Try CSV export or try again.';
+
+export default function ExportResultsDialog({ onClose, onDownloadCsv, onDownloadError = () => {}, onDownloadXlsx }) {
   const [selectedFormat, setSelectedFormat] = useState('xlsx');
-
-  useEffect(() => {
-    function handleKeyDown(event) {
-      if (event.key === 'Escape') {
-        onClose();
-      }
-    }
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
-
-  function handleOverlayMouseDown(event) {
-    if (event.target === event.currentTarget) {
-      onClose();
-    }
-  }
+  const { handleOverlayMouseDown } = useDismissibleDialog(onClose);
 
   function handleDownload() {
     if (selectedFormat === 'csv') {
@@ -33,9 +20,13 @@ export default function ExportResultsDialog({ onClose, onDownloadCsv, onDownload
       return;
     }
 
-    Promise.resolve(onDownloadXlsx()).catch((error) => {
-      console.error('Excel export failed.', error);
-    });
+    try {
+      Promise.resolve(onDownloadXlsx()).catch(() => {
+        onDownloadError(XLSX_EXPORT_ERROR_MESSAGE);
+      });
+    } catch {
+      onDownloadError(XLSX_EXPORT_ERROR_MESSAGE);
+    }
     onClose();
   }
 
@@ -53,8 +44,8 @@ export default function ExportResultsDialog({ onClose, onDownloadCsv, onDownload
             <span className="export-dialog-tooltip-copy">
               <span>Export Results downloads one results file for labels that have a current verification result.</span>
               <span>
-                It includes the filename, overall status, field status for brand name, class/type, alcohol content, net
-                contents, government warning, and processing time.
+                It includes the filename, final overall status, automated status, manual decision fields, automated
+                field statuses, and processing time.
               </span>
               <span>
                 Labels without a current result are not included. Stale results are not included until you verify that

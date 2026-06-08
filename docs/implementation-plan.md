@@ -29,7 +29,7 @@
 - Brand/class: exact and harmless normalized case, whitespace, line-break, and safe punctuation matches are `pass`; ambiguous punctuation or high similarity is reviewable; clear conflict is `fail`; absent found value is `missing`.
 - Alcohol content: parse ABV and proof; treat `45%`, `45% ABV`, `45% Alc./Vol.`, and `90 Proof` as equivalent; wrong ABV/proof fails.
 - Net contents: normalize `750 mL`, `750ml`, `750 milliliters`, and `0.75 L` to the same milliliter value; different quantities fail.
-- Government warning: require `GOVERNMENT WARNING` uppercase and compare strictly against the backend standard warning wording and punctuation; title-case heading fails; missing warning is missing; bold/font/placement checks are documented as limitations.
+- Government warning: require exact uppercase `GOVERNMENT WARNING` heading before any normalized comparison; title-case, lowercase, or mixed-case headings fail. Full statement wording is compared against the backend standard warning text, with punctuation or body capitalization uncertainty marked reviewable rather than passed. Missing warning is missing; bold/font/placement checks are documented as limitations.
 
 ## Test Plan
 

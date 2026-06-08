@@ -295,7 +295,7 @@ def verify_net_contents(expected: str, found: str | None) -> FieldResult:
     return build_field_result("net_contents", expected, found, "fail", "Net contents conflict with expected value.", 0.95)
 
 
-def _warning_heading_is_uppercase(found: str) -> bool:
+def _has_required_government_warning_heading(found: str) -> bool:
     return remove_extra_whitespace(found).startswith("GOVERNMENT WARNING")
 
 
@@ -315,7 +315,7 @@ def verify_government_warning(expected: str, found: str | None) -> FieldResult:
         )
 
     found_value = found or ""
-    if not _warning_heading_is_uppercase(found_value):
+    if not _has_required_government_warning_heading(found_value):
         return build_field_result(
             "government_warning",
             expected,

@@ -7,11 +7,13 @@ import {
 import InfoTooltip from './InfoTooltip';
 
 export default function ExpectedFieldsForm({
+  canBackToResults = false,
   canCopyClaimData = false,
   copyClaimDataDisabledReason = '',
   contextFilename,
   disabled = false,
   expectedFields,
+  onBackToResults,
   onChange,
   onCopyClaimData,
 }) {
@@ -101,6 +103,15 @@ export default function ExpectedFieldsForm({
         ))}
       </div>
       <div className="form-actions">
+        {canBackToResults ? (
+          <button
+            className="secondary-button export-dialog-back-button expected-back-to-results-button"
+            type="button"
+            onClick={onBackToResults}
+          >
+            Back to Results
+          </button>
+        ) : null}
         <button
           className="primary-button expected-copy-claim-data-button"
           disabled={!isCopyClaimDataEnabled}
