@@ -65,7 +65,7 @@ def test_parse_uses_fast_field_only_responses_parameters(monkeypatch) -> None:
     }
     image_item = captured["input"][0]["content"][1]
     assert image_item["type"] == "input_image"
-    assert "detail" not in image_item
+    assert image_item["detail"] == "low"
     assert image_item["image_url"].startswith("data:image/jpeg;base64,")
 
 

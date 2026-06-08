@@ -92,6 +92,7 @@ def _extract_label_fields_sync(image_bytes: bytes, settings: Settings) -> Extrac
                         {
                             "type": "input_image",
                             "image_url": image_data_url,
+                            "detail": settings.openai_image_detail,
                         },
                     ],
                 }

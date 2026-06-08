@@ -19,6 +19,7 @@ The frontend calls only the backend API. Do not configure an OpenAI API key in V
   - `OPENAI_API_KEY`
   - `OPENAI_MODEL`
   - `OPENAI_TIMEOUT_SECONDS`
+  - `OPENAI_IMAGE_DETAIL`
   - `OPENAI_MAX_RETRIES`
   - `OPENAI_EXTRACTION_CONCURRENCY`
   - `MAX_FILE_SIZE_MB`

@@ -37,7 +37,7 @@ def _resize_if_needed(image: Image.Image, max_width: int) -> Image.Image:
 def preprocess_image_for_extraction(
     file_bytes: bytes,
     max_width: int,
-    jpeg_quality: int = 65,
+    jpeg_quality: int = 60,
 ) -> PreprocessedImage:
     try:
         with Image.open(BytesIO(file_bytes)) as uploaded_image:

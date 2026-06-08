@@ -60,7 +60,7 @@ def test_fast_preprocessing_defaults_are_configured(monkeypatch) -> None:
 
     settings = Settings()
     assert settings.max_image_width == 640
-    assert settings.jpeg_quality == 65
+    assert settings.jpeg_quality == 60
 
 
 def test_preprocess_default_jpeg_quality_is_fast_profile_quality() -> None:
@@ -69,6 +69,6 @@ def test_preprocess_default_jpeg_quality_is_fast_profile_quality() -> None:
     source_bytes = buffer.getvalue()
 
     default_quality = preprocess_image_for_extraction(source_bytes, max_width=400)
-    explicit_fast_quality = preprocess_image_for_extraction(source_bytes, max_width=400, jpeg_quality=65)
+    explicit_fast_quality = preprocess_image_for_extraction(source_bytes, max_width=400, jpeg_quality=60)
 
     assert default_quality.byte_count == explicit_fast_quality.byte_count

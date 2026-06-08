@@ -26,6 +26,13 @@ def _read_bounded_int(name: str, default: int, minimum: int, maximum: int) -> in
     return min(max(_read_int(name, default), minimum), maximum)
 
 
+def _read_choice(name: str, default: str, allowed_values: set[str]) -> str:
+    raw_value = os.getenv(name, default).strip().lower()
+    if raw_value in allowed_values:
+        return raw_value
+    return default
+
+
 def _read_origins() -> list[str]:
     raw_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173")
     return [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
@@ -37,6 +44,9 @@ class Settings:
     openai_api_key: str = field(default_factory=lambda: os.getenv("OPENAI_API_KEY", ""))
     openai_model: str = field(default_factory=lambda: os.getenv("OPENAI_MODEL", "gpt-4.1-mini"))
     openai_timeout_seconds: int = field(default_factory=lambda: _read_bounded_int("OPENAI_TIMEOUT_SECONDS", 10, 2, 30))
+    openai_image_detail: str = field(
+        default_factory=lambda: _read_choice("OPENAI_IMAGE_DETAIL", "low", {"low", "auto", "high"})
+    )
     openai_max_retries: int = field(default_factory=lambda: _read_bounded_int("OPENAI_MAX_RETRIES", 0, 0, 2))
     openai_extraction_concurrency: int = field(
         default_factory=lambda: _read_bounded_int("OPENAI_EXTRACTION_CONCURRENCY", 2, 1, 4)
@@ -46,7 +56,7 @@ class Settings:
     max_batch_size: int = field(default_factory=lambda: _read_int("MAX_BATCH_SIZE", 10))
     batch_concurrency: int = field(default_factory=lambda: _read_int("BATCH_CONCURRENCY", 3))
     max_image_width: int = field(default_factory=lambda: _read_bounded_int("MAX_IMAGE_WIDTH", 640, 600, 2000))
-    jpeg_quality: int = field(default_factory=lambda: _read_bounded_int("JPEG_QUALITY", 65, 50, 95))
+    jpeg_quality: int = field(default_factory=lambda: _read_bounded_int("JPEG_QUALITY", 60, 50, 95))
     allowed_origins: list[str] = field(default_factory=_read_origins)
 
 
