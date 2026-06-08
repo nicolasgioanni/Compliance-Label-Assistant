@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../../api/verificationApi', () => ({
+  warmVerificationBackend: vi.fn(() => Promise.resolve()),
   verifySingleLabel: vi.fn(),
 }));
 
@@ -22,6 +23,7 @@ import {
   renderVerifiedQueue,
   screen,
   VerificationForm,
+  warmVerificationBackend,
   verifySingleLabel,
   waitFor,
   within,
@@ -57,6 +59,47 @@ describe('VerificationForm.queue', () => {
     expect(showError).toHaveBeenCalledWith(
       'Added 1 label image. Skipped 1 unsupported or oversized file. Skipped 1 duplicate file.',
     );
+    expect(warmVerificationBackend).toHaveBeenCalledTimes(1);
+  });
+
+  it('warms the backend only once after valid queue additions', () => {
+    const showError = vi.fn();
+    const { container } = render(<VerificationForm showError={showError} />);
+    const [fileInput] = fileInputs(container);
+
+    fireEvent.change(fileInput, { target: { files: [makeFile('first-warm-label.png')] } });
+    fireEvent.change(fileInput, { target: { files: [makeFile('second-warm-label.png')] } });
+
+    expect(queueFilenames(container)).toHaveLength(2);
+    expect(warmVerificationBackend).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not warm the backend for invalid or duplicate-only uploads', () => {
+    const showError = vi.fn();
+    const { container } = render(<VerificationForm showError={showError} />);
+    const [fileInput] = fileInputs(container);
+
+    fireEvent.change(fileInput, { target: { files: [makeFile('bad.svg', 'image/svg+xml')] } });
+    expect(warmVerificationBackend).not.toHaveBeenCalled();
+
+    fireEvent.change(fileInput, { target: { files: [makeFile('unique-warm-label.png')] } });
+    warmVerificationBackend.mockClear();
+    fireEvent.change(fileInput, { target: { files: [makeFile('unique-warm-label.png')] } });
+
+    expect(warmVerificationBackend).not.toHaveBeenCalled();
+  });
+
+  it('ignores backend warmup failures without blocking queue updates', () => {
+    warmVerificationBackend.mockRejectedValueOnce(new Error('warmup failed'));
+    const showError = vi.fn();
+    const { container } = render(<VerificationForm showError={showError} />);
+    const [fileInput] = fileInputs(container);
+
+    fireEvent.change(fileInput, { target: { files: [makeFile('warmup-failure-label.png')] } });
+
+    expect(queueFilenames(container)).toHaveLength(1);
+    expect(screen.getByText(hasExactText('Editing selected label: warmup-failure-label.png'))).toBeInTheDocument();
+    expect(showError).not.toHaveBeenCalledWith('warmup failed');
   });
 
   it('rejects a folder upload whose basename already exists from Add Files', () => {

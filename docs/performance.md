@@ -7,6 +7,7 @@ Speed is handled through preprocessing, bounded work, and deterministic verifica
 - Images are resized to `MAX_IMAGE_WIDTH` before extraction.
 - Images are compressed to configured `JPEG_QUALITY` before OpenAI calls.
 - OpenAI clients are cached by backend API key, timeout, and retry settings to avoid repeated SDK setup overhead.
+- A non-billing `/warmup` endpoint initializes reusable backend verification dependencies before the first real verification.
 - OpenAI image detail defaults to `low` so the model uses a faster, lower-cost image processing path.
 - OpenAI SDK retries default to `0` so slow calls do not hide behind retry delays.
 - OpenAI extraction asks only for the fields needed by deterministic comparison, not a full raw text transcript.
@@ -24,6 +25,7 @@ Speed is handled through preprocessing, bounded work, and deterministic verifica
 - The main frontend queue is limited to 10 files to control latency and cost.
 - The backend batch endpoint is limited to 10 files by default.
 - The app uses live interactive OpenAI calls, not OpenAI's asynchronous Batch API.
+- Warmup does not send labels or make model requests, so first model-call latency can still vary.
 - The app intentionally does not cache OpenAI extraction results. A cache could reduce repeated-image cost and latency,
   but it would add cache-key, invalidation, retention, and deployment complexity that is not justified for the MVP.
 - A file-backed extraction cache is a poor fit for the planned Render Starter backend unless a persistent disk is added;

@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../../api/verificationApi', () => ({
+  warmVerificationBackend: vi.fn(() => Promise.resolve()),
   verifySingleLabel: vi.fn(),
 }));
 

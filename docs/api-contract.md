@@ -13,6 +13,18 @@ Response:
 }
 ```
 
+## POST /warmup
+
+Initializes reusable backend verification dependencies without uploading files or making a model extraction request.
+
+Response:
+
+```json
+{
+  "status": "ok"
+}
+```
+
 ## POST /verify
 
 Accepts `multipart/form-data`:

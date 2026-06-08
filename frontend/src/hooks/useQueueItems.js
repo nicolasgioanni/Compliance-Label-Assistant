@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { warmVerificationBackend } from '../api/verificationApi';
 import { MAX_QUEUE_FILES } from '../utils/fileValidation';
 import { validateExpectedFields } from '../utils/expectedFields';
 import { buildUploadWarningMessage, planQueueFileAddition } from '../utils/queueFileValidation';
@@ -33,6 +34,7 @@ export function useQueueItems({ showError = () => {} } = {}) {
   const [selectedQueueItemId, setSelectedQueueItemId] = useState(null);
   const [copyModalSourceId, setCopyModalSourceId] = useState(null);
   const [selectedQueueFilterIds, setSelectedQueueFilterIds] = useState(createDefaultQueueFilterIds);
+  const hasRequestedWarmupRef = useRef(false);
   const {
     clearRemovalState,
     handleRemoveItem: removeQueueItemWithAnimation,
@@ -113,6 +115,7 @@ export function useQueueItems({ showError = () => {} } = {}) {
     if (queueItemsToAdd.length) {
       setQueueItems((currentItems) => [...currentItems, ...queueItemsToAdd]);
       setSelectedQueueItemId((currentSelectedId) => currentSelectedId || queueItemsToAdd[0].id);
+      warmBackendOnce();
     }
 
     const uploadErrorMessage = buildUploadWarningMessage({
@@ -254,6 +257,15 @@ export function useQueueItems({ showError = () => {} } = {}) {
     setQueueItems((currentItems) =>
       currentItems.map((item) => (itemIdSet.has(item.id) ? transition(item) : item)),
     );
+  }
+
+  function warmBackendOnce() {
+    if (hasRequestedWarmupRef.current) {
+      return;
+    }
+
+    hasRequestedWarmupRef.current = true;
+    void warmVerificationBackend().catch(() => {});
   }
 
   return {

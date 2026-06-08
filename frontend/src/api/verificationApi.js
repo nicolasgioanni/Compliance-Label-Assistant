@@ -26,6 +26,13 @@ export async function checkHealth() {
   return parseApiResponse(response);
 }
 
+export async function warmVerificationBackend() {
+  const response = await fetch(`${API_BASE_URL}/warmup`, {
+    method: 'POST',
+  });
+  return parseApiResponse(response);
+}
+
 export async function verifySingleLabel(file, expectedFields) {
   const formData = new FormData();
   formData.append('file', file);

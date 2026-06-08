@@ -30,6 +30,13 @@ def test_health_contract() -> None:
     }
 
 
+def test_warmup_contract() -> None:
+    response = client.post("/warmup")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
+
+
 OLD_UNNUMBERED_WARNING = (
     "GOVERNMENT WARNING: According to the Surgeon General, women should not drink alcoholic beverages during "
     "pregnancy because of the risk of birth defects. Consumption of alcoholic beverages impairs your ability "

@@ -5,6 +5,7 @@ import App from './App';
 
 vi.mock('./api/verificationApi', () => ({
   checkHealth: vi.fn(),
+  warmVerificationBackend: vi.fn(() => Promise.resolve()),
 }));
 
 vi.mock('./components/shared/Header', () => ({

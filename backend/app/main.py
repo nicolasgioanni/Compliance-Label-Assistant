@@ -8,7 +8,7 @@ from fastapi.requests import Request
 from fastapi.responses import JSONResponse
 
 from app.config import get_settings
-from app.routes import health, verification
+from app.routes import health, verification, warmup
 from app.utils.logging_config import configure_logging
 
 
@@ -46,6 +46,7 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(health.router)
+    app.include_router(warmup.router)
     app.include_router(verification.router)
     app.add_exception_handler(Exception, handle_unexpected_error)
     return app

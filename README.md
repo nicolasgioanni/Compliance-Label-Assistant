@@ -141,6 +141,7 @@ labels and compare latency.
 ## API Endpoints
 
 - `GET /health`
+- `POST /warmup`
 - `POST /verify`
 - `POST /verify-batch`
 
