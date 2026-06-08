@@ -39,3 +39,7 @@ export function getMissingExpectedFieldLabels(expectedFields) {
 export function hasCompleteExpectedFields(expectedFields) {
   return getMissingExpectedFieldLabels(expectedFields).length === 0;
 }
+
+export function hasAnyVisibleExpectedFieldValue(expectedFields) {
+  return VISIBLE_EXPECTED_FIELD_DEFINITIONS.some((field) => Boolean(expectedFields[field.id]?.trim()));
+}

@@ -2,6 +2,7 @@ import { DEFAULT_GOVERNMENT_WARNING } from '../constants/defaultWarningText';
 import {
   createEmptyExpectedFields,
   EXAMPLE_EXPECTED_FIELDS,
+  hasAnyVisibleExpectedFieldValue,
   VISIBLE_EXPECTED_FIELD_DEFINITIONS,
 } from '../utils/expectedFields';
 import InfoTooltip from './InfoTooltip';
@@ -15,6 +16,10 @@ export default function ExpectedFieldsForm({
   onChange,
 }) {
   const isBrandReady = Boolean(expectedFields.brandName?.trim());
+  const isApplyToAllEnabled = !disabled && canApplyToAll && hasAnyVisibleExpectedFieldValue(expectedFields);
+  const applyToAllButtonClassName = isApplyToAllEnabled
+    ? 'primary-button expected-apply-all-button'
+    : 'secondary-button expected-apply-all-button';
   const claimStatus = isBrandReady ? 'Ready' : 'Brand name required';
 
   function updateField(fieldName, value) {
@@ -100,8 +105,8 @@ export default function ExpectedFieldsForm({
       </div>
       <div className="form-actions">
         <button
-          className="secondary-button"
-          disabled={disabled || !canApplyToAll}
+          className={applyToAllButtonClassName}
+          disabled={!isApplyToAllEnabled}
           type="button"
           onClick={onApplyToAll}
         >

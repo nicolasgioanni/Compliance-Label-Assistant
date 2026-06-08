@@ -188,6 +188,30 @@ describe('VerificationForm upload queue behavior', () => {
     expect(screen.queryByText('Expected Application Data')).not.toBeInTheDocument();
   });
 
+  it('enables Apply Current Data to All Labels only after visible expected data is entered', () => {
+    const showError = vi.fn();
+    const { container } = render(<VerificationForm showError={showError} />);
+    const [fileInput] = fileInputs(container);
+
+    fireEvent.change(fileInput, {
+      target: { files: [makeFile('first-label.png'), makeFile('second-label.png')] },
+    });
+
+    const applyToAllButton = screen.getByRole('button', { name: 'Apply Current Data to All Labels' });
+    expect(applyToAllButton).toBeDisabled();
+    expect(applyToAllButton).toHaveClass('secondary-button');
+
+    addBrandName('Shared Brand');
+
+    expect(applyToAllButton).not.toBeDisabled();
+    expect(applyToAllButton).toHaveClass('primary-button');
+
+    fireEvent.click(screen.getByRole('button', { name: 'Clear Fields' }));
+
+    expect(applyToAllButton).toBeDisabled();
+    expect(applyToAllButton).toHaveClass('secondary-button');
+  });
+
   it('keeps selected label review visible after verification and uses text status metadata', async () => {
     verifySingleLabel.mockResolvedValueOnce(successfulVerificationResult());
     const showError = vi.fn();
