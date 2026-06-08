@@ -28,6 +28,13 @@ export default function QueueSummaryBar({ canExport = false, onExportCsv, onExpo
 
   return (
     <section className="panel queue-summary-panel" aria-label="Queue summary">
+      <div className="queue-summary-heading">
+        <h2>Results Summary</h2>
+        <InfoTooltip label="About results summary">
+          Shows how many queued labels have been checked, how many passed or failed, the current queue status, and
+          export options for verified results.
+        </InfoTooltip>
+      </div>
       <div className="queue-summary-primary-row">
         <dl className="queue-summary-list">
           {SUMMARY_ITEMS.map(([key, label]) => (

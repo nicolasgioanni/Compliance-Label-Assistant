@@ -282,6 +282,9 @@ describe('VerificationForm.queue', () => {
     const showError = vi.fn();
     render(<VerificationForm showError={showError} />);
 
+    expect(screen.getByRole('heading', { name: 'Results Summary' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'About results summary' })).toBeInTheDocument();
+
     const exportButton = screen.getByRole('button', { name: 'Export Results' });
     expect(exportButton).toBeDisabled();
     expect(exportButton).toHaveClass('secondary-button');

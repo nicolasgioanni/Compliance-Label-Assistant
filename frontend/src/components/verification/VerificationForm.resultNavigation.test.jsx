@@ -98,6 +98,7 @@ describe('VerificationForm.resultNavigation', () => {
     });
 
     expect(screen.getByRole('heading', { name: 'Selected Label Review' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'About selected label results' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Edit Selected Label' })).toBeInTheDocument();
     expect(screen.queryByText(/AI extraction completed/i)).not.toBeInTheDocument();
 

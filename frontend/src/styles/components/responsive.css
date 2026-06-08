@@ -67,7 +67,7 @@
   .export-dialog-overlay,
   .label-preview-dialog-overlay,
   .copy-data-dialog-overlay,
-  .copy-data-blank-warning,
+  .copy-data-warning-stack,
   .selected-workspace-panel-collapsed .selected-workspace-scroll,
   .selected-workspace-panel-expanded .selected-workspace-scroll {
     animation: none;
@@ -130,17 +130,17 @@
   }
 
   .copy-data-dialog {
-    max-height: calc(100vh - 1rem);
+    max-height: calc(var(--viewport-height) - 1rem);
     padding: 0.95rem;
   }
 
   .label-preview-dialog {
-    max-height: calc(100vh - 1rem);
+    max-height: calc(var(--viewport-height) - 1rem);
     padding: 0.95rem;
   }
 
   .label-preview-image {
-    max-height: calc(100vh - 11rem);
+    max-height: calc(var(--viewport-height) - 11rem);
   }
 
   .copy-data-toolbar,

@@ -26,6 +26,8 @@ export default function CopyClaimDataModal({ queueItems, sourceItem, onApply, on
   const willClearResults = selectedTargets.some(
     (item) => item.result && hasDifferentCopyExpectedFields(item.expectedFields, sourceItem.expectedFields),
   );
+  const shouldShowBlankWarning = hasBlankSourceFields && isBlankWarningVisible;
+  const shouldShowWarningStack = shouldShowBlankWarning || willOverwriteExpectedData;
   const canApply = selectedTargetIds.size > 0 || shouldClearSource;
   const primaryButtonLabel =
     selectedTargetIds.size === 0 && shouldClearSource ? 'Clear Source Data' : 'Apply to Selected Labels';
@@ -89,8 +91,12 @@ export default function CopyClaimDataModal({ queueItems, sourceItem, onApply, on
         className="copy-data-dialog"
         role="dialog"
       >
-        {hasBlankSourceFields && isBlankWarningVisible ? (
-          <CopyDataBlankWarning onDismiss={() => setIsBlankWarningVisible(false)} />
+        {shouldShowWarningStack ? (
+          <CopyDataWarningStack
+            showBlankWarning={shouldShowBlankWarning}
+            showOverwriteWarning={willOverwriteExpectedData}
+            onDismissBlankWarning={() => setIsBlankWarningVisible(false)}
+          />
         ) : null}
         <div className="copy-data-dialog-header">
           <div className="copy-data-title-row">
@@ -111,11 +117,6 @@ export default function CopyClaimDataModal({ queueItems, sourceItem, onApply, on
           onSelectAll={handleSelectAll}
         />
 
-        {willOverwriteExpectedData ? (
-          <p className="copy-data-message copy-data-message-warning">
-            Selected labels with existing expected data will be overwritten.
-          </p>
-        ) : null}
         {willClearResults ? (
           <p className="copy-data-message copy-data-message-info">
             Verification results will be cleared for selected labels whose expected data changes.
@@ -146,9 +147,18 @@ export default function CopyClaimDataModal({ queueItems, sourceItem, onApply, on
   );
 }
 
+function CopyDataWarningStack({ showBlankWarning, showOverwriteWarning, onDismissBlankWarning }) {
+  return (
+    <div className="copy-data-warning-stack" role="alert">
+      {showBlankWarning ? <CopyDataBlankWarning onDismiss={onDismissBlankWarning} /> : null}
+      {showOverwriteWarning ? <CopyDataOverwriteWarning /> : null}
+    </div>
+  );
+}
+
 function CopyDataBlankWarning({ onDismiss }) {
   return (
-    <div className="copy-data-blank-warning" role="alert">
+    <div className="copy-data-warning-row">
       <span>Blank fields will also be copied.</span>
       <button
         aria-label="Dismiss blank field warning"
@@ -158,6 +168,14 @@ function CopyDataBlankWarning({ onDismiss }) {
       >
         X
       </button>
+    </div>
+  );
+}
+
+function CopyDataOverwriteWarning() {
+  return (
+    <div className="copy-data-warning-row">
+      <span>Selected labels with existing expected data will be overwritten.</span>
     </div>
   );
 }

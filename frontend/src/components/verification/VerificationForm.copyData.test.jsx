@@ -155,7 +155,7 @@ describe('VerificationForm.copyData', () => {
     expect(within(dialog).getByRole('button', { name: 'Apply to Selected Labels' })).not.toBeDisabled();
   });
 
-  it('shows and dismisses the blank-field overlay warning in the copy dialog', () => {
+  it('shows and dismisses the blank-field popdown warning in the copy dialog', () => {
     const showError = vi.fn();
     const { container } = render(<VerificationForm showError={showError} />);
     const [fileInput] = fileInputs(container);
@@ -167,14 +167,70 @@ describe('VerificationForm.copyData', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Copy Claim Data' }));
 
     const dialog = screen.getByRole('dialog', { name: 'Copy Expected Data to Labels' });
-    expect(within(dialog).getByRole('alert')).toHaveTextContent('Blank fields will also be copied.');
+    const warningStack = within(dialog).getByRole('alert');
+    expect(warningStack).toHaveClass('copy-data-warning-stack');
+    expect(warningStack).toHaveTextContent('Blank fields will also be copied.');
+    expect(warningStack).not.toHaveTextContent('Selected labels with existing expected data will be overwritten.');
 
     fireEvent.click(within(dialog).getByRole('button', { name: 'Dismiss blank field warning' }));
 
     expect(within(dialog).queryByRole('alert')).not.toBeInTheDocument();
   });
 
-  it('auto-dismisses the blank-field overlay warning after 10 seconds', () => {
+  it('shows overwrite and blank-field warnings together in the top popdown area', () => {
+    const showError = vi.fn();
+    const { container } = render(<VerificationForm showError={showError} />);
+    const [fileInput] = fileInputs(container);
+
+    fireEvent.change(fileInput, {
+      target: { files: [makeFile('source-label.png'), makeFile('target-label.png')] },
+    });
+    addBrandName('Source Brand');
+    selectQueueLabel('target-label.png');
+    addBrandName('Existing Target Brand');
+    selectQueueLabel('source-label.png');
+    fireEvent.click(screen.getByRole('button', { name: 'Copy Claim Data' }));
+
+    const dialog = screen.getByRole('dialog', { name: 'Copy Expected Data to Labels' });
+    fireEvent.click(within(dialog).getByRole('checkbox', { name: /target-label\.png/i }));
+
+    let warningStack = within(dialog).getByRole('alert');
+    expect(warningStack).toHaveTextContent('Blank fields will also be copied.');
+    expect(warningStack).toHaveTextContent('Selected labels with existing expected data will be overwritten.');
+    expect(within(dialog).getByRole('button', { name: 'Dismiss blank field warning' })).toBeInTheDocument();
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Clear Selection' }));
+
+    warningStack = within(dialog).getByRole('alert');
+    expect(warningStack).toHaveTextContent('Blank fields will also be copied.');
+    expect(warningStack).not.toHaveTextContent('Selected labels with existing expected data will be overwritten.');
+  });
+
+  it('shows only the overwrite warning when the blank-field warning is dismissed', () => {
+    const showError = vi.fn();
+    const { container } = render(<VerificationForm showError={showError} />);
+    const [fileInput] = fileInputs(container);
+
+    fireEvent.change(fileInput, {
+      target: { files: [makeFile('source-label.png'), makeFile('target-label.png')] },
+    });
+    addBrandName('Source Brand');
+    selectQueueLabel('target-label.png');
+    addBrandName('Existing Target Brand');
+    selectQueueLabel('source-label.png');
+    fireEvent.click(screen.getByRole('button', { name: 'Copy Claim Data' }));
+
+    const dialog = screen.getByRole('dialog', { name: 'Copy Expected Data to Labels' });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Dismiss blank field warning' }));
+    fireEvent.click(within(dialog).getByRole('checkbox', { name: /target-label\.png/i }));
+
+    const warningStack = within(dialog).getByRole('alert');
+    expect(warningStack).not.toHaveTextContent('Blank fields will also be copied.');
+    expect(warningStack).toHaveTextContent('Selected labels with existing expected data will be overwritten.');
+    expect(within(dialog).queryByRole('button', { name: 'Dismiss blank field warning' })).not.toBeInTheDocument();
+  });
+
+  it('auto-dismisses the blank-field popdown warning after 10 seconds', () => {
     vi.useFakeTimers();
     const showError = vi.fn();
     const { container } = render(<VerificationForm showError={showError} />);

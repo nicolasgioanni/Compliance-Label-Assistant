@@ -1,8 +1,10 @@
 import { useRef } from 'react';
+import { supportsDirectoryUpload } from '../../utils/browserSupport';
 import { FILE_INPUT_ACCEPT, SUPPORTED_IMAGE_DESCRIPTION } from '../../utils/fileValidation';
 
 export default function ImageUploadDropzone({
   disabled,
+  isFolderUploadSupported = supportsDirectoryUpload(),
   maxQueueSize,
   onFilesAdded,
 }) {
@@ -10,6 +12,8 @@ export default function ImageUploadDropzone({
   const folderInputRef = useRef(null);
 
   const inputDisabled = disabled;
+  const folderInputDisabled = inputDisabled || !isFolderUploadSupported;
+  const folderUploadUnsupportedMessage = 'Folder upload is not supported in this browser. Use Add Files instead.';
 
   function handleFileChange(event) {
     const nextFiles = Array.from(event.target.files || []);
@@ -48,7 +52,10 @@ export default function ImageUploadDropzone({
         </button>
         <button
           className="upload-action-button"
-          disabled={inputDisabled}
+          aria-describedby={!isFolderUploadSupported ? 'folder-upload-support-note' : undefined}
+          aria-label={!isFolderUploadSupported ? 'Add Folder unavailable' : undefined}
+          disabled={folderInputDisabled}
+          title={!isFolderUploadSupported ? folderUploadUnsupportedMessage : undefined}
           type="button"
           onClick={handleAddFolderClick}
         >
@@ -62,6 +69,11 @@ export default function ImageUploadDropzone({
           <span>Add Folder</span>
         </button>
       </div>
+      {!isFolderUploadSupported ? (
+        <p className="sr-only" id="folder-upload-support-note">
+          {folderUploadUnsupportedMessage}
+        </p>
+      ) : null}
       <input
         accept={FILE_INPUT_ACCEPT}
         className="upload-hidden-input"
@@ -75,7 +87,7 @@ export default function ImageUploadDropzone({
         accept={FILE_INPUT_ACCEPT}
         className="upload-hidden-input"
         directory=""
-        disabled={inputDisabled}
+        disabled={folderInputDisabled}
         multiple
         ref={folderInputRef}
         type="file"

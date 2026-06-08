@@ -20,12 +20,14 @@
   display: inline-flex;
   flex-shrink: 0;
   gap: 0.4rem;
+  min-width: 0;
 }
 
 .queue-filter-label {
   color: var(--color-muted);
   font-size: 0.82rem;
   font-weight: 900;
+  overflow-wrap: anywhere;
 }
 
 .queue-filter-pills {
@@ -47,6 +49,8 @@
   font-size: 0.76rem;
   font-weight: 900;
   line-height: 1;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   padding: 0.42rem 0.65rem;
   transition:
     background 140ms ease,
@@ -123,6 +127,7 @@
   border: 1px dashed var(--color-border);
   border-radius: var(--radius-card);
   color: var(--color-muted);
+  overflow-wrap: anywhere;
   padding: 1rem;
 }
 
@@ -131,6 +136,7 @@
   border: 1px dashed var(--color-border);
   border-radius: var(--radius-card);
   color: var(--color-muted);
+  overflow-wrap: anywhere;
   padding: 1rem;
 }
 
@@ -251,6 +257,7 @@
   border-left: 1px solid var(--color-border);
   color: var(--color-muted);
   cursor: pointer;
+  flex-shrink: 0;
   font-weight: 900;
   padding: 0 0.8rem;
 }
@@ -280,8 +287,12 @@
   font-size: 0.76rem;
   font-weight: 800;
   gap: 0.35rem;
+  line-height: 1.1;
+  max-width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
   padding: 0.25rem 0.5rem;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .queue-status-spinner {
@@ -329,6 +340,7 @@
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-card);
+  min-width: 0;
   padding: 1rem;
 }
 
@@ -337,11 +349,13 @@
   display: flex;
   gap: 0.75rem;
   justify-content: space-between;
+  min-width: 0;
 }
 
 .field-card h3 {
   font-size: 0.98rem;
   margin: 0;
+  overflow-wrap: anywhere;
   text-transform: capitalize;
 }
 
@@ -354,6 +368,7 @@
 
 dd {
   margin: 0.2rem 0 0;
+  overflow-wrap: anywhere;
 }
 
 .extracted-text-panel h3 {
@@ -366,7 +381,9 @@ dd {
 .raw-text {
   background: var(--color-surface-muted);
   border-radius: var(--radius-control);
+  max-width: 100%;
   overflow: auto;
+  overflow-wrap: anywhere;
   padding: 0.85rem;
   white-space: pre-wrap;
 }

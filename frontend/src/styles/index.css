@@ -18,6 +18,13 @@
   --shadow-card: 0 14px 35px rgba(23, 33, 43, 0.08);
   --shadow-soft: 0 6px 18px rgba(23, 33, 43, 0.06);
   --shell-padding: 1.5rem;
+  --viewport-height: 100vh;
+}
+
+@supports (height: 100dvh) {
+  :root {
+    --viewport-height: 100dvh;
+  }
 }
 
 * {
@@ -41,7 +48,7 @@ body {
   gap: 1rem;
   margin: 0 auto;
   max-width: 1180px;
-  min-height: 100vh;
+  min-height: var(--viewport-height);
   padding: var(--shell-padding);
 }
 
@@ -55,7 +62,8 @@ body {
   display: flex;
   gap: 1rem;
   justify-content: space-between;
-  margin: calc(var(--shell-padding) * -1) calc(50% - 50vw) 1rem;
+  margin: calc(var(--shell-padding) * -1) calc(50% - 50vw) 0;
+  min-width: 0;
   padding: 1.35rem max(var(--shell-padding), calc((100vw - 1180px) / 2 + var(--shell-padding)));
   width: 100vw;
 }
@@ -63,7 +71,9 @@ body {
 .brand-lockup {
   align-items: center;
   display: flex;
+  flex: 1 1 auto;
   gap: 1.15rem;
+  max-width: 100%;
   min-width: 0;
 }
 
@@ -87,6 +97,7 @@ body {
 }
 
 .brand-wordmark {
+  max-width: 100%;
   min-width: 0;
 }
 
@@ -108,7 +119,10 @@ body {
   letter-spacing: 0;
   line-height: 1;
   margin: 0.25rem 0 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-transform: capitalize;
+  white-space: nowrap;
 }
 
 .brand-rule {
@@ -125,7 +139,10 @@ body {
   letter-spacing: 0;
   line-height: 1;
   margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 h1 {
@@ -141,9 +158,11 @@ h1 {
   border-radius: 999px;
   color: var(--color-muted);
   display: inline-flex;
+  flex-shrink: 0;
   font-size: 0.86rem;
   font-weight: 800;
   gap: 0.5rem;
+  max-width: 100%;
   padding: 0.45rem 0.7rem;
   white-space: nowrap;
 }
@@ -190,11 +209,13 @@ h1 {
 .app-footer__primary {
   color: #d8e2ed;
   font-weight: 700;
+  overflow-wrap: anywhere;
 }
 
 .app-footer__secondary {
   color: #93a8bd;
   font-size: 0.76rem;
+  overflow-wrap: anywhere;
 }
 
 .app-footer__meta {
@@ -237,6 +258,7 @@ button,
 input,
 textarea {
   font: inherit;
+  max-width: 100%;
 }
 
 button {

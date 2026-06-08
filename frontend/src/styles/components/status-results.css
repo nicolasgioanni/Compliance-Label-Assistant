@@ -3,8 +3,12 @@
   display: inline-flex;
   font-size: 0.8rem;
   font-weight: 800;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   padding: 0.3rem 0.55rem;
+  white-space: normal;
 }
+
 .status-pass {
   background: #ddf7eb;
   color: var(--color-success);
@@ -64,4 +68,9 @@
   display: grid;
   gap: 1rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-width: 0;
+}
+
+.result-grid > * {
+  min-width: 0;
 }

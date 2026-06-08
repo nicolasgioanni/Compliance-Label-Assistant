@@ -1,5 +1,6 @@
 import { getStatusLabel, getStatusTextClassName } from '../../utils/statusStyles';
 import { getAutomatedStatus } from '../../utils/statusResolution';
+import InfoTooltip from '../shared/InfoTooltip';
 import ExtractedTextPanel from './ExtractedTextPanel';
 import FieldResultCard from './FieldResultCard';
 
@@ -24,7 +25,15 @@ export default function SelectedResultDetail({
     <div className="selected-result-detail">
       <div className="result-detail-header">
         <div className="result-title-block">
-          <h2>Selected Label Review</h2>
+          <div className="section-title-row">
+            <h2>Selected Label Review</h2>
+            <InfoTooltip label="About selected label results">
+              This view shows the verification result for the selected label. Overall Status summarizes the backend
+              check, each field card compares the expected value with what was found, and Extracted Label Text shows
+              what the AI read from the image. Select another label in the queue to review its result, or edit this
+              label's expected data and rerun verification if the application values need to change.
+            </InfoTooltip>
+          </div>
         </div>
         <div className="result-header-actions">
           <button
