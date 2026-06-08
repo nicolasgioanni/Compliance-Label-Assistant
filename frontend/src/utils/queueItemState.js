@@ -4,7 +4,7 @@ import {
   copyExpectedFields,
   hasDifferentCopyExpectedFields,
 } from './expectedFieldCopy';
-import { validateExpectedFields } from './fileValidation';
+import { validateExpectedFields } from './expectedFields';
 import { hasCurrentResult } from './statusResolution';
 
 const EMPTY_EXPECTED_FIELDS = createEmptyExpectedFields();

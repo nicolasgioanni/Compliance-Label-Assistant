@@ -20,6 +20,8 @@ npm test
 npm run build
 ```
 
+`frontend/package.json` does not currently define lint or typecheck scripts.
+
 ## Upload Validation Matrix
 
 Backend tests cover the security-critical upload path before extraction:

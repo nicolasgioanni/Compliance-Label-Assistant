@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { verifySingleLabel } from '../api/verificationApi';
-import { validateExpectedFields } from '../utils/fileValidation';
+import { SERVICE_UNAVAILABLE_MESSAGE } from '../constants/notificationMessages';
+import { validateExpectedFields } from '../utils/expectedFields';
 import {
   applyVerificationError,
   applyVerificationStarted,
@@ -136,7 +137,7 @@ export function useQueueVerification({
 
 function getVerificationErrorMessage(error) {
   if (error.message === 'Failed to fetch') {
-    return 'The verification service is currently unavailable. Please try again shortly.';
+    return SERVICE_UNAVAILABLE_MESSAGE;
   }
 
   return error.message || 'The verification request could not be completed.';

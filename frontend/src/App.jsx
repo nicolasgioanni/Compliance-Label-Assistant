@@ -4,6 +4,7 @@ import AppFooter from './components/shared/AppFooter';
 import Header from './components/shared/Header';
 import VerificationForm from './components/verification/VerificationForm';
 import ErrorBanner from './components/shared/ErrorBanner';
+import { SERVICE_UNAVAILABLE_MESSAGE } from './constants/notificationMessages';
 
 export default function App() {
   const [health, setHealth] = useState(null);
@@ -83,7 +84,7 @@ export default function App() {
 
 function getHealthErrorMessage(error) {
   if (error.message === 'Failed to fetch') {
-    return 'The verification service is currently unavailable. Please try again shortly.';
+    return SERVICE_UNAVAILABLE_MESSAGE;
   }
 
   return error.message || 'Cannot connect to the verification service.';

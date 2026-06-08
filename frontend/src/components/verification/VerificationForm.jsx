@@ -3,7 +3,7 @@ import LabelPreviewDialog from '../dialogs/LabelPreviewDialog';
 import LabelQueue from '../queue/LabelQueue';
 import QueueActions from '../queue/QueueActions';
 import QueueSummaryBar from '../queue/QueueSummaryBar';
-import SelectedLabelWorkspace from '../queue/SelectedLabelWorkspace';
+import SelectedLabelWorkspace from './SelectedLabelWorkspace';
 import { useQueueItems } from '../../hooks/useQueueItems';
 import { downloadQueueResultsCsv, downloadQueueResultsXlsx } from '../../utils/resultExport';
 

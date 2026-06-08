@@ -1,9 +1,9 @@
 import { getStatusClassName } from '../../utils/statusStyles';
 import { hasCurrentResult } from '../../utils/statusResolution';
-import ExpectedFieldsForm from '../verification/ExpectedFieldsForm';
+import ExpectedFieldsForm from './ExpectedFieldsForm';
 import InfoTooltip from '../shared/InfoTooltip';
 import LoadingState from '../shared/LoadingState';
-import SelectedResultDetail from '../verification/SelectedResultDetail';
+import SelectedResultDetail from './SelectedResultDetail';
 
 export default function SelectedLabelWorkspace({
   canCopyClaimData = false,

@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import {
-  MAX_QUEUE_FILES,
-  validateExpectedFields,
-} from '../utils/fileValidation';
+import { MAX_QUEUE_FILES } from '../utils/fileValidation';
+import { validateExpectedFields } from '../utils/expectedFields';
 import { buildUploadWarningMessage, planQueueFileAddition } from '../utils/queueFileValidation';
 import {
   createDefaultQueueFilterIds,

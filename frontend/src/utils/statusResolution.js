@@ -16,7 +16,6 @@ const DEFAULT_QUEUE_SUMMARY = {
   checkedCount: 0,
   passedCount: 0,
   failedCount: 0,
-  verifiedLabels: 0,
   passCount: 0,
   failCount: 0,
   needsReviewCount: 0,
@@ -45,7 +44,6 @@ export function getQueueStatusCounts(queueItems) {
 
     if (hasCurrentResult(item)) {
       summary.checkedCount += 1;
-      summary.verifiedLabels += 1;
       applyStatusCount(summary, getAutomatedStatus(item));
       return summary;
     }

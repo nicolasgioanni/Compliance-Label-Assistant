@@ -10,7 +10,7 @@ The app does not make final legal compliance determinations, integrate with COLA
 
 - React/Vite single-page app with a selected-label workspace and a queue for up to 10 JPG, PNG, WebP, or TIFF labels.
 - Each queued label has its own expected field values, request status, backend result evidence, and selected workspace view.
-- The frontend calls `/verify` once per ready queued label through `frontend/src/api/verificationApi.js`; ready-label verification runs sequentially to keep latency and cost bounded.
+- The frontend calls `/verify` once per ready queued label through `frontend/src/api/verificationApi.js`; ready-label verification uses frontend concurrency capped at 2 to keep latency and cost bounded.
 - Queue badges, summary counts, filters, selected result detail, and exports use the backend `overall_status`.
 - CSV and Excel exports are client-side only, skip unverified or stale results, and include filename, overall status, field statuses, and processing time.
 

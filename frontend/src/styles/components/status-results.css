@@ -64,6 +64,68 @@
   color: var(--color-danger);
 }
 
+.field-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  min-width: 0;
+  padding: 1rem;
+}
+
+.field-card-header {
+  align-items: start;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.field-card h3 {
+  font-size: 0.98rem;
+  margin: 0;
+  overflow-wrap: anywhere;
+  text-transform: capitalize;
+}
+
+.field-card dl,
+.extracted-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1rem 0 0;
+}
+
+dd {
+  margin: 0.2rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+.extracted-text-panel h3 {
+  border-top: 1px solid var(--color-border);
+  font-size: 0.98rem;
+  margin: 1.1rem 0 0.75rem;
+  padding-top: 1rem;
+}
+
+.raw-text {
+  background: var(--color-surface-muted);
+  border-radius: var(--radius-control);
+  max-width: 100%;
+  overflow: auto;
+  overflow-wrap: anywhere;
+  padding: 0.85rem;
+  white-space: pre-wrap;
+}
+
+.extracted-text-panel-embedded {
+  border-top: 1px solid var(--color-border);
+  margin-top: 1.1rem;
+  padding-top: 1rem;
+}
+
+.extracted-text-panel-embedded .section-heading h2 {
+  font-size: 0.98rem;
+}
+
 .result-grid {
   display: grid;
   gap: 1rem;
