@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import ExportResultsDialog from './ExportResultsDialog';
 import InfoTooltip from './InfoTooltip';
 
 const SUMMARY_ITEMS = [
@@ -6,12 +8,23 @@ const SUMMARY_ITEMS = [
   ['failedCount', 'Failed'],
 ];
 
-export default function QueueSummaryBar({ canExport = false, onExportCsv, summary }) {
+export default function QueueSummaryBar({ canExport = false, onExportCsv, onExportXlsx, summary }) {
+  const [isExportDialogOpen, setIsExportDialogOpen] = useState(false);
+
   if (!summary) {
     return null;
   }
 
   const status = getQueueSummaryStatus(summary);
+  const exportButtonClassName = canExport
+    ? 'primary-button queue-summary-export'
+    : 'secondary-button queue-summary-export';
+
+  function handleExportClick() {
+    if (canExport) {
+      setIsExportDialogOpen(true);
+    }
+  }
 
   return (
     <section className="panel queue-summary-panel" aria-label="Queue summary">
@@ -25,12 +38,12 @@ export default function QueueSummaryBar({ canExport = false, onExportCsv, summar
           ))}
         </dl>
         <button
-          className="secondary-button queue-summary-export"
+          className={exportButtonClassName}
           disabled={!canExport}
           type="button"
-          onClick={onExportCsv}
+          onClick={handleExportClick}
         >
-          Export CSV
+          Export Results
         </button>
       </div>
       <div className="queue-summary-status-row">
@@ -40,6 +53,13 @@ export default function QueueSummaryBar({ canExport = false, onExportCsv, summar
           <InfoTooltip label={status.tooltipLabel}>{status.tooltipText}</InfoTooltip>
         </span>
       </div>
+      {isExportDialogOpen ? (
+        <ExportResultsDialog
+          onClose={() => setIsExportDialogOpen(false)}
+          onDownloadCsv={onExportCsv}
+          onDownloadXlsx={onExportXlsx}
+        />
+      ) : null}
     </section>
   );
 }

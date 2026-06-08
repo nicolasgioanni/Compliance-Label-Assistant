@@ -4,7 +4,7 @@ import LabelQueue from './LabelQueue';
 import QueueActions from './QueueActions';
 import QueueSummaryBar from './QueueSummaryBar';
 import SelectedLabelWorkspace from './SelectedLabelWorkspace';
-import { downloadQueueResultsCsv } from '../utils/csvExport';
+import { downloadQueueResultsCsv, downloadQueueResultsXlsx } from '../utils/resultExport';
 import { createEmptyExpectedFields } from '../utils/expectedFields';
 import {
   MAX_QUEUE_FILES,
@@ -377,6 +377,7 @@ export default function VerificationForm({ showError = () => {} }) {
             canExport={hasResultForExport}
             summary={queueSummary}
             onExportCsv={() => downloadQueueResultsCsv(activeQueueItems)}
+            onExportXlsx={() => downloadQueueResultsXlsx(activeQueueItems)}
           />
           <SelectedLabelWorkspace
             canApplyToAll={activeQueueItems.length > 1}

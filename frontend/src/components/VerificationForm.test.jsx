@@ -1,10 +1,16 @@
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { verifySingleLabel } from '../api/verificationApi';
+import { downloadQueueResultsCsv, downloadQueueResultsXlsx } from '../utils/resultExport';
 import VerificationForm from './VerificationForm';
 
 vi.mock('../api/verificationApi', () => ({
   verifySingleLabel: vi.fn(),
+}));
+
+vi.mock('../utils/resultExport', () => ({
+  downloadQueueResultsCsv: vi.fn(),
+  downloadQueueResultsXlsx: vi.fn(),
 }));
 
 function makeFile(name, type = 'image/png', size = 4) {
@@ -62,6 +68,23 @@ function successfulVerificationResult(overrides = {}) {
     },
     ...overrides,
   };
+}
+
+async function renderVerifiedQueue(filename = 'verified-label.png') {
+  verifySingleLabel.mockResolvedValueOnce(successfulVerificationResult());
+  const showError = vi.fn();
+  const rendered = render(<VerificationForm showError={showError} />);
+  const [fileInput] = fileInputs(rendered.container);
+
+  fireEvent.change(fileInput, { target: { files: [makeFile(filename)] } });
+  addBrandName('Review Brand');
+  fireEvent.click(screen.getByRole('button', { name: 'Verify Selected Label' }));
+
+  await waitFor(() => {
+    expect(screen.getByRole('button', { name: 'Export Results' })).not.toBeDisabled();
+  });
+
+  return { ...rendered, showError };
 }
 
 describe('VerificationForm upload queue behavior', () => {
@@ -226,5 +249,61 @@ describe('VerificationForm upload queue behavior', () => {
     expect(screen.getByRole('button', { name: 'Pass' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Fail' })).toBeDisabled();
     expect(queueFilenames(container)).toHaveLength(1);
+  });
+
+  it('keeps export results disabled until a current verification result exists', () => {
+    const showError = vi.fn();
+    render(<VerificationForm showError={showError} />);
+
+    const exportButton = screen.getByRole('button', { name: 'Export Results' });
+    expect(exportButton).toBeDisabled();
+    expect(exportButton).toHaveClass('secondary-button');
+  });
+
+  it('uses primary styling for enabled export results', async () => {
+    await renderVerifiedQueue();
+
+    const exportButton = screen.getByRole('button', { name: 'Export Results' });
+    expect(exportButton).not.toBeDisabled();
+    expect(exportButton).toHaveClass('primary-button');
+  });
+
+  it('opens the export dialog and routes CSV and Excel downloads', async () => {
+    await renderVerifiedQueue();
+    const exportButton = screen.getByRole('button', { name: 'Export Results' });
+
+    fireEvent.click(exportButton);
+    let dialog = screen.getByRole('dialog', { name: 'Which file type would you like to download?' });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Download CSV' }));
+
+    expect(downloadQueueResultsCsv).toHaveBeenCalledTimes(1);
+    expect(downloadQueueResultsXlsx).not.toHaveBeenCalled();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    fireEvent.click(exportButton);
+    dialog = screen.getByRole('dialog', { name: 'Which file type would you like to download?' });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Download Excel' }));
+
+    expect(downloadQueueResultsXlsx).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('closes the export dialog without downloading from back, outside click, or Escape', async () => {
+    const { container } = await renderVerifiedQueue();
+    const exportButton = screen.getByRole('button', { name: 'Export Results' });
+
+    fireEvent.click(exportButton);
+    fireEvent.click(screen.getByRole('button', { name: 'Back' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    fireEvent.click(exportButton);
+    fireEvent.mouseDown(container.querySelector('.export-dialog-overlay'));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    fireEvent.click(exportButton);
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(downloadQueueResultsCsv).not.toHaveBeenCalled();
+    expect(downloadQueueResultsXlsx).not.toHaveBeenCalled();
   });
 });

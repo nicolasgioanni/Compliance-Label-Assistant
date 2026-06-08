@@ -11,7 +11,7 @@ The prototype does not perform final legal compliance review. It assists agents 
 - Unified label queue for 1 to 10 uploaded JPG, PNG, WebP, or TIFF labels, with expected application fields stored per label.
 - Per-label verification with AI extraction, deterministic comparison, extracted text, and timing metrics.
 - Controlled batch concurrency with isolated per-file errors.
-- Client-side CSV export for verified queue results, with unverified labels skipped.
+- Client-side CSV and Excel export for verified queue results, with unverified labels skipped.
 - Backend-only OpenAI API key handling.
 - In-memory upload validation, duplicate filename rejection, image resizing, and JPEG compression before extraction.
 
@@ -37,7 +37,7 @@ Frontend queue
 -> one OpenAI extraction call per image
 -> deterministic backend verification
 -> structured response with statuses and timing
--> frontend queue summary, selected-label details, extracted text, and CSV export
+-> frontend queue summary, selected-label details, extracted text, and results export
 ```
 
 AI extracts visible label text. Backend code verifies fields. A human agent makes the final compliance judgment.
@@ -143,9 +143,9 @@ See [docs/api-contract.md](docs/api-contract.md) for request and response detail
 - Net contents pass when the quantity matches after unit normalization, including `mL`, `ml`, `ML`, and `milliliters`.
 - Government warning text is strict: `GOVERNMENT WARNING` must be uppercase, and wording and punctuation must match the backend standard warning text.
 
-## CSV Export And Future Import
+## Results Export And Future Import
 
-CSV export is implemented in the frontend for queue results. It exports `queue-verification-results.csv`, includes one row per verified label, skips unverified queue items, and does not include raw extracted text. The existing shared-field batch result CSV helper remains available for batch result data.
+CSV and Excel export are implemented in the frontend for queue results. Exports use timestamped names like `label-compliance-verification-results_YYYY-MM-DD_HH-mm-ss.csv` or `label-compliance-verification-results_YYYY-MM-DD_HH-mm-ss.xlsx`, include one row per verified label, skip unverified queue items, and do not include raw extracted text.
 
 CSV import is a future scalability improvement. For larger submission batches, reviewers could upload a spreadsheet mapping filenames to expected application data so queued labels can be matched by filename and prefilled before verification.
 

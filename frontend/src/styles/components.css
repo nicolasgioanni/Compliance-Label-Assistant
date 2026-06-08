@@ -449,6 +449,51 @@ textarea {
   cursor: not-allowed;
 }
 
+.export-dialog-overlay {
+  align-items: center;
+  animation: export-dialog-fade 140ms ease-out;
+  background: rgba(7, 29, 51, 0.42);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 1rem;
+  position: fixed;
+  z-index: 80;
+}
+
+.export-dialog {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  max-width: 420px;
+  padding: 1.1rem;
+  width: min(420px, 100%);
+}
+
+.export-dialog h2 {
+  color: var(--color-text);
+  font-size: 1.05rem;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.export-dialog-actions {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
+@keyframes export-dialog-fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 .verification-actions {
   display: flex;
   flex-wrap: wrap;
@@ -1434,6 +1479,7 @@ dd {
     animation: none;
   }
 
+  .export-dialog-overlay,
   .selected-workspace-panel-collapsed .selected-workspace-scroll,
   .selected-workspace-panel-expanded .selected-workspace-scroll {
     animation: none;

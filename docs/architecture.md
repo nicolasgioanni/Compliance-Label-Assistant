@@ -11,15 +11,15 @@ User
 -> OpenAI extraction
 -> deterministic verification
 -> structured response
--> frontend results and CSV export
+-> frontend results and results export
 ```
 
 ## Frontend
 
 - `frontend/src/api/verificationApi.js` is the only endpoint-aware frontend module.
 - Components render the label queue, upload controls, per-label expected fields, loading/error states, queue summaries, selected-label details, and extracted text.
-- Reusable frontend logic stays in `frontend/src/utils`, including file validation, status styling, and CSV export.
-- CSV export is client-side only, skips unverified queue items, and does not include raw extracted text.
+- Reusable frontend logic stays in `frontend/src/utils`, including file validation, status styling, and results export.
+- CSV and Excel export are client-side only, skip unverified queue items, and do not include raw extracted text.
 - Future CSV import can populate each queue item's expected fields by matching spreadsheet rows to queued files by filename.
 
 ## Backend
