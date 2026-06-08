@@ -17,11 +17,13 @@ Frontend:
 
 ```powershell
 cd frontend
+npm run lint
+npm run typecheck
 npm test
 npm run build
 ```
 
-`frontend/package.json` does not currently define lint or typecheck scripts.
+`npm run typecheck` uses TypeScript project checking without forcing all JavaScript files into strict `checkJs` mode.
 
 ## Upload Validation Matrix
 

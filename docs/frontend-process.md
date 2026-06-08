@@ -74,8 +74,10 @@ Run the available frontend regression commands after frontend changes:
 
 ```powershell
 cd frontend
+npm run lint
+npm run typecheck
 npm test
 npm run build
 ```
 
-`frontend/package.json` does not currently define lint or typecheck scripts. Add and document those scripts before relying on them as regression gates.
+`npm run typecheck` is intentionally non-invasive for the current JavaScript codebase; use JSDoc `// @ts-check` or TypeScript files when adding code that should receive stricter type checking.

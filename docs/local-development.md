@@ -104,7 +104,7 @@ All startup scripts support these parameters where applicable:
 - `-SkipSetup`: skip dependency setup checks and start immediately.
 - `-NoEnvFile`: do not create or load local `.env` files.
 
-When the backend port changes, the scripts set `VITE_API_BASE_URL` for the frontend process to match the selected backend URL.
+When ports change, the scripts set `VITE_API_BASE_URL` for the frontend process to match the selected backend URL and ensure `ALLOWED_ORIGINS` includes the selected frontend origin.
 
 ## Environment Files
 

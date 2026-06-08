@@ -77,6 +77,8 @@ Optional ports:
 .\scripts\start-dev.ps1 -BackendPort 8010 -FrontendPort 5174
 ```
 
+When custom ports are used, the scripts set the frontend API base URL and include the selected frontend origin in backend CORS settings for that process.
+
 From a nested repo folder, use the repo root path:
 
 ```powershell
@@ -190,6 +192,8 @@ Frontend:
 
 ```powershell
 cd frontend
+npm run lint
+npm run typecheck
 npm test
 npm run build
 ```
@@ -205,3 +209,7 @@ npm run build
 - The main frontend queue is limited to 10 labels and calls `/verify` once per queued label.
 - The backend `/verify-batch` endpoint remains available for shared expected-field batch requests.
 - External extraction depends on OpenAI API availability and correct backend configuration.
+
+## License
+
+This project is licensed under the Apache License 2.0. See [LICENSE](LICENSE).

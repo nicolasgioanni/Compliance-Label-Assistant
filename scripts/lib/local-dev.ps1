@@ -311,8 +311,21 @@ function Set-LocalDevEnvironment {
         [int]$FrontendPort
     )
 
+    $frontendOrigin = "http://localhost:$FrontendPort"
+
     if ([string]::IsNullOrWhiteSpace($env:ALLOWED_ORIGINS)) {
-        $env:ALLOWED_ORIGINS = "http://localhost:$FrontendPort"
+        $env:ALLOWED_ORIGINS = $frontendOrigin
+    }
+    else {
+        $allowedOrigins = @(
+            $env:ALLOWED_ORIGINS -split "," |
+                ForEach-Object { $_.Trim() } |
+                Where-Object { $_ }
+        )
+
+        if ($allowedOrigins -notcontains $frontendOrigin) {
+            $env:ALLOWED_ORIGINS = (@($allowedOrigins) + $frontendOrigin) -join ","
+        }
     }
 
     $env:VITE_API_BASE_URL = "http://127.0.0.1:$BackendPort"

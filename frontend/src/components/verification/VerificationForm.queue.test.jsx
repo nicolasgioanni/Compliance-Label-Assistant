@@ -21,8 +21,6 @@ import {
   render,
   renderVerifiedQueue,
   screen,
-  selectQueueLabel,
-  successfulVerificationResult,
   VerificationForm,
   verifySingleLabel,
   waitFor,
