@@ -1,11 +1,9 @@
+import InfoTooltip from './InfoTooltip';
+
 const SUMMARY_ITEMS = [
-  ['totalLabels', 'Total Labels'],
-  ['readyLabels', 'Ready Labels'],
-  ['verifiedLabels', 'Verified Labels'],
-  ['passCount', 'Pass'],
-  ['failCount', 'Fail'],
-  ['needsReviewCount', 'Needs Review'],
-  ['errorCount', 'Error'],
+  ['checkedCount', 'Checked'],
+  ['passedCount', 'Passed'],
+  ['failedCount', 'Failed'],
 ];
 
 export default function QueueSummaryBar({ canExport = false, onExportCsv, summary }) {
@@ -13,21 +11,84 @@ export default function QueueSummaryBar({ canExport = false, onExportCsv, summar
     return null;
   }
 
+  const status = getQueueSummaryStatus(summary);
+
   return (
-    <section className="queue-summary-bar" aria-label="Queue summary">
-      <dl className="queue-summary-list">
-        {SUMMARY_ITEMS.map(([key, label]) => (
-          <div className="queue-summary-stat" key={key}>
-            <dt>{label}</dt>
-            <dd>{summary[key]}</dd>
-          </div>
-        ))}
-      </dl>
-      {canExport ? (
-        <button className="secondary-button queue-summary-export" type="button" onClick={onExportCsv}>
+    <section className="panel queue-summary-panel" aria-label="Queue summary">
+      <div className="queue-summary-primary-row">
+        <dl className="queue-summary-list">
+          {SUMMARY_ITEMS.map(([key, label]) => (
+            <div className="queue-summary-stat" key={key}>
+              <dt>{label}</dt>
+              <dd>{summary[key] ?? 0}</dd>
+            </div>
+          ))}
+        </dl>
+        <button
+          className="secondary-button queue-summary-export"
+          disabled={!canExport}
+          type="button"
+          onClick={onExportCsv}
+        >
           Export CSV
         </button>
-      ) : null}
+      </div>
+      <div className="queue-summary-status-row">
+        <span className="queue-summary-status-label">Status:</span>
+        <span className={`queue-summary-status-pill queue-summary-status-pill-${status.tone}`}>
+          <span>{status.label}</span>
+          <InfoTooltip label={status.tooltipLabel}>{status.tooltipText}</InfoTooltip>
+        </span>
+      </div>
     </section>
   );
+}
+
+function getQueueSummaryStatus(summary) {
+  if (summary.totalLabels < 1) {
+    return {
+      label: 'No Labels Queued Yet',
+      tone: 'neutral',
+      tooltipLabel: 'About empty queue status',
+      tooltipText: 'Add labels to the queue to populate these metrics and enable verification.',
+    };
+  }
+
+  if (summary.checkedCount < 1) {
+    return {
+      label: 'Needs Review',
+      tone: 'warning',
+      tooltipLabel: 'About queue review status',
+      tooltipText: 'Verify the selected label or ready labels to populate checked, passed, and failed results.',
+    };
+  }
+
+  if (summary.failedCount > 0) {
+    return {
+      label: `Review ${summary.failedCount} Failed ${pluralizeLabel(summary.failedCount)}`,
+      tone: 'danger',
+      tooltipLabel: 'About failed queue results',
+      tooltipText: 'Review failed labels in the Label Queue by selecting items marked Fail, Needs Review, or Error.',
+    };
+  }
+
+  if (summary.checkedCount === summary.totalLabels) {
+    return {
+      label: 'All Labels Passed',
+      tone: 'success',
+      tooltipLabel: 'About passed queue results',
+      tooltipText: 'Every label currently in the Label Queue has been checked and passed verification.',
+    };
+  }
+
+  return {
+    label: 'Checked Labels Passed',
+    tone: 'success',
+    tooltipLabel: 'About checked queue results',
+    tooltipText: 'Checked labels passed. Remaining labels still need to be prepared or verified from the Label Queue.',
+  };
+}
+
+function pluralizeLabel(count) {
+  return count === 1 ? 'Label' : 'Labels';
 }

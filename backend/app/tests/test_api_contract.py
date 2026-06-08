@@ -4,6 +4,7 @@ from fastapi.testclient import TestClient
 from PIL import Image
 
 from app.config import Settings
+from app.constants import STANDARD_GOVERNMENT_WARNING as STANDARD_WARNING
 from app.main import app
 from app.routes import verification
 from app.schemas import ExtractedFields
@@ -29,7 +30,7 @@ def test_health_contract() -> None:
     }
 
 
-STANDARD_WARNING = (
+OLD_UNNUMBERED_WARNING = (
     "GOVERNMENT WARNING: According to the Surgeon General, women should not drink alcoholic beverages during "
     "pregnancy because of the risk of birth defects. Consumption of alcoholic beverages impairs your ability "
     "to drive a car or operate machinery, and may cause health problems."
@@ -48,7 +49,7 @@ def _expected_form_data(**overrides: str) -> dict[str, str]:
     return form_data
 
 
-def _post_verify_with_extracted(monkeypatch, extracted_fields: ExtractedFields):
+def _post_verify_with_extracted(monkeypatch, extracted_fields: ExtractedFields, **form_overrides: str):
     async def fake_extract_label_fields(image_bytes: bytes, settings):
         assert image_bytes
         assert settings.openai_model
@@ -58,7 +59,7 @@ def _post_verify_with_extracted(monkeypatch, extracted_fields: ExtractedFields):
 
     return client.post(
         "/verify",
-        data=_expected_form_data(),
+        data=_expected_form_data(**form_overrides),
         files={"file": ("old-tom.png", _image_bytes(), "image/png")},
     )
 
@@ -99,6 +100,30 @@ def test_verify_extraction_backed_contract(monkeypatch) -> None:
     assert body["extraction_time_ms"] >= 1
     assert [field["status"] for field in body["field_results"]] == ["pass", "pass", "pass", "pass", "pass"]
     assert body["message"].startswith("AI extraction completed and deterministic")
+
+
+def test_verify_uses_backend_standard_warning_when_client_submits_stale_text(monkeypatch) -> None:
+    response = _post_verify_with_extracted(
+        monkeypatch,
+        ExtractedFields(
+            brand_name="OLD TOM DISTILLERY",
+            class_type="Kentucky Straight Bourbon Whiskey",
+            alcohol_content="90 Proof",
+            net_contents="750 mL",
+            government_warning_text=OLD_UNNUMBERED_WARNING,
+            raw_text="OLD TOM DISTILLERY",
+        ),
+        government_warning=OLD_UNNUMBERED_WARNING,
+    )
+
+    body = response.json()
+    warning_result = next(field for field in body["field_results"] if field["field_name"] == "government_warning")
+
+    assert response.status_code == 200
+    assert body["overall_status"] == "fail"
+    assert body["expected_fields"]["government_warning"] == STANDARD_WARNING
+    assert warning_result["expected"] == STANDARD_WARNING
+    assert warning_result["status"] == "fail"
 
 
 def test_verify_returns_fail_when_extracted_value_conflicts(monkeypatch) -> None:

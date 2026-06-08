@@ -1,5 +1,9 @@
 import { DEFAULT_GOVERNMENT_WARNING } from '../constants/defaultWarningText';
-import { EXAMPLE_EXPECTED_FIELDS, VISIBLE_EXPECTED_FIELD_DEFINITIONS } from '../utils/expectedFields';
+import {
+  createEmptyExpectedFields,
+  EXAMPLE_EXPECTED_FIELDS,
+  VISIBLE_EXPECTED_FIELD_DEFINITIONS,
+} from '../utils/expectedFields';
 import InfoTooltip from './InfoTooltip';
 
 export default function ExpectedFieldsForm({
@@ -19,6 +23,10 @@ export default function ExpectedFieldsForm({
 
   function useExample() {
     onChange({ ...expectedFields, ...EXAMPLE_EXPECTED_FIELDS });
+  }
+
+  function clearFields() {
+    onChange(createEmptyExpectedFields());
   }
 
   return (
@@ -48,6 +56,25 @@ export default function ExpectedFieldsForm({
             <span className="claim-context-label">
               Editing claim for: <strong>{contextFilename}</strong>
             </span>
+            <span className="claim-context-actions">
+              <button
+                className="link-button expected-example-action"
+                disabled={disabled}
+                type="button"
+                onClick={useExample}
+              >
+                Load Example
+              </button>
+              <span className="claim-context-action-separator" aria-hidden="true" />
+              <button
+                className="link-button expected-clear-action"
+                disabled={disabled}
+                type="button"
+                onClick={clearFields}
+              >
+                Clear Fields
+              </button>
+            </span>
           </p>
         ) : null}
       </div>
@@ -72,9 +99,6 @@ export default function ExpectedFieldsForm({
         ))}
       </div>
       <div className="form-actions">
-        <button className="link-button expected-example-action" disabled={disabled} type="button" onClick={useExample}>
-          Load Example Data
-        </button>
         <button
           className="secondary-button"
           disabled={disabled || !canApplyToAll}

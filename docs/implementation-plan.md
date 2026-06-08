@@ -29,7 +29,7 @@
 - Brand/class: exact match is `pass`; safe normalization is `normalized_match`; high similarity is `needs_review`; clear conflict is `fail`; absent found value is `missing`.
 - Alcohol content: parse ABV and proof; treat `45%`, `45% ABV`, `45% Alc./Vol.`, and `90 Proof` as equivalent; wrong ABV/proof fails.
 - Net contents: normalize `750 mL`, `750ml`, and `0.75 L` to the same milliliter value; different quantities fail.
-- Government warning: require `GOVERNMENT WARNING` uppercase and compare expected wording; title-case heading fails; missing warning is missing; bold/font/placement checks are documented as limitations.
+- Government warning: require `GOVERNMENT WARNING` uppercase and compare against the backend standard warning wording; title-case heading fails; missing warning is missing; bold/font/placement checks are documented as limitations.
 
 ## Test Plan
 

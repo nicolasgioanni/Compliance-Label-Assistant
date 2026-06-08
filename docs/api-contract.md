@@ -22,7 +22,7 @@ Accepts `multipart/form-data`:
 - `class_type`
 - `alcohol_content`
 - `net_contents`
-- `government_warning`
+- `government_warning` (accepted for API compatibility; the backend verifies against its standard warning text)
 
 Supported upload formats are JPG/JPEG, PNG, WebP, and TIFF/TIF. Uploads are also constrained by file size and decoded image pixel count.
 
@@ -74,7 +74,7 @@ Accepts `multipart/form-data`:
 - `class_type`
 - `alcohol_content`
 - `net_contents`
-- `government_warning`
+- `government_warning` (accepted for API compatibility; the backend verifies against its standard warning text)
 
 Batch mode accepts 2 to `MAX_BATCH_SIZE` files and uses one shared expected application dataset.
 Supported upload formats are JPG/JPEG, PNG, WebP, and TIFF/TIF. Uploads are also constrained by file size and decoded image pixel count. Duplicate basenames in the same batch request are rejected case-insensitively before processing.

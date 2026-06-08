@@ -2,24 +2,19 @@ import { getStatusClassName } from '../utils/statusStyles';
 import ExpectedFieldsForm from './ExpectedFieldsForm';
 import InfoTooltip from './InfoTooltip';
 import LoadingState from './LoadingState';
-import QueueSummaryBar from './QueueSummaryBar';
 import SelectedResultDetail from './SelectedResultDetail';
 
 const RESULT_STATUSES = new Set(['pass', 'fail', 'needs_review']);
 
 export default function SelectedLabelWorkspace({
   canApplyToAll = false,
-  canExportResults = false,
   isExpanded = false,
   isQueueLocked = false,
   isVerifySelectedDisabled = true,
-  queueSummary,
   selectedItem,
-  showQueueSummary = false,
   onApplyExpectedFieldsToAll,
   onEditExpectedData,
   onExpectedFieldsChange,
-  onExportCsv,
   onVerifySelected,
 }) {
   const shouldShowResult =
@@ -36,13 +31,6 @@ export default function SelectedLabelWorkspace({
 
   return (
     <section className={panelClassName}>
-      {showQueueSummary ? (
-        <QueueSummaryBar
-          canExport={canExportResults}
-          summary={queueSummary}
-          onExportCsv={onExportCsv}
-        />
-      ) : null}
       <div className="selected-workspace-scroll">
         {!selectedItem ? <NoSelectedLabelState /> : null}
         {selectedItem?.status === 'verifying' ? <SelectedLoadingState /> : null}

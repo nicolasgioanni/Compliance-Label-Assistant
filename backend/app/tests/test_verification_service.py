@@ -1,3 +1,4 @@
+from app.constants import STANDARD_GOVERNMENT_WARNING as STANDARD_WARNING
 from app.schemas import ExpectedFields, ExtractedFields
 from app.services.verification_service import (
     calculate_overall_status,
@@ -10,7 +11,7 @@ from app.services.verification_service import (
 )
 
 
-STANDARD_WARNING = (
+OLD_UNNUMBERED_WARNING = (
     "GOVERNMENT WARNING: According to the Surgeon General, women should not drink alcoholic beverages during "
     "pregnancy because of the risk of birth defects. Consumption of alcoholic beverages impairs your ability "
     "to drive a car or operate machinery, and may cause health problems."
@@ -124,6 +125,11 @@ def test_government_warning_changed_wording_fails() -> None:
     assert result.status == "fail"
 
 
+def test_government_warning_without_numbered_clauses_fails() -> None:
+    result = verify_government_warning(STANDARD_WARNING, OLD_UNNUMBERED_WARNING)
+    assert result.status == "fail"
+
+
 def test_overall_status_rules() -> None:
     pass_result = verify_brand_name("OLD TOM", "OLD TOM")
     normalized_result = verify_brand_name("STONE'S THROW", "Stones Throw")
@@ -155,6 +161,26 @@ def test_verify_expected_fields_returns_field_results() -> None:
     results = verify_expected_fields(expected, extracted)
 
     assert [result.status for result in results] == ["pass", "pass", "pass", "pass", "pass"]
+
+
+def test_verify_expected_fields_uses_canonical_government_warning() -> None:
+    expected = ExpectedFields(
+        brand_name="OLD TOM DISTILLERY",
+        class_type="",
+        alcohol_content="",
+        net_contents="",
+        government_warning=OLD_UNNUMBERED_WARNING,
+    )
+    extracted = ExtractedFields(
+        brand_name="OLD TOM DISTILLERY",
+        government_warning_text=OLD_UNNUMBERED_WARNING,
+    )
+
+    results = verify_expected_fields(expected, extracted)
+    warning_result = next(result for result in results if result.field_name == "government_warning")
+
+    assert warning_result.expected == STANDARD_WARNING
+    assert warning_result.status == "fail"
 
 
 def test_verify_expected_fields_skips_blank_optional_expected_values() -> None:

@@ -6,6 +6,7 @@ the resulting field statuses are explainable and auditable. It does not call
 OpenAI, process image bytes, or make final legal compliance decisions.
 """
 
+from app.constants import STANDARD_GOVERNMENT_WARNING
 from app.schemas import ExpectedFields, ExtractedFields, FieldResult, OverallStatus
 from app.utils.response_builders import build_field_result
 from app.utils.text_normalization import (
@@ -270,6 +271,6 @@ def verify_expected_fields(expected_fields: ExpectedFields, extracted_fields: Ex
     if not _is_missing(expected_fields.net_contents):
         field_results.append(verify_net_contents(expected_fields.net_contents, extracted_fields.net_contents))
 
-    field_results.append(verify_government_warning(expected_fields.government_warning, extracted_fields.government_warning_text))
+    field_results.append(verify_government_warning(STANDARD_GOVERNMENT_WARNING, extracted_fields.government_warning_text))
 
     return field_results

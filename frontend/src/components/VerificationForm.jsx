@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { verifySingleLabel } from '../api/verificationApi';
 import LabelQueue from './LabelQueue';
 import QueueActions from './QueueActions';
+import QueueSummaryBar from './QueueSummaryBar';
 import SelectedLabelWorkspace from './SelectedLabelWorkspace';
 import { downloadQueueResultsCsv } from '../utils/csvExport';
 import { createEmptyExpectedFields } from '../utils/expectedFields';
@@ -36,7 +37,6 @@ export default function VerificationForm({ showError = () => {} }) {
   const isQueueLocked = isAnyItemVerifying || isVerifyingAll;
   const readyQueueItems = activeQueueItems.filter((item) => item.status === 'ready');
   const queueSummary = useMemo(() => buildQueueSummary(activeQueueItems), [activeQueueItems]);
-  const hasQueueOutcome = activeQueueItems.some((item) => hasCurrentResult(item) || item.status === 'error');
   const hasResultForExport = activeQueueItems.some(hasCurrentResult);
   const selectedFieldWarning = selectedItem ? validateExpectedFields(selectedItem.expectedFields) : '';
   const isVerifySelectedDisabled = !selectedItem || isQueueLocked || Boolean(selectedFieldWarning);
@@ -344,19 +344,20 @@ export default function VerificationForm({ showError = () => {} }) {
         </div>
 
         <div className="results-column">
+          <QueueSummaryBar
+            canExport={hasResultForExport}
+            summary={queueSummary}
+            onExportCsv={() => downloadQueueResultsCsv(activeQueueItems)}
+          />
           <SelectedLabelWorkspace
             canApplyToAll={activeQueueItems.length > 1}
-            canExportResults={hasResultForExport}
             isExpanded={activeQueueItems.length > 0}
             isQueueLocked={isQueueLocked}
             isVerifySelectedDisabled={isVerifySelectedDisabled}
-            queueSummary={queueSummary}
             selectedItem={selectedItem}
-            showQueueSummary={hasQueueOutcome}
             onApplyExpectedFieldsToAll={handleApplyExpectedFieldsToAll}
             onEditExpectedData={handleEditExpectedData}
             onExpectedFieldsChange={handleExpectedFieldsChange}
-            onExportCsv={() => downloadQueueResultsCsv(activeQueueItems)}
             onVerifySelected={handleVerifySelected}
           />
         </div>
@@ -452,18 +453,24 @@ function buildQueueSummary(queueItems) {
       }
 
       if (hasCurrentResult(item)) {
+        summary.checkedCount += 1;
         summary.verifiedLabels += 1;
 
         if (item.result.overall_status === 'pass') {
+          summary.passedCount += 1;
           summary.passCount += 1;
         } else if (item.result.overall_status === 'fail') {
+          summary.failedCount += 1;
           summary.failCount += 1;
         } else if (item.result.overall_status === 'needs_review') {
+          summary.failedCount += 1;
           summary.needsReviewCount += 1;
         }
       }
 
       if (item.status === 'error') {
+        summary.checkedCount += 1;
+        summary.failedCount += 1;
         summary.errorCount += 1;
       }
 
@@ -472,6 +479,9 @@ function buildQueueSummary(queueItems) {
     {
       totalLabels: 0,
       readyLabels: 0,
+      checkedCount: 0,
+      passedCount: 0,
+      failedCount: 0,
       verifiedLabels: 0,
       passCount: 0,
       failCount: 0,

@@ -6,6 +6,7 @@ and response construction to service modules.
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 
+from app.constants import STANDARD_GOVERNMENT_WARNING
 from app.schemas import BatchVerificationResponse, ExpectedFields, SingleVerificationResponse
 from app.services.batch_service import BatchRequestValidationError, verify_batch_labels
 from app.services.image_preprocessor import ImagePreprocessingError
@@ -79,10 +80,11 @@ def _build_expected_fields(
     net_contents: str,
     government_warning: str,
 ) -> ExpectedFields:
+    # The form field is kept for API compatibility; the standard warning is server-owned.
     return ExpectedFields(
         brand_name=brand_name,
         class_type=class_type,
         alcohol_content=alcohol_content,
         net_contents=net_contents,
-        government_warning=government_warning,
+        government_warning=STANDARD_GOVERNMENT_WARNING,
     )
