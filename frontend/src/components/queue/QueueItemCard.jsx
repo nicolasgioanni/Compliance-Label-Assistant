@@ -27,14 +27,16 @@ export default function QueueItemCard({
           type="button"
           onClick={onSelect}
         >
-          <span className="queue-file-copy" title={filename}>
-            <span className="queue-filename">{filename}</span>
-          </span>
-          <span className={statusClassName}>
-            {item.status === 'verifying' ? (
-              <span className="loading-spinner queue-status-spinner" aria-hidden="true" />
-            ) : null}
-            {statusLabel}
+          <span className="queue-item-main-row">
+            <span className="queue-file-copy" title={filename}>
+              <span className="queue-filename">{filename}</span>
+            </span>
+            <span className={statusClassName}>
+              {item.status === 'verifying' ? (
+                <span className="loading-spinner queue-status-spinner" aria-hidden="true" />
+              ) : null}
+              {statusLabel}
+            </span>
           </span>
         </button>
         <button

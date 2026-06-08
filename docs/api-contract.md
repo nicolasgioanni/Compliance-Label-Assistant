@@ -45,7 +45,7 @@ Response:
     "alcohol_content": "90 Proof",
     "net_contents": "750 mL",
     "government_warning_text": "GOVERNMENT WARNING: ...",
-    "raw_text": "Visible extracted text..."
+    "raw_text": null
   },
   "field_results": [
     {
@@ -58,12 +58,20 @@ Response:
     }
   ],
   "processing_time_ms": 1200,
+  "validation_time_ms": 25,
+  "preprocessing_time_ms": 80,
   "extraction_time_ms": 1100,
   "verification_time_ms": 1,
+  "preprocessed_image_bytes": 92000,
+  "preprocessed_image_width": 640,
   "message": "AI extraction completed and deterministic field verification was applied.",
   "error": null
 }
 ```
+
+Timing fields are measured in milliseconds. `processing_time_ms` is the total backend processing time; validation,
+preprocessing, extraction, and verification fields show the main internal phases. Preprocessed image metadata reports
+the in-memory JPEG sent to extraction. Error results use safe zero defaults where a phase did not complete.
 
 ## POST /verify-batch
 
@@ -110,7 +118,7 @@ Response:
         "alcohol_content": "90 Proof",
         "net_contents": "750 mL",
         "government_warning_text": "GOVERNMENT WARNING: ...",
-        "raw_text": "Visible extracted text..."
+        "raw_text": null
       },
       "field_results": [
         {
@@ -123,8 +131,12 @@ Response:
         }
       ],
       "processing_time_ms": 1200,
+      "validation_time_ms": 25,
+      "preprocessing_time_ms": 80,
       "extraction_time_ms": 1100,
       "verification_time_ms": 1,
+      "preprocessed_image_bytes": 92000,
+      "preprocessed_image_width": 640,
       "message": "AI extraction completed and deterministic field verification was applied.",
       "error": null
     }

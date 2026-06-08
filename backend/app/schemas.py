@@ -50,9 +50,13 @@ class SingleVerificationResponse(BaseModel):
     expected_fields: ExpectedFields
     extracted_fields: ExtractedFields
     field_results: list[FieldResult]
-    processing_time_ms: int
-    extraction_time_ms: int
-    verification_time_ms: int
+    processing_time_ms: int = 0
+    validation_time_ms: int = 0
+    preprocessing_time_ms: int = 0
+    extraction_time_ms: int = 0
+    verification_time_ms: int = 0
+    preprocessed_image_bytes: int = 0
+    preprocessed_image_width: int = 0
     message: str | None = None
     error: str | None = None
 

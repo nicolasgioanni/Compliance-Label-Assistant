@@ -63,6 +63,12 @@ export function successfulVerificationResult(overrides = {}) {
   return {
     overall_status: 'pass',
     processing_time_ms: 42,
+    validation_time_ms: 3,
+    preprocessing_time_ms: 7,
+    extraction_time_ms: 30,
+    verification_time_ms: 2,
+    preprocessed_image_bytes: 2048,
+    preprocessed_image_width: 1000,
     message: 'AI extraction completed and deterministic field verification was applied.',
     field_results: [
       {
@@ -80,7 +86,7 @@ export function successfulVerificationResult(overrides = {}) {
       alcohol_content: '40%',
       net_contents: '750 mL',
       government_warning_text: 'GOVERNMENT WARNING',
-      raw_text: 'Review Brand Whiskey 40% 750 mL',
+      raw_text: null,
     },
     ...overrides,
   };

@@ -19,10 +19,13 @@ The frontend calls only the backend API. Do not configure an OpenAI API key in V
   - `OPENAI_API_KEY`
   - `OPENAI_MODEL`
   - `OPENAI_TIMEOUT_SECONDS`
+  - `OPENAI_MAX_RETRIES`
+  - `OPENAI_EXTRACTION_CONCURRENCY`
   - `MAX_FILE_SIZE_MB`
   - `MAX_BATCH_SIZE`
   - `BATCH_CONCURRENCY`
   - `MAX_IMAGE_WIDTH`
+  - `JPEG_QUALITY`
   - `ALLOWED_ORIGINS`
 
 Set `ALLOWED_ORIGINS` to the deployed Vercel URL. Keep file and batch limits conservative for cost and latency control.

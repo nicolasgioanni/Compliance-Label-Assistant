@@ -32,7 +32,7 @@ export default function QueueSummaryBar({ canExport = false, onExportCsv, onExpo
         <h2>Results Summary</h2>
         <InfoTooltip label="About results summary">
           Shows how many queued labels have been checked, how many passed or failed, the current queue status, and
-          export options for verified results.
+          export options for verified results. Overall status values come from automated verification results.
         </InfoTooltip>
       </div>
       <div className="queue-summary-primary-row">
@@ -92,11 +92,13 @@ function getQueueSummaryStatus(summary) {
   }
 
   if (summary.failedCount > 0) {
+    const failedLabelCount = summary.failedCount;
+
     return {
-      label: `Review ${summary.failedCount} Failed ${pluralizeLabel(summary.failedCount)}`,
+      label: `${failedLabelCount} ${pluralizeLabel(failedLabelCount)} ${pluralizeAction(failedLabelCount)} Attention`,
       tone: 'danger',
-      tooltipLabel: 'About failed queue results',
-      tooltipText: 'Review failed labels in the Label Queue by selecting items marked Fail, Needs Review, or Error.',
+      tooltipLabel: 'About labels needing attention',
+      tooltipText: getAttentionTooltipText(summary),
     };
   }
 
@@ -119,4 +121,22 @@ function getQueueSummaryStatus(summary) {
 
 function pluralizeLabel(count) {
   return count === 1 ? 'Label' : 'Labels';
+}
+
+function pluralizeAction(count) {
+  return count === 1 ? 'Needs' : 'Need';
+}
+
+function getAttentionTooltipText(summary) {
+  return `Informational status only. This includes ${formatBreakdownCount(
+    summary.failCount,
+    'Fail result',
+  )}, ${formatBreakdownCount(summary.needsReviewCount, 'Needs Review result')}, and ${formatBreakdownCount(
+    summary.errorCount,
+    'Error result',
+  )}. Overall status comes from automated verification and cannot be changed manually.`;
+}
+
+function formatBreakdownCount(count, label) {
+  return `${count ?? 0} ${label}${count === 1 ? '' : 's'}`;
 }

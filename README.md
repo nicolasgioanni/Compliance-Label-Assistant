@@ -114,11 +114,14 @@ Backend variables are centralized in `backend/app/config.py` and documented in `
 - `OPENAI_API_KEY`
 - `OPENAI_MODEL`
 - `OPENAI_TIMEOUT_SECONDS`
+- `OPENAI_MAX_RETRIES`
+- `OPENAI_EXTRACTION_CONCURRENCY`
 - `MAX_FILE_SIZE_MB`
 - `MAX_IMAGE_PIXELS`
 - `MAX_BATCH_SIZE`
 - `BATCH_CONCURRENCY`
 - `MAX_IMAGE_WIDTH`
+- `JPEG_QUALITY`
 - `ALLOWED_ORIGINS`
 
 Frontend variables are documented in `frontend/.env.example`:
@@ -126,6 +129,10 @@ Frontend variables are documented in `frontend/.env.example`:
 - `VITE_API_BASE_URL`
 
 No OpenAI API key belongs in frontend code or frontend environment variables.
+
+The default verification path reuses backend OpenAI clients, sends smaller compressed label images, asks the model
+only for fields needed by deterministic comparison, and disables hidden retries. Representative labels should be used
+to validate latency and accuracy after changing image width or JPEG quality.
 
 ## API Endpoints
 

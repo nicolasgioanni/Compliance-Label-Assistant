@@ -7,7 +7,7 @@ import {
   applyVerificationSuccess,
 } from '../utils/queueItemState';
 
-const VERIFY_ALL_CONCURRENCY = 1;
+const VERIFY_ALL_CONCURRENCY = 2;
 
 export function useQueueVerification({
   activeQueueItems,

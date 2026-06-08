@@ -97,7 +97,14 @@ def test_verify_extraction_backed_contract(monkeypatch) -> None:
     assert response.status_code == 200
     assert body["filename"] == "old-tom.png"
     assert body["overall_status"] == "pass"
+    assert body["validation_time_ms"] >= 1
+    assert body["preprocessing_time_ms"] >= 1
     assert body["extraction_time_ms"] >= 1
+    assert body["verification_time_ms"] >= 1
+    assert body["processing_time_ms"] >= 1
+    assert body["preprocessed_image_bytes"] > 0
+    assert body["preprocessed_image_width"] == 24
+    assert "openai_image_detail" not in body
     assert [field["status"] for field in body["field_results"]] == ["pass", "pass", "pass", "pass", "pass"]
     assert body["message"].startswith("AI extraction completed and deterministic")
 
@@ -401,6 +408,14 @@ def test_verify_batch_returns_one_result_per_valid_file(monkeypatch) -> None:
     assert "expected_fields" in body["results"][0]
     assert "extracted_fields" in body["results"][0]
     assert "field_results" in body["results"][0]
+    for result in body["results"]:
+        assert result["validation_time_ms"] >= 1
+        assert result["preprocessing_time_ms"] >= 1
+        assert result["extraction_time_ms"] >= 1
+        assert result["verification_time_ms"] >= 1
+        assert result["preprocessed_image_bytes"] > 0
+        assert result["preprocessed_image_width"] == 24
+        assert "openai_image_detail" not in result
 
 
 def test_verify_batch_returns_partial_per_file_errors(monkeypatch) -> None:
@@ -428,3 +443,10 @@ def test_verify_batch_returns_partial_per_file_errors(monkeypatch) -> None:
     assert body["status_counts"] == {"pass": 1, "fail": 0, "needs_review": 0, "error": 1}
     assert [result["overall_status"] for result in body["results"]] == ["pass", "error"]
     assert "Unsupported file extension" in body["results"][1]["error"]
+    assert body["results"][1]["validation_time_ms"] == 0
+    assert body["results"][1]["preprocessing_time_ms"] == 0
+    assert body["results"][1]["extraction_time_ms"] == 0
+    assert body["results"][1]["verification_time_ms"] == 0
+    assert body["results"][1]["preprocessed_image_bytes"] == 0
+    assert body["results"][1]["preprocessed_image_width"] == 0
+    assert "openai_image_detail" not in body["results"][1]

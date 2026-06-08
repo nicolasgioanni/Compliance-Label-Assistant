@@ -179,27 +179,33 @@
 }
 
 .queue-item-content {
-  display: flex;
-  flex-direction: column;
+  display: grid;
   min-width: 0;
 }
 
 .queue-item-main {
-  align-items: center;
   background: transparent;
   border: 0;
   cursor: pointer;
-  display: flex;
-  gap: 0.7rem;
-  justify-content: space-between;
+  display: block;
+  grid-area: 1 / 1;
   min-width: 0;
-  padding: 0.72rem 0.8rem 0.36rem;
+  padding: 0.72rem 0.8rem 2rem;
   text-align: left;
   width: 100%;
 }
 
 .queue-item-main:disabled {
   cursor: default;
+}
+
+.queue-item-main-row {
+  align-items: center;
+  display: flex;
+  gap: 0.7rem;
+  justify-content: space-between;
+  min-width: 0;
+  width: 100%;
 }
 
 .queue-file-copy {
@@ -220,7 +226,7 @@
 }
 
 .queue-preview-button {
-  align-self: flex-start;
+  align-self: end;
   background: transparent;
   border: 0;
   color: var(--color-muted);
@@ -228,11 +234,14 @@
   font: inherit;
   font-size: 0.78rem;
   font-weight: 850;
+  grid-area: 1 / 1;
+  justify-self: start;
   line-height: 1.2;
   margin: 0 0 0.68rem 0.8rem;
   padding: 0;
   text-decoration: underline;
   text-underline-offset: 0.14rem;
+  z-index: 1;
 }
 
 .queue-preview-button:hover:not(:disabled) {

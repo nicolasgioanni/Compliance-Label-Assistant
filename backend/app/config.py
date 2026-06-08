@@ -22,6 +22,10 @@ def _read_int(name: str, default: int) -> int:
         return default
 
 
+def _read_bounded_int(name: str, default: int, minimum: int, maximum: int) -> int:
+    return min(max(_read_int(name, default), minimum), maximum)
+
+
 def _read_origins() -> list[str]:
     raw_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173")
     return [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
@@ -32,12 +36,17 @@ class Settings:
     service_name: str = "alcohol-label-verification-api"
     openai_api_key: str = field(default_factory=lambda: os.getenv("OPENAI_API_KEY", ""))
     openai_model: str = field(default_factory=lambda: os.getenv("OPENAI_MODEL", "gpt-4.1-mini"))
-    openai_timeout_seconds: int = field(default_factory=lambda: _read_int("OPENAI_TIMEOUT_SECONDS", 30))
+    openai_timeout_seconds: int = field(default_factory=lambda: _read_bounded_int("OPENAI_TIMEOUT_SECONDS", 10, 2, 30))
+    openai_max_retries: int = field(default_factory=lambda: _read_bounded_int("OPENAI_MAX_RETRIES", 0, 0, 2))
+    openai_extraction_concurrency: int = field(
+        default_factory=lambda: _read_bounded_int("OPENAI_EXTRACTION_CONCURRENCY", 2, 1, 4)
+    )
     max_file_size_mb: int = field(default_factory=lambda: _read_int("MAX_FILE_SIZE_MB", 5))
     max_image_pixels: int = field(default_factory=lambda: _read_int("MAX_IMAGE_PIXELS", 25_000_000))
     max_batch_size: int = field(default_factory=lambda: _read_int("MAX_BATCH_SIZE", 10))
     batch_concurrency: int = field(default_factory=lambda: _read_int("BATCH_CONCURRENCY", 3))
-    max_image_width: int = field(default_factory=lambda: _read_int("MAX_IMAGE_WIDTH", 1600))
+    max_image_width: int = field(default_factory=lambda: _read_bounded_int("MAX_IMAGE_WIDTH", 640, 600, 2000))
+    jpeg_quality: int = field(default_factory=lambda: _read_bounded_int("JPEG_QUALITY", 65, 50, 95))
     allowed_origins: list[str] = field(default_factory=_read_origins)
 
 

@@ -11,7 +11,7 @@ export default function ExtractedTextPanel({ embedded = false, extractedFields }
     return null;
   }
 
-  const rawText = extractedFields.raw_text || 'No extracted text returned.';
+  const rawText = extractedFields.raw_text?.trim();
   const className = embedded ? 'extracted-text-panel extracted-text-panel-embedded' : 'panel extracted-text-panel';
 
   return (
@@ -27,8 +27,12 @@ export default function ExtractedTextPanel({ embedded = false, extractedFields }
           </div>
         ))}
       </dl>
-      <h3>Raw Text</h3>
-      <pre className="raw-text">{rawText}</pre>
+      {rawText ? (
+        <>
+          <h3>Raw Text</h3>
+          <pre className="raw-text">{rawText}</pre>
+        </>
+      ) : null}
     </section>
   );
 }

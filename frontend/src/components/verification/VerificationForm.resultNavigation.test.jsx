@@ -48,6 +48,8 @@ describe('VerificationForm.resultNavigation', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Verify Ready Labels' }));
 
+    expect(verifySingleLabel).toHaveBeenCalledTimes(2);
+
     await act(async () => {
       firstVerification.resolve(successfulVerificationResult());
       await firstVerification.promise;
@@ -75,7 +77,52 @@ describe('VerificationForm.resultNavigation', () => {
       expect(screen.getByRole('button', { name: 'Edit Selected Label' })).not.toBeDisabled();
     });
     expect(screen.getByRole('button', { name: 'Export Results' })).not.toBeDisabled();
+  });
+
+  it('keeps ready-label successes when another ready label fails', async () => {
+    verifySingleLabel
+      .mockRejectedValueOnce(new Error('Verification failed.'))
+      .mockResolvedValueOnce(successfulVerificationResult());
+    const showError = vi.fn();
+    const { container } = render(<VerificationForm showError={showError} />);
+    const [fileInput] = fileInputs(container);
+
+    fireEvent.change(fileInput, {
+      target: { files: [makeFile('failed-ready.png'), makeFile('passed-ready.png')] },
+    });
+    addBrandName('Failed Brand');
+    fireEvent.click(screen.getByRole('button', { name: /Select label passed-ready\.png/i }));
+    addBrandName('Passed Brand');
+    fireEvent.click(screen.getByRole('button', { name: 'Verify Ready Labels' }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /label failed-ready\.png, status Error/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /label passed-ready\.png, status Pass/i })).toBeInTheDocument();
+    });
     expect(verifySingleLabel).toHaveBeenCalledTimes(2);
+  });
+
+  it('updates only the selected label when verifying a single label', async () => {
+    verifySingleLabel.mockResolvedValueOnce(successfulVerificationResult());
+    const showError = vi.fn();
+    const { container } = render(<VerificationForm showError={showError} />);
+    const [fileInput] = fileInputs(container);
+
+    fireEvent.change(fileInput, {
+      target: { files: [makeFile('unverified-selected-only.png'), makeFile('verified-selected-only.png')] },
+    });
+    addBrandName('Unverified Brand');
+    fireEvent.click(screen.getByRole('button', { name: /Select label verified-selected-only\.png/i }));
+    addBrandName('Verified Brand');
+    fireEvent.click(screen.getByRole('button', { name: 'Verify Selected Label' }));
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /label verified-selected-only\.png, status Pass/i })).toBeInTheDocument();
+    });
+
+    expect(screen.getByRole('button', { name: /label unverified-selected-only\.png, status Ready/i })).toBeInTheDocument();
+    expect(verifySingleLabel).toHaveBeenCalledTimes(1);
+    expect(verifySingleLabel.mock.calls[0][0].name).toBe('verified-selected-only.png');
   });
 
   afterEach(() => {
@@ -112,6 +159,9 @@ describe('VerificationForm.resultNavigation', () => {
 
     expect(screen.getByText('Overall Status').nextElementSibling).toHaveClass('status-text', 'status-text-pass');
     expect(screen.getByText('Overall Status').nextElementSibling).not.toHaveClass('status-pill');
+    expect(screen.getByText('Processing Time')).toBeInTheDocument();
+    expect(screen.queryByText('Timing Details')).not.toBeInTheDocument();
+    expect(screen.queryByText('Raw Text')).not.toBeInTheDocument();
   });
 
   it('returns from selected label editing to current results without re-verification', async () => {

@@ -135,6 +135,36 @@ describe('VerificationForm.queue', () => {
     expect(screen.getByText(hasExactText('Editing selected label: first-label.png'))).toBeInTheDocument();
   });
 
+  it('keeps queue item select, preview, and remove click targets distinct', () => {
+    restoreObjectUrl = mockObjectUrl('blob:queue-target-preview');
+    const showError = vi.fn();
+    const { container } = render(<VerificationForm showError={showError} />);
+    const [fileInput] = fileInputs(container);
+
+    fireEvent.change(fileInput, {
+      target: { files: [makeFile('first-label.png'), makeFile('second-label.png')] },
+    });
+
+    const secondSelectButton = screen.getByRole('button', { name: /Select label second-label\.png/i });
+    expect(secondSelectButton).toHaveClass('queue-item-main');
+    fireEvent.click(secondSelectButton);
+    expect(screen.getByText(hasExactText('Editing selected label: second-label.png'))).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Preview first-label.png' }));
+    const dialog = screen.getByRole('dialog', { name: 'Preview: first-label.png' });
+    expect(within(dialog).getByRole('img', { name: 'Preview of first-label.png' })).toHaveAttribute(
+      'src',
+      'blob:queue-target-preview',
+    );
+    expect(screen.getByText(hasExactText('Editing selected label: second-label.png'))).toBeInTheDocument();
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Back' }));
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Remove first-label.png' }));
+    expect(screen.getByText(hasExactText('Editing selected label: second-label.png'))).toBeInTheDocument();
+  });
+
   it('closes the preview safely when the previewed label leaves the queue', async () => {
     restoreObjectUrl = mockObjectUrl('blob:label-preview');
     const showError = vi.fn();

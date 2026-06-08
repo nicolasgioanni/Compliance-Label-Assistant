@@ -141,8 +141,12 @@ def _build_error_item(
         extracted_fields=ExtractedFields(),
         field_results=[],
         processing_time_ms=max(get_elapsed_ms(processing_start), 1),
+        validation_time_ms=0,
+        preprocessing_time_ms=0,
         extraction_time_ms=0,
         verification_time_ms=0,
+        preprocessed_image_bytes=0,
+        preprocessed_image_width=0,
         message="This label could not be processed.",
         error=error_message,
     )
