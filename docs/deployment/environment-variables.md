@@ -40,4 +40,4 @@ Example files:
 
 Never commit real secret values.
 
-Backend warmup can make a non-generation provider metadata request when `OPENAI_NETWORK_WARMUP` is enabled. It does not send label images, prompts, or extraction payloads, but the metadata request may still count as an API request or be rate-limited.
+Backend warmup can make a non-generation provider metadata request when `OPENAI_NETWORK_WARMUP` is enabled. It does not send label images, provider request content, or extraction payloads, but the metadata request may still count as an API request or be rate-limited.

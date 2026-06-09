@@ -37,7 +37,7 @@ Calls `warm_verification_dependencies()` and returns:
 }
 ```
 
-Warmup initializes reusable backend dependencies when a provider key exists. It can make a best-effort model metadata request to warm the provider network path. It does not upload files, send prompts, or make an extraction request.
+Warmup initializes reusable backend dependencies when a provider key exists. It can make a best-effort model metadata request to warm the provider network path. It does not upload files, send provider request content, or make an extraction request.
 
 ## `POST /verify`
 
@@ -50,6 +50,8 @@ Accepts multipart form data:
 - `class_type`
 - `alcohol_content`
 - `net_contents`
+- `bottler_producer`
+- `country_of_origin`
 - `government_warning`
 
 Returns `SingleVerificationResponse`.
@@ -67,6 +69,8 @@ Accepts multipart form data:
 - `class_type`
 - `alcohol_content`
 - `net_contents`
+- `bottler_producer`
+- `country_of_origin`
 - `government_warning`
 
 Returns `BatchVerificationResponse`.

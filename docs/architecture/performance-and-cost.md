@@ -46,7 +46,7 @@ Implemented:
 
 Warmup notes:
 
-- Warmup does not upload label files, send prompts, send expected fields, or call extraction.
+- Warmup does not upload label files, send provider request content, send expected fields, or call extraction.
 - The metadata request is not an image extraction or generation request, but it can still count as an API request and can be rate-limited.
 - Warmup may reduce first-verification setup latency. It cannot eliminate provider/model tail latency.
 

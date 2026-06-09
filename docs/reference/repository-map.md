@@ -55,10 +55,11 @@ label-compliance-verifier/
 
 - Frontend Vercel settings are documented in `docs/deployment/frontend-vercel.md`.
 - Backend Render settings are documented in `docs/deployment/backend-render.md`.
+- `frontend/vercel.json` defines lightweight static response headers for the frontend deployment.
 - `backend/runtime.txt` declares Python `3.11.9`.
 - `backend/start.sh` starts Uvicorn using `$PORT`.
 
-No checked-in deployment platform config files are present.
+No checked-in Render, Docker, docker-compose, or Procfile configuration is present.
 
 ## Files And Folders Not Documented In Detail
 

@@ -52,6 +52,8 @@ The provider boundary returns:
 - `class_type`
 - `alcohol_content`
 - `net_contents`
+- `bottler_producer`
+- `country_of_origin`
 - `government_warning_text`
 - `raw_text`
 
