@@ -5,6 +5,7 @@
 - Run backend tests and ruff.
 - Run backend import/startup validation.
 - Run frontend lint, typecheck, tests, and build.
+- Confirm the GitHub Actions `Backend` and `Frontend` checks pass before merging to `main`.
 - Confirm `backend/.env` and `frontend/.env` are not committed.
 - Confirm docs and examples use placeholders only.
 
@@ -44,5 +45,5 @@ After deployment:
 ## Known Deployment Gaps
 
 - No checked-in Render config.
-- No checked-in CI workflow.
+- No CI-driven deployment workflow.
 - No deployment health monitor configuration documented in code.

@@ -17,6 +17,10 @@ Deployment config files:
 
 Use deployment dashboard settings described in this section.
 
+## Validation Gate
+
+GitHub Actions runs separate `Backend` and `Frontend` validation jobs on pull requests and pushes to `main`. The workflow does not deploy and does not require provider or deployment secrets. Configure branch protection so both checks pass before merging to `main`, then let Vercel and Render deploy from validated `main` commits.
+
 ## Frontend To Backend Connection
 
 The deployed frontend calls the deployed backend through:

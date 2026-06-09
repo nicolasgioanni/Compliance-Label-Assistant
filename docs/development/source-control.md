@@ -4,7 +4,7 @@
 
 - `.gitignore` excludes dependency folders, virtualenvs, caches, build output, logs, editor folders, and local env files.
 - `.gitattributes` normalizes repository text files to LF and keeps PowerShell scripts CRLF.
-- No `.github/` directory or CI workflow is checked in.
+- `.github/workflows/ci.yml` runs backend and frontend validation on pull requests and pushes to `main`.
 - No commit message convention is documented in the repository.
 
 ## Recommended Branch Workflow
@@ -15,7 +15,8 @@ Because no strict repository policy is documented in code, use this as a recomme
 2. Keep frontend, backend, API, deployment, and docs changes scoped.
 3. Run the validation commands relevant to changed areas.
 4. Open a pull request with a concise summary and test results.
-5. Update docs when behavior, commands, environment variables, or deployment settings change.
+5. Configure branch protection on `main` to require the `Backend` and `Frontend` CI checks before merging.
+6. Update docs when behavior, commands, environment variables, or deployment settings change.
 
 ## Before Opening A Pull Request
 

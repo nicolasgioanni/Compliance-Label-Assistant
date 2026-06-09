@@ -61,7 +61,9 @@ External provider:
 
 - Frontend: Vercel project with `frontend` as root, `npm run build`, and `dist` output.
 - Backend: Render Starter web service with `backend` as root, Python 3.11, and Uvicorn startup.
-- `frontend/vercel.json` defines lightweight static response headers. There are no checked-in Render, Docker, or CI config files.
+- `frontend/vercel.json` defines lightweight static response headers.
+- `.github/workflows/ci.yml` runs validation checks on pull requests and pushes to `main`.
+- There are no checked-in Render or Docker config files.
 
 ## Runtime Assumptions
 

@@ -2,9 +2,9 @@
 
 ## Confirmed Missing From Repository
 
-- No `.github/` CI workflow.
 - No checked-in Render config.
 - No Dockerfile or docker-compose config.
+- No CI-driven deployment workflow.
 - No backend typecheck command.
 - No frontend coverage command.
 - No backend coverage command.

@@ -29,6 +29,30 @@ npm run build
 npm run preview
 ```
 
+## Continuous Integration
+
+`.github/workflows/ci.yml` runs on pull requests and pushes to `main`. It has separate `Backend` and `Frontend` jobs, does not deploy, and does not require `OPENAI_API_KEY`, Vercel credentials, or Render credentials.
+
+The `Backend` job runs from `backend/`:
+
+```text
+python -m pytest
+python -m ruff check app
+python -c "from app.main import app; print(app.title)"
+```
+
+The `Frontend` job runs from `frontend/`:
+
+```text
+npm ci
+npm run lint
+npm run typecheck
+npm test
+npm run build
+```
+
+`npm test` is CI-safe because it maps to `vitest run`.
+
 ## Full-Stack Local Validation
 
 1. Run `.\scripts\setup-local.ps1`.
@@ -64,4 +88,3 @@ npm run preview
 - No backend typecheck command is configured.
 - No frontend coverage command is configured.
 - No backend coverage command is configured.
-- No CI workflow is checked in.

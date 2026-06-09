@@ -6,6 +6,7 @@
 | --- | --- |
 | `.gitignore` | Excludes dependencies, env files, build outputs, caches, logs, and editor files. |
 | `.gitattributes` | Normalizes line endings and marks image/PDF/Office files as binary. |
+| `.github/workflows/ci.yml` | Runs backend and frontend validation on pull requests and pushes to `main`. |
 | `LICENSE` | Apache License 2.0. |
 
 ## Frontend Config
@@ -70,7 +71,6 @@ No backend script runner is configured. Use module commands from `backend/`:
 
 Not present:
 
-- `.github/` workflow files
 - `render.yaml`
 - `Dockerfile`
 - `docker-compose.yml`
