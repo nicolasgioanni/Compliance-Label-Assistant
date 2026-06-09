@@ -5,13 +5,18 @@ from app.providers.openai.client import get_openai_client
 
 
 def warm_verification_dependencies(settings: Settings | None = None) -> None:
-    """Initialize reusable clients without making model requests."""
+    """Initialize reusable clients and optionally warm the provider network path."""
 
     active_settings = settings or get_settings()
     if not active_settings.openai_api_key:
         return
 
     try:
-        get_openai_client(active_settings)
+        client = get_openai_client(active_settings)
+        if active_settings.openai_network_warmup:
+            client.models.retrieve(
+                active_settings.openai_model,
+                timeout=active_settings.openai_warmup_timeout_seconds,
+            )
     except Exception:
         return

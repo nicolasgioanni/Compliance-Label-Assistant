@@ -22,6 +22,8 @@ Local real values belong in ignored `backend/.env`.
 | `OPENAI_IMAGE_DETAIL` | Optional | No | `low` | Provider image detail, allowed `low`, `auto`, `high`. | `backend/app/config.py`, `backend/app/providers/openai/extraction.py` |
 | `OPENAI_MAX_RETRIES` | Optional | No | `0` | SDK retry count, bounded 0 to 2. | `backend/app/config.py`, `backend/app/providers/openai/client.py` |
 | `OPENAI_EXTRACTION_CONCURRENCY` | Optional | No | `2` | Provider extraction semaphore size, bounded 1 to 4. | `backend/app/config.py`, `backend/app/providers/openai/extraction.py` |
+| `OPENAI_NETWORK_WARMUP` | Optional | No | `true` | Enables best-effort provider metadata warmup without extraction. | `backend/app/config.py`, `backend/app/services/warmup_service.py` |
+| `OPENAI_WARMUP_TIMEOUT_SECONDS` | Optional | No | `2` | Warmup metadata request timeout, bounded 1 to 5. | `backend/app/config.py`, `backend/app/services/warmup_service.py` |
 | `MAX_FILE_SIZE_MB` | Optional | No | `5` | Upload byte-size limit. | `backend/app/config.py`, `backend/app/image_processing/validation.py` |
 | `MAX_IMAGE_PIXELS` | Optional | No | `25000000` | Decoded image pixel-count limit. | `backend/app/config.py`, `backend/app/image_processing/validation.py` |
 | `MAX_BATCH_SIZE` | Optional | No | `10` | `/verify-batch` maximum file count. | `backend/app/config.py`, `backend/app/services/batch_service.py` |
@@ -39,6 +41,8 @@ OPENAI_TIMEOUT_SECONDS=10
 OPENAI_IMAGE_DETAIL=low
 OPENAI_MAX_RETRIES=0
 OPENAI_EXTRACTION_CONCURRENCY=2
+OPENAI_NETWORK_WARMUP=true
+OPENAI_WARMUP_TIMEOUT_SECONDS=2
 MAX_FILE_SIZE_MB=5
 MAX_IMAGE_PIXELS=25000000
 MAX_BATCH_SIZE=10
@@ -51,3 +55,5 @@ ALLOWED_ORIGINS=<FRONTEND_URL>
 ## Deployment
 
 Configure backend variables in Render service environment settings. Do not expose `OPENAI_API_KEY` to Vercel or browser code.
+
+Warmup initializes the cached provider client and can make a non-generation model metadata request. It does not upload label files, send prompts, or call extraction. The metadata request may still count as an API request or be rate-limited.

@@ -33,6 +33,19 @@ def _read_choice(name: str, default: str, allowed_values: set[str]) -> str:
     return default
 
 
+def _read_bool(name: str, default: bool) -> bool:
+    raw_value = os.getenv(name)
+    if raw_value is None or raw_value == "":
+        return default
+
+    normalized_value = raw_value.strip().lower()
+    if normalized_value in {"1", "true", "yes", "on"}:
+        return True
+    if normalized_value in {"0", "false", "no", "off"}:
+        return False
+    return default
+
+
 def _read_origins() -> list[str]:
     raw_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173")
     return [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
@@ -50,6 +63,10 @@ class Settings:
     openai_max_retries: int = field(default_factory=lambda: _read_bounded_int("OPENAI_MAX_RETRIES", 0, 0, 2))
     openai_extraction_concurrency: int = field(
         default_factory=lambda: _read_bounded_int("OPENAI_EXTRACTION_CONCURRENCY", 2, 1, 4)
+    )
+    openai_network_warmup: bool = field(default_factory=lambda: _read_bool("OPENAI_NETWORK_WARMUP", True))
+    openai_warmup_timeout_seconds: int = field(
+        default_factory=lambda: _read_bounded_int("OPENAI_WARMUP_TIMEOUT_SECONDS", 2, 1, 5)
     )
     max_file_size_mb: int = field(default_factory=lambda: _read_int("MAX_FILE_SIZE_MB", 5))
     max_image_pixels: int = field(default_factory=lambda: _read_int("MAX_IMAGE_PIXELS", 25_000_000))

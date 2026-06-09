@@ -19,6 +19,8 @@ Routes and services should import settings from this module instead of reading e
 - `openai_image_detail`
 - `openai_max_retries`
 - `openai_extraction_concurrency`
+- `openai_network_warmup`
+- `openai_warmup_timeout_seconds`
 - `max_file_size_mb`
 - `max_image_pixels`
 - `max_batch_size`
@@ -31,6 +33,7 @@ Routes and services should import settings from this module instead of reading e
 
 - `_read_int`: reads an integer with fallback default.
 - `_read_bounded_int`: reads an integer and clamps it between minimum and maximum.
+- `_read_bool`: reads common boolean strings with fallback default.
 - `_read_choice`: reads a string and falls back to default unless it is allowed.
 - `_read_origins`: splits `ALLOWED_ORIGINS` on commas and trims blanks.
 - `get_settings`: returns cached `Settings`.
@@ -44,6 +47,8 @@ Routes and services should import settings from this module instead of reading e
 | `OPENAI_IMAGE_DETAIL` | `low` | `low`, `auto`, `high`. |
 | `OPENAI_MAX_RETRIES` | `0` | 0 to 2. |
 | `OPENAI_EXTRACTION_CONCURRENCY` | `2` | 1 to 4. |
+| `OPENAI_NETWORK_WARMUP` | `true` | Common boolean values. |
+| `OPENAI_WARMUP_TIMEOUT_SECONDS` | `2` | 1 to 5. |
 | `MAX_FILE_SIZE_MB` | `5` | Integer; no explicit bound. |
 | `MAX_IMAGE_PIXELS` | `25000000` | Integer; values above 0 enforce a limit. |
 | `MAX_BATCH_SIZE` | `10` | Integer; used by batch request validation. |

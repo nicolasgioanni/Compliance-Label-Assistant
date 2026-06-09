@@ -91,6 +91,8 @@ The checked-in example is `frontend/.env.example`.
 | `OPENAI_IMAGE_DETAIL` | Optional | `low` | Provider image detail setting. |
 | `OPENAI_MAX_RETRIES` | Optional | `0` | Provider retry count, bounded in backend config. |
 | `OPENAI_EXTRACTION_CONCURRENCY` | Optional | `2` | Concurrency for provider extraction calls. |
+| `OPENAI_NETWORK_WARMUP` | Optional | `true` | Enables non-generation provider metadata warmup. |
+| `OPENAI_WARMUP_TIMEOUT_SECONDS` | Optional | `2` | Warmup metadata request timeout, bounded in backend config. |
 | `MAX_FILE_SIZE_MB` | Optional | `5` | Backend upload size limit. |
 | `MAX_IMAGE_PIXELS` | Optional | `25000000` | Backend image pixel limit. |
 | `MAX_BATCH_SIZE` | Optional | `10` | Backend `/verify-batch` file count limit. |

@@ -27,7 +27,7 @@ Ready-label verification uses the `VERIFY_ALL_CONCURRENCY` setting. The current 
 
 ## Warmup Behavior
 
-`useQueueItems` calls `warmVerificationBackend()` once after the first successful file addition. Warmup failure is ignored in the frontend because the actual verification call still reports its own result.
+`useQueueItems` calls `warmVerificationBackend()` once after the first successful file addition. It does not upload label files early. Warmup failure is ignored in the frontend because the actual verification call still reports its own result.
 
 ## Removal Behavior
 

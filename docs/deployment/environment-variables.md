@@ -16,6 +16,8 @@
 | `OPENAI_IMAGE_DETAIL` | Optional | No | `low` | Provider image detail. |
 | `OPENAI_MAX_RETRIES` | Optional | No | `0` | SDK retry count. |
 | `OPENAI_EXTRACTION_CONCURRENCY` | Optional | No | `2` | Provider extraction concurrency. |
+| `OPENAI_NETWORK_WARMUP` | Optional | No | `true` | Enables best-effort provider metadata warmup without extraction. |
+| `OPENAI_WARMUP_TIMEOUT_SECONDS` | Optional | No | `2` | Warmup metadata request timeout. |
 | `MAX_FILE_SIZE_MB` | Optional | No | `5` | Upload file-size limit. |
 | `MAX_IMAGE_PIXELS` | Optional | No | `25000000` | Decoded image pixel limit. |
 | `MAX_BATCH_SIZE` | Optional | No | `10` | Backend batch size limit. |
@@ -37,3 +39,5 @@ Example files:
 - `frontend/.env.example`
 
 Never commit real secret values.
+
+Backend warmup can make a non-generation provider metadata request when `OPENAI_NETWORK_WARMUP` is enabled. It does not send label images, prompts, or extraction payloads, but the metadata request may still count as an API request or be rate-limited.

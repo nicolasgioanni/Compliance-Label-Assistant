@@ -15,6 +15,8 @@ Speed and cost-sensitive settings are centralized in `backend/app/config.py`:
 | `OPENAI_IMAGE_DETAIL` | `low` | Image detail setting, allowed values `low`, `auto`, `high`. |
 | `OPENAI_MAX_RETRIES` | `0` | SDK retry count, bounded from 0 to 2. |
 | `OPENAI_EXTRACTION_CONCURRENCY` | `2` | Provider extraction concurrency, bounded from 1 to 4. |
+| `OPENAI_NETWORK_WARMUP` | `true` | Enables a best-effort non-generation provider metadata request during warmup. |
+| `OPENAI_WARMUP_TIMEOUT_SECONDS` | `2` | Warmup metadata request timeout, bounded from 1 to 5. |
 | `MAX_IMAGE_WIDTH` | `640` | Preprocessed JPEG maximum width, bounded from 600 to 2000. |
 | `JPEG_QUALITY` | `60` | Preprocessed JPEG quality, bounded from 50 to 95. |
 | `BATCH_CONCURRENCY` | `3` | Backend `/verify-batch` per-file concurrency. |
@@ -40,6 +42,13 @@ Backend:
 Implemented:
 
 - OpenAI client objects are cached by API key, timeout, and retry settings in `backend/app/providers/openai/client.py`.
+- The frontend calls `/warmup` once after the first successful queue addition. The backend builds the cached provider client and, when enabled, makes one model metadata request to warm the authenticated network path.
+
+Warmup notes:
+
+- Warmup does not upload label files, send prompts, send expected fields, or call extraction.
+- The metadata request is not an image extraction or generation request, but it can still count as an API request and can be rate-limited.
+- Warmup may reduce first-verification setup latency. It cannot eliminate provider/model tail latency.
 
 Not implemented:
 

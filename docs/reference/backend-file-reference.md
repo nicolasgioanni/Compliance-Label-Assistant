@@ -27,7 +27,7 @@
 | `backend/app/services/single_verification_service.py` | Single-label workflow orchestration. | `verify_single_label`, `process_single_label` | settings, upload validation, preprocessing, extraction, timing, verification rules, schemas | verification route, batch service | Builds `SingleVerificationResponse`. |
 | `backend/app/services/batch_service.py` | Batch workflow orchestration and per-file error conversion. | `BatchRequestValidationError`, `validate_batch_request`, `validate_batch_filenames`, `verify_batch_labels` | asyncio, settings, single-label service, schemas, image/provider errors | verification route, tests | Rejects duplicate basenames before processing. |
 | `backend/app/services/timing_service.py` | Timing helper functions. | `start_timer`, `get_elapsed_ms` | `time.perf_counter` | services | Returns elapsed integer milliseconds. |
-| `backend/app/services/warmup_service.py` | Best-effort dependency warmup. | `warm_verification_dependencies` | settings, OpenAI client factory | warmup route, tests | Does not make extraction requests. |
+| `backend/app/services/warmup_service.py` | Best-effort dependency warmup. | `warm_verification_dependencies` | settings, OpenAI client factory | warmup route, tests | Can make a model metadata request, but does not make extraction requests. |
 
 ## Image Processing
 

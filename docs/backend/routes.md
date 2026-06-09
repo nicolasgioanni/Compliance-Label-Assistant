@@ -37,7 +37,7 @@ Calls `warm_verification_dependencies()` and returns:
 }
 ```
 
-Warmup initializes reusable backend dependencies when a provider key exists. It does not upload files or make an extraction request.
+Warmup initializes reusable backend dependencies when a provider key exists. It can make a best-effort model metadata request to warm the provider network path. It does not upload files, send prompts, or make an extraction request.
 
 ## `POST /verify`
 

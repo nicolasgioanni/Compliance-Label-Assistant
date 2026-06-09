@@ -68,7 +68,11 @@ Service:
 Notes:
 
 - Skips provider client initialization when `OPENAI_API_KEY` is missing.
-- Swallows client initialization failures.
+- Builds the cached provider client when possible.
+- When `OPENAI_NETWORK_WARMUP` is enabled, makes one best-effort model metadata request for `OPENAI_MODEL`.
+- Does not send image files, prompts, expected fields, extracted fields, or extraction request bodies.
+- Does not call the extraction endpoint or `responses.parse`.
+- Swallows warmup failures.
 
 ## `POST /verify`
 

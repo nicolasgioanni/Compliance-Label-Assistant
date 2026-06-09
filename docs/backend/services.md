@@ -56,7 +56,9 @@ Responsibilities:
 - Read active settings when not supplied.
 - Skip when no provider key exists.
 - Initialize the cached OpenAI client when possible.
-- Swallow client initialization failures because warmup is best effort.
+- Optionally make one non-generation model metadata request to warm the provider network path.
+- Never send image files, prompts, expected fields, or extraction payloads.
+- Swallow warmup failures because warmup is best effort.
 
 ## `timing_service.py`
 
