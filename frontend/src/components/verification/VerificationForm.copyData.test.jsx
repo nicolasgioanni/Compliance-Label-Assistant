@@ -191,7 +191,7 @@ describe('VerificationForm.copyData', () => {
     expect(within(dialog).queryByRole('alert')).not.toBeInTheDocument();
   });
 
-  it('shows overwrite and blank-field warnings together in the top popdown area', async () => {
+  it('replaces the blank-field warning with the overwrite warning', async () => {
     const showError = vi.fn();
     const { container } = render(<VerificationForm showError={showError} />);
     const [fileInput] = fileInputs(container);
@@ -206,24 +206,28 @@ describe('VerificationForm.copyData', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Copy Claim Data' }));
 
     const dialog = screen.getByRole('dialog', { name: 'Copy Expected Data to Labels' });
+    let warningAlert = within(dialog).getByRole('alert');
+    expect(within(dialog).getAllByRole('alert')).toHaveLength(1);
+    expect(warningAlert).toHaveTextContent('Blank fields will also be copied.');
+    expect(warningAlert).not.toHaveTextContent(OVERWRITE_WARNING_TEXT);
+
     fireEvent.click(within(dialog).getByRole('checkbox', { name: /target-label\.png/i }));
 
     await waitFor(() => {
       expect(within(dialog).getByRole('alert')).toHaveTextContent(OVERWRITE_WARNING_TEXT);
     });
 
-    let warningStack = within(dialog).getByRole('alert');
-    expect(warningStack).toHaveTextContent('Blank fields will also be copied.');
-    expect(warningStack).toHaveTextContent(OVERWRITE_WARNING_TEXT);
-    expect(within(dialog).getByRole('button', { name: 'Dismiss blank field warning' })).toBeInTheDocument();
+    warningAlert = within(dialog).getByRole('alert');
+    expect(within(dialog).getAllByRole('alert')).toHaveLength(1);
+    expect(warningAlert).not.toHaveTextContent('Blank fields will also be copied.');
+    expect(warningAlert).toHaveTextContent(OVERWRITE_WARNING_TEXT);
+    expect(within(dialog).queryByRole('button', { name: 'Dismiss blank field warning' })).not.toBeInTheDocument();
     expect(within(dialog).getByRole('button', { name: 'Dismiss overwrite warning' })).toBeInTheDocument();
     expect(dialog.querySelector('.copy-data-message-info')).not.toBeInTheDocument();
 
     fireEvent.click(within(dialog).getByRole('button', { name: 'Clear Selection' }));
 
-    warningStack = within(dialog).getByRole('alert');
-    expect(warningStack).toHaveTextContent('Blank fields will also be copied.');
-    expect(warningStack).not.toHaveTextContent(OVERWRITE_WARNING_TEXT);
+    expect(within(dialog).queryByRole('alert')).not.toBeInTheDocument();
   });
 
   it('dismisses the overwrite warning without closing the copy dialog', async () => {

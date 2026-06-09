@@ -18,16 +18,12 @@ export default function CopyClaimDataModal({ queueItems, sourceItem, onApply, on
     [queueItems, sourceItem.id],
   );
   const hasBlankSourceFields = hasBlankCopyExpectedField(sourceItem.expectedFields);
-  const [isBlankWarningVisible, setIsBlankWarningVisible] = useState(() => hasBlankSourceFields);
-  const [isOverwriteWarningVisible, setIsOverwriteWarningVisible] = useState(false);
+  const [activeWarning, setActiveWarning] = useState(() => (hasBlankSourceFields ? 'blank' : null));
   const [isOverwriteWarningDismissedForSession, setIsOverwriteWarningDismissedForSession] = useState(false);
   const selectedTargets = targetItems.filter((item) => selectedTargetIds.has(item.id));
   const willOverwriteExpectedData = selectedTargets.some((item) =>
     hasAnyVisibleExpectedFieldValue(item.expectedFields),
   );
-  const shouldShowBlankWarning = hasBlankSourceFields && isBlankWarningVisible;
-  const shouldShowOverwriteWarning = willOverwriteExpectedData && isOverwriteWarningVisible;
-  const shouldShowWarningStack = shouldShowBlankWarning || shouldShowOverwriteWarning;
   const canApply = selectedTargetIds.size > 0 || shouldClearSource;
   const primaryButtonLabel =
     selectedTargetIds.size === 0 && shouldClearSource ? 'Clear Source Data' : 'Apply to Selected Labels';
@@ -42,42 +38,46 @@ export default function CopyClaimDataModal({ queueItems, sourceItem, onApply, on
 
   useEffect(() => {
     if (!willOverwriteExpectedData) {
-      setIsOverwriteWarningVisible(false);
+      setActiveWarning((currentWarning) => (currentWarning === 'overwrite' ? null : currentWarning));
       return;
     }
 
     if (!isOverwriteWarningDismissedForSession) {
-      setIsOverwriteWarningVisible(true);
+      setActiveWarning('overwrite');
     }
   }, [isOverwriteWarningDismissedForSession, willOverwriteExpectedData]);
 
   useEffect(() => {
-    if (!isBlankWarningVisible) {
+    if (activeWarning !== 'blank') {
       return undefined;
     }
 
     const timeoutId = window.setTimeout(() => {
-      setIsBlankWarningVisible(false);
+      setActiveWarning(null);
     }, 10000);
 
     return () => window.clearTimeout(timeoutId);
-  }, [isBlankWarningVisible]);
+  }, [activeWarning]);
 
   useEffect(() => {
-    if (!shouldShowOverwriteWarning) {
+    if (activeWarning !== 'overwrite') {
       return undefined;
     }
 
     const timeoutId = window.setTimeout(() => {
-      setIsOverwriteWarningVisible(false);
+      setActiveWarning(null);
       setIsOverwriteWarningDismissedForSession(true);
     }, 10000);
 
     return () => window.clearTimeout(timeoutId);
-  }, [shouldShowOverwriteWarning]);
+  }, [activeWarning]);
+
+  function handleDismissBlankWarning() {
+    setActiveWarning(null);
+  }
 
   function handleDismissOverwriteWarning() {
-    setIsOverwriteWarningVisible(false);
+    setActiveWarning(null);
     setIsOverwriteWarningDismissedForSession(true);
   }
 
@@ -120,11 +120,10 @@ export default function CopyClaimDataModal({ queueItems, sourceItem, onApply, on
         className="copy-data-dialog"
         role="dialog"
       >
-        {shouldShowWarningStack ? (
-          <CopyDataWarningStack
-            showBlankWarning={shouldShowBlankWarning}
-            showOverwriteWarning={shouldShowOverwriteWarning}
-            onDismissBlankWarning={() => setIsBlankWarningVisible(false)}
+        {activeWarning ? (
+          <CopyDataWarning
+            activeWarning={activeWarning}
+            onDismissBlankWarning={handleDismissBlankWarning}
             onDismissOverwriteWarning={handleDismissOverwriteWarning}
           />
         ) : null}
@@ -171,16 +170,11 @@ export default function CopyClaimDataModal({ queueItems, sourceItem, onApply, on
   );
 }
 
-function CopyDataWarningStack({
-  showBlankWarning,
-  showOverwriteWarning,
-  onDismissBlankWarning,
-  onDismissOverwriteWarning,
-}) {
+function CopyDataWarning({ activeWarning, onDismissBlankWarning, onDismissOverwriteWarning }) {
   return (
     <div className="copy-data-warning-stack" role="alert">
-      {showBlankWarning ? <CopyDataBlankWarning onDismiss={onDismissBlankWarning} /> : null}
-      {showOverwriteWarning ? <CopyDataOverwriteWarning onDismiss={onDismissOverwriteWarning} /> : null}
+      {activeWarning === 'blank' ? <CopyDataBlankWarning onDismiss={onDismissBlankWarning} /> : null}
+      {activeWarning === 'overwrite' ? <CopyDataOverwriteWarning onDismiss={onDismissOverwriteWarning} /> : null}
     </div>
   );
 }
