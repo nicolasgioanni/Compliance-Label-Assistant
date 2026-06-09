@@ -1,15 +1,15 @@
 # Deployment Links
 
-Last updated: 2026-06-08
+Last updated: 2026-06-09
 
 ## Application URLs
 
 | Target | URL |
 | --- | --- |
-| Frontend deployed URL | To be added before submission |
-| Backend API URL | To be added before submission |
+| Frontend deployed URL | https://compliance-label-assistant.vercel.app |
+| Backend API URL | https://compliance-label-assistant.onrender.com |
 
-Replace these placeholder values before final submission.
+These are public application URLs. Do not add private dashboard URLs.
 
 ## Deployment Platform
 
@@ -18,7 +18,6 @@ Replace these placeholder values before final submission.
 
 ## Notes
 
-- No deployed Vercel or Render URL is currently present in tracked repository documentation or config.
 - Do not add private dashboard URLs.
 - Do not add API keys, provider keys, access tokens, or credentials.
 - The frontend deployment should set `VITE_API_BASE_URL` to the public backend API base URL.

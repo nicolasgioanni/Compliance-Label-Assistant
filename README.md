@@ -4,10 +4,10 @@ Compliance Label Assistant is an AI-powered alcohol label verification prototype
 
 ## Deployed Application
 
-- Frontend URL: To be added before submission
-- Backend API URL: To be added before submission
+- Frontend URL: https://compliance-label-assistant.vercel.app
+- Backend API URL: https://compliance-label-assistant.onrender.com
 
-Update these values before final submission. Do not include private dashboard links or secrets.
+These are public application URLs. Do not include private dashboard links or secrets.
 
 ## Key Features
 
@@ -30,7 +30,7 @@ Compliance reviewers manually compare label artwork to application data. This pr
 
 The React and Vite frontend handles image selection, queue state, expected field entry, API calls, result display, and exports. The FastAPI backend validates uploads, preprocesses images in memory, extracts label fields with an OpenAI vision model, and applies deterministic verification rules for selected fields. Extraction and verification are separate so provider output stays isolated from the comparison rules.
 
-More detail is available in [docs/architecture/data-flow.md](docs/architecture/data-flow.md) and [docs/take-home/project-brief.md](docs/take-home/project-brief.md).
+More detail is available in [docs/architecture/data-flow.md](docs/architecture/data-flow.md), [docs/take-home/project-brief.md](docs/take-home/project-brief.md), and [docs/take-home/engineering-decisions.md](docs/take-home/engineering-decisions.md).
 
 ## Security Posture
 
@@ -41,7 +41,7 @@ More detail is available in [docs/architecture/data-flow.md](docs/architecture/d
 - Deployed Render CORS must set `ALLOWED_ORIGINS` to the deployed Vercel origin.
 - CSV export neutralizes spreadsheet formula prefixes and excludes raw extracted text.
 
-The prototype is not production-ready for government use. Production deployment would need authentication, access control, audit logging, PII handling, retention policy, network egress review, production monitoring, stronger rate limiting, larger batch-job processing, and an agency-approved AI/OCR provider. Cloud AI providers may not be allowed in restricted government networks.
+The prototype is not production-ready for government use. Production deployment would need authentication, access control, audit logging, PII handling, retention policy, network egress review, production monitoring, stronger rate limiting, larger batch-job processing, and an agency-approved OCR or vision provider. Cloud AI providers may not be allowed in restricted government networks.
 
 ## Tools and Technologies
 
@@ -176,6 +176,7 @@ cd backend
 
 - [Documentation index](docs/README.md)
 - [Take-home project brief](docs/take-home/project-brief.md)
+- [Take-home engineering decisions](docs/take-home/engineering-decisions.md)
 - [Take-home setup and run guide](docs/take-home/setup-and-run.md)
 - [Take-home requirements mapping](docs/take-home/requirements-mapping.md)
 - [Take-home deployment links](docs/take-home/deployment-links.md)
@@ -188,7 +189,7 @@ cd backend
 
 ```text
 backend/      FastAPI app, schemas, routes, services, provider integration, tests
-frontend/     React/Vite app, components, hooks, utilities, tests
+frontend/     React and Vite app, components, hooks, utilities, tests
 docs/         Take-home, architecture, frontend, backend, API, deployment, and reference docs
 scripts/      Local setup and development PowerShell scripts
 sample-data/  Synthetic label fixtures, manual test data, and backend fixture-test data

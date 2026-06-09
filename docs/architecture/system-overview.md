@@ -23,7 +23,7 @@ The user interface is built for reviewers who need to compare label artwork agai
 
 ```mermaid
 flowchart LR
-  U[Reviewer] --> F[React/Vite frontend]
+  U[Reviewer] --> F[React and Vite frontend]
   F --> A[FastAPI backend]
   A --> V[Upload validation]
   V --> P[Image preprocessing]

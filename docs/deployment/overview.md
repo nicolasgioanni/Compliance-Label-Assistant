@@ -40,7 +40,7 @@ Only the backend needs provider secrets. Do not configure `OPENAI_API_KEY` in Ve
 - Set backend `ALLOWED_ORIGINS` to the deployed Vercel origin.
 - Keep `OPENAI_API_KEY` only in Render backend environment settings.
 - Confirm Vercel `VITE_API_BASE_URL` points to the Render backend URL.
-- Do not deploy this prototype to restricted government networks without review of PII, retention, audit logging, network egress, approved AI/OCR provider, access control, monitoring, and rate limiting.
+- Do not deploy this prototype to restricted government networks without review of PII, retention, audit logging, network egress, approved OCR or vision provider usage, access control, monitoring, and rate limiting.
 
 ## Related Docs
 

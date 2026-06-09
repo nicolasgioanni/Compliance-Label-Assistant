@@ -36,7 +36,7 @@ Compliance Label Assistant is a lightweight prototype, not a production security
 
 The prototype does not include authentication, authorization, a database, audit logging, persistent upload storage, malware scanning, production monitoring, or long-running batch infrastructure.
 
-Production government deployment would need review for PII handling, retention, audit logging, network egress, approved AI/OCR provider usage, access control, monitoring, and rate limiting. A cloud AI provider may not be allowed in restricted government networks.
+Production government deployment would need review for PII handling, retention, audit logging, network egress, approved OCR or vision provider usage, access control, monitoring, and rate limiting. A cloud AI provider may not be allowed in restricted government networks.
 
 Related documentation:
 

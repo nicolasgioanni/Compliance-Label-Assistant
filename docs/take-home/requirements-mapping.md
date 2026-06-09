@@ -7,7 +7,8 @@ This table maps the take-home deliverables and stakeholder needs to the current 
 | Source code repository | Repository root, `frontend/`, `backend/`, `scripts/`, `docs/` | Source code and documentation are contained in this repository. |
 | README with setup and run instructions | [../../README.md](../../README.md), [setup-and-run.md](setup-and-run.md) | README provides the short path; the setup guide provides detailed commands. |
 | Brief documentation of approach, tools used, and assumptions made | [project-brief.md](project-brief.md), [../../README.md](../../README.md) | Covers business problem, technical approach, tools, assumptions, trade-offs, and limitations. |
-| Deployed application URL | [deployment-links.md](deployment-links.md), [../../README.md](../../README.md) | Current value is `To be added before submission` because no deployed URL is present in tracked repository documentation or config. |
+| Engineering reasoning behind scope and architecture | [engineering-decisions.md](engineering-decisions.md) | Explains project interpretation, assumptions, alternatives considered, implementation trade-offs, development approach, and production considerations. |
+| Deployed application URL | [deployment-links.md](deployment-links.md), [../../README.md](../../README.md) | Public frontend and backend URLs are listed for final review. |
 | Working prototype accessible for testing | [setup-and-run.md](setup-and-run.md) | Local prototype can run with `.\scripts\start-dev.ps1` after dependency setup and backend provider key configuration. |
 | Label image upload | `frontend/src/components/verification/VerificationForm.jsx`, `frontend/src/utils/fileValidation.js` | Supports JPG, PNG, WebP, and TIFF uploads with client validation. |
 | Backend upload validation | `backend/app/image_processing/validation.py` | Validates content type, file size, image readability, and image dimensions. |

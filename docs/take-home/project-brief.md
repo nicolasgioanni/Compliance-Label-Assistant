@@ -42,6 +42,8 @@ Compliance reviewers manually compare alcohol label artwork to expected applicat
 
 ## Technical Approach
 
+For a deeper explanation of the architecture choices, alternatives considered, assumptions, and trade-offs, see [Engineering Decisions](engineering-decisions.md).
+
 ### Frontend
 
 The frontend is a React and Vite application under `frontend/`. It owns the upload user interface, queue state, expected field forms, API calls, result display, filtering, and exports. API calls are centralized in `frontend/src/api/verificationApi.js`.
