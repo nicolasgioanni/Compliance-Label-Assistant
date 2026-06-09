@@ -26,16 +26,18 @@ The current prototype verifies these fields:
 - Class or type
 - Alcohol content
 - Net contents
+- Bottler/producer
+- Country of origin
 - Government warning
 
-The app does not currently verify bottler or producer information, country of origin, label placement, font size, or full government-warning typography.
+Government warning verification is strict for extracted text: the backend checks presence, uppercase `GOVERNMENT WARNING:` heading, and exact standard wording. The prototype does not make final typography, boldness, font-size, placement, or label-layout determinations; those remain human-review items.
 
 ## Quick Smoke Test
 
 1. Open https://compliance-label-assistant.vercel.app.
 2. Confirm the backend status indicator is online.
 3. Upload a supported alcohol label image.
-4. Enter expected values for brand name, class or type, alcohol content, and net contents; the standard government warning is applied automatically.
+4. Enter expected values for brand name, class or type, alcohol content, net contents, bottler/producer, and country of origin; the standard government warning is applied automatically.
 5. Run verification for the selected label.
 6. Review field-level statuses, extracted values, reasons, and processing time.
 7. Queue multiple labels and run the ready-label workflow.

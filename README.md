@@ -13,7 +13,7 @@ These are public application URLs. Do not include private dashboard links or sec
 
 - No test account is required for the deployed frontend.
 - Local verification requires a backend `OPENAI_API_KEY`; no provider key is included in this repository.
-- Supported verification fields are brand name, class or type, alcohol content, net contents, bottler/producer, country of origin, and government warning.
+- The current prototype verifies brand name, class or type, alcohol content, net contents, bottler/producer, country of origin, and government warning text.
 - Sample labels and manual test inputs are documented in [sample-data/README.md](sample-data/README.md).
 - Current known gaps: no direct COLA integration, no COLA PDF ingestion, no authentication, no database, no audit trail, no persistent uploaded-file storage, no final legal compliance decision, and no full government-warning typography or placement verification.
 - The fastest evaluator path is [REVIEWER_GUIDE.md](REVIEWER_GUIDE.md).
@@ -76,23 +76,23 @@ The prototype is not production-ready for government use. Production deployment 
 - The prototype is not production compliance or security hardened.
 - It does not include authentication, audit logging, a database, or persistent file storage.
 - OpenAI extraction may be imperfect on glare, blur, poor lighting, tiny text, or unusual layouts.
-- Government warning verification checks extracted text, not label typography, placement, or visual formatting.
+- Government warning verification is strict for extracted text: the backend checks presence, uppercase `GOVERNMENT WARNING:` heading, and exact standard wording. The prototype does not make final typography, boldness, font-size, placement, or label-layout determinations; those remain human-review items.
 - The user interface verifies queued labels by calling the single-label endpoint for each ready item; the backend also exposes a shared expected-field `/verify-batch` endpoint that the current user interface does not call.
 - Performance depends on provider response time, image size, preprocessing settings, and deployment tier.
 
 ## Performance Smoke Test
 
-On 2026-06-09, I ran a small warm-backend smoke test against the deployed Render backend API using synthetic fixtures from `sample-data/images`. Each fixture was verified three times after calling `/warmup`; the table reports median timings.
+On 2026-06-09, I ran a small warm-backend smoke test against the deployed Render backend API using synthetic fixtures from `sample-data/images`. Each fixture was verified three times after calling `/warmup`; the table reports median timings. All documented medians in this run were under five seconds.
 
 | Case | Scenario | Observed status | Median backend processing time | Median API request time |
 | --- | --- | --- | ---: | ---: |
-| TC01 | Clean baseline label | `pass` | 3,526 ms | 3,608 ms |
-| TC03 | Clean label with intentional ABV mismatch | `fail` | 4,248 ms | 4,348 ms |
-| TC10 | Low-light label with multiple expected mismatches | `fail` | 2,010 ms | 2,081 ms |
+| TC01 | Clean baseline label | `pass` | 2,556 ms | 2,633 ms |
+| TC03 | Clean label with intentional ABV mismatch | `pass` | 2,966 ms | 3,080 ms |
+| TC10 | Low-light label with multiple expected mismatches | `pass` | 2,645 ms | 2,761 ms |
 
 These are smoke-test timings, not an SLA. Provider latency, Render cold starts, image complexity, and network conditions can affect response time. The backend also returns `processing_time_ms`, `validation_time_ms`, `preprocessing_time_ms`, `extraction_time_ms`, and `verification_time_ms` for more detailed inspection.
 
-I also tested `TC09` as a rotated/glare image-quality case. It completed quickly, with a 3,574 ms median backend processing time and 3,701 ms median API request time, but returned `fail` in the live provider-backed runs. That result is consistent with the documented limitation that extraction quality can vary on glare, rotation, low light, and other imperfect images.
+I also tested `TC09` as a rotated/glare image-quality case. It completed quickly, with a 3,323 ms median backend processing time and 3,463 ms median API request time, but returned `fail` in the live provider-backed runs. That result is consistent with the documented limitation that extraction quality can vary on glare, rotation, low light, and other imperfect images.
 
 ## Local Setup and Run Instructions
 
@@ -152,7 +152,7 @@ Basic smoke test:
 1. Open `http://localhost:5173`.
 2. Confirm the backend status indicator is online.
 3. Upload a supported label image smaller than 5 MB.
-4. Enter expected field values; the standard government warning is applied automatically.
+4. Enter expected values for brand name, class or type, alcohol content, net contents, bottler/producer, and country of origin; the standard government warning is applied automatically.
 5. Run verification and review the field-level results.
 6. Try an unsupported file type or oversized file and confirm a user-facing validation error.
 7. Export verified results to CSV or XLSX.

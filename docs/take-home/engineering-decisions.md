@@ -22,7 +22,7 @@ The implementation keeps human review as the final decision point. The system as
 | Assumption | Rationale | Impact on implementation |
 | --- | --- | --- |
 | Reviewers upload label artwork images. | The take-home assignment focuses on label artwork and does not require direct COLA integration or COLA PDF ingestion. | The app accepts JPG, PNG, WebP, and TIFF image uploads. COLA PDFs and direct COLA records are out of scope. |
-| Expected application data is entered by the user. | No COLA API, database, or application-record source is required by the assignment. | The frontend provides fields for brand name, class or type, alcohol content, net contents, bottler/producer, country of origin, and government warning. |
+| Expected application data is entered by the user. | No COLA API, database, or application-record source is required by the assignment. | Reviewers enter expected values for brand name, class or type, alcohol content, net contents, bottler/producer, and country of origin; the standard government warning is applied automatically. |
 | Human review remains final. | Label review contains nuance, especially for capitalization, punctuation, image quality, and legal interpretation. | Results include field-level statuses rather than a single irreversible decision. |
 | Government warning text should be stricter than general label text. | The warning statement is a specific regulated text area and is less tolerant of formatting and wording variation than ordinary brand text. | Warning text is verified separately and documented as stricter than normalized brand or class matching. |
 | Uploaded files should not be persisted by application code. | Persistent storage would introduce retention, privacy, and audit-design questions that are outside the prototype scope. | Files are validated and processed in memory. No database or uploaded-file storage is included. |
@@ -100,7 +100,7 @@ The deployed application should open directly into the working tool. Evaluators 
 
 The verification rules are field-specific. Brand and class or type comparisons can produce normalized matches when differences are limited to capitalization, punctuation, or similar low-risk text variation. Alcohol content and net contents use parsing and normalization so equivalent representations can be compared more consistently.
 
-Government warning verification is stricter because it is a regulated text area. The current implementation checks extracted text and heading case, but it does not fully verify bold type, font size, or physical label placement.
+Government warning verification is strict for extracted text: the backend checks presence, uppercase `GOVERNMENT WARNING:` heading, and exact standard wording. The prototype does not make final typography, boldness, font-size, placement, or label-layout determinations; those remain human-review items.
 
 ## Development Approach
 

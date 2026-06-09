@@ -9,7 +9,7 @@ Compliance reviewers manually compare alcohol label artwork to expected applicat
 - Provide fast label verification assistance for selected alcohol label fields.
 - Keep the user interface simple enough for quick review.
 - Show clear field-level and overall verification results.
-- Support key fields currently implemented in code: brand name, class or type, alcohol content, net contents, bottler/producer, country of origin, and government warning.
+- The current prototype verifies brand name, class or type, alcohol content, net contents, bottler/producer, country of origin, and government warning text.
 - Support prototype-level local development and cloud deployment.
 - Keep frontend, backend, extraction, image processing, and verification concerns separated.
 
@@ -26,7 +26,7 @@ Compliance reviewers manually compare alcohol label artwork to expected applicat
 
 - Frontend queue for up to 10 label images.
 - Client-side validation for JPG, PNG, WebP, and TIFF uploads up to 5 MB.
-- Expected field entry for brand name, class or type, alcohol content, net contents, bottler/producer, country of origin, and government warning.
+- Reviewers enter expected values for brand name, class or type, alcohol content, net contents, bottler/producer, and country of origin; the standard government warning is applied automatically.
 - Backend upload validation for file type, size, and image dimensions.
 - In-memory image preprocessing with Pillow.
 - Backend OpenAI vision-model extraction for visible label fields.
@@ -104,9 +104,8 @@ The system reduces provider payload size through image preprocessing and configu
 
 ## Limitations
 
-- Deployed URLs are not currently documented in the repository and must be added before submission.
 - Extraction may be inaccurate for glare, blur, poor lighting, unusual layouts, curved labels, or very small text.
-- Government warning verification checks extracted text, not typography, placement, or label formatting.
+- Government warning verification is strict for extracted text: the backend checks presence, uppercase `GOVERNMENT WARNING:` heading, and exact standard wording. The prototype does not make final typography, boldness, font-size, placement, or label-layout determinations; those remain human-review items.
 - The system does not evaluate every federal alcohol labeling requirement.
 - The current implementation does not persist historical results.
 - The frontend does not call the backend `/verify-batch` endpoint.

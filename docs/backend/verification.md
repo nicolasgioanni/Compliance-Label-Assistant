@@ -54,9 +54,10 @@ Bottler/producer and country of origin:
 
 Government warning:
 
-- Requires uppercase heading.
+- Government warning verification is strict for extracted text: the backend checks presence, uppercase `GOVERNMENT WARNING:` heading, and exact standard wording.
 - Compares against `STANDARD_GOVERNMENT_WARNING`.
 - Uses review statuses for similar or punctuation/capitalization differences that do not pass.
+- The prototype does not make final typography, boldness, font-size, placement, or label-layout determinations; those remain human-review items.
 
 ## Optional Expected Fields
 

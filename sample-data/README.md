@@ -8,7 +8,7 @@ This folder contains synthetic alcohol label images for manual smoke testing and
 2. Open the frontend at `http://localhost:5173`.
 3. Upload one or more images from [images/](images/).
 4. Select a queued image and enter the fields from the table below.
-5. Run verification and compare the result with the expected current prototype result.
+5. Run verification and compare the result with the automated fixture expected result. Live provider-backed manual results may vary on difficult images.
 
 The current prototype verifies these fields:
 
@@ -30,7 +30,7 @@ GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink
 
 ## Manual Test Matrix
 
-| Case | Image | Brand name | Class or type | Alcohol content | Net contents | Bottler/producer | Country of origin | Expected result | Notes |
+| Case | Image | Brand name | Class or type | Alcohol content | Net contents | Bottler/producer | Country of origin | Automated fixture expected result | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | TC01 | `images/tc01_valid_bourbon.png` | `OLD TOM DISTILLERY` | `Kentucky Straight Bourbon Whiskey` | `45% Alc./Vol. (90 Proof)` | `750 mL` | `Old Tom Distillery, Louisville, KY` | `USA` | `pass` | Baseline case where all currently supported fields match. |
 | TC02 | `images/tc02_brand_case_normalization.png` | `Stone's Throw` | `American Single Malt Whiskey` | `46% Alc./Vol. (92 Proof)` | `750 mL` | `Stone's Throw Spirits, Portland, OR` | `USA` | `pass` | Brand name should pass after capitalization normalization. |
@@ -40,7 +40,7 @@ GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink
 | TC06 | `images/tc06_net_contents_mismatch.png` | `NORTH STAR RUM` | `Aged Rum` | `42% Alc./Vol. (84 Proof)` | `750 mL` | `North Star Rum Co., Miami, FL` | `USA` | `fail` | Net contents should fail because the application expects 750 mL and the label shows 700 mL. |
 | TC07 | `images/tc07_class_type_mismatch.png` | `GOLDEN BARREL` | `Vodka` | `35% Alc./Vol. (70 Proof)` | `750 mL` | `Golden Barrel Imports, Tampa, FL` | `Jamaica` | `fail` | Class or type should fail because the application expects Vodka and the label shows Spiced Rum. |
 | TC08 | `images/tc08_country_origin_mismatch.png` | `HIGHLAND VALE` | `Single Malt Scotch Whisky` | `40% Alc./Vol. (80 Proof)` | `750 mL` | `Atlantic Beverage Importers, New York, NY` | `Ireland` | `fail` | Country of origin should fail because the application expects Ireland and the label shows Scotland. |
-| TC09 | `images/tc09_valid_wine_rotated_glare.png` | `SUNSET RIDGE CHARDONNAY` | `Chardonnay White Wine` | `14.2% Alc./Vol.` | `750 mL` | `Sunset Ridge Winery, Sonoma, CA` | `USA` | `pass` | Image is rotated with glare. Automated tests use mocked extraction, while manual testing exercises the real extraction provider. |
+| TC09 | `images/tc09_valid_wine_rotated_glare.png` | `SUNSET RIDGE CHARDONNAY` | `Chardonnay White Wine` | `14.2% Alc./Vol.` | `750 mL` | `Sunset Ridge Winery, Sonoma, CA` | `USA` | `pass` | Image is rotated with glare. Automated tests use mocked extraction; live provider-backed manual testing can vary on this image. |
 | TC10 | `images/tc10_multiple_errors_low_light.png` | `BLUE HARBOR SILVER` | `Tequila Blanco` | `40% Alc./Vol. (80 Proof)` | `750 mL` | `Blue Harbor Spirits, Austin, TX` | `Mexico` | `fail` | Low-light image with multiple intentional supported-field failures, including country of origin. |
 
 ## Automated Test Data
