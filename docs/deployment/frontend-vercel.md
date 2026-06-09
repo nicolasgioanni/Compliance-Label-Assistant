@@ -9,6 +9,8 @@
 | Output directory | `dist` |
 | Install command | Not currently documented in code; Vercel default npm install is expected. |
 
+`frontend/vercel.json` is checked in for lightweight static security headers.
+
 ## Environment Variables
 
 | Name | Value |
@@ -22,6 +24,7 @@ Do not configure backend provider secrets in Vercel.
 - Preview deployments need a backend URL that is reachable from the browser.
 - Production deployments should use the production Render backend URL.
 - If a preview frontend uses a different origin, add that origin to backend `ALLOWED_ORIGINS`.
+- A CSP is intentionally not configured in this prototype because the backend API origin is deployment-specific.
 
 ## Common Failures
 
@@ -45,5 +48,6 @@ Wrong output directory:
 
 - `VITE_API_BASE_URL` points to deployed backend.
 - No provider key is configured in frontend environment variables.
+- Static response headers from `frontend/vercel.json` are present in deployment responses.
 - `npm run lint`, `npm run typecheck`, `npm test`, and `npm run build` pass locally.
 - Backend CORS includes the Vercel production origin.

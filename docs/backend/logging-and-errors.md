@@ -19,6 +19,8 @@ Application-wide unexpected error handling lives in `backend/app/main.py`.
 
 Known verification errors are mapped in `backend/app/routes/verification.py`.
 
+Security headers are applied in `backend/app/utils/security_headers.py`.
+
 ## Safe Logging Rules
 
 Do not log:
@@ -49,6 +51,12 @@ Unexpected errors return:
   "detail": "An unexpected server error occurred. Please try again."
 }
 ```
+
+API responses include:
+
+- `X-Content-Type-Options: nosniff`
+- `Referrer-Policy: no-referrer`
+- `Cache-Control: no-store`
 
 ## Related Docs
 

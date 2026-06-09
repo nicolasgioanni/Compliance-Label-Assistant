@@ -3,7 +3,6 @@
 ## Confirmed Missing From Repository
 
 - No `.github/` CI workflow.
-- No checked-in Vercel config.
 - No checked-in Render config.
 - No Dockerfile or docker-compose config.
 - No backend typecheck command.
@@ -11,6 +10,7 @@
 - No backend coverage command.
 - No database or persistent upload storage.
 - No authentication or authorization.
+- No production rate limiting or monitoring.
 
 ## Current Behavior To Keep Clear
 
@@ -20,6 +20,7 @@
 - The route accepts `government_warning`, but backend verification uses `STANDARD_GOVERNMENT_WARNING`.
 - The provider parser currently sets `raw_text` to `null`.
 - OpenAI clients are cached, but extraction results are not cached.
+- `frontend/vercel.json` defines static security headers only; CSP is not configured.
 - `sample-data/` contains synthetic label fixtures; TC08 documents a country-of-origin mismatch as future scope because current schemas do not verify country of origin.
 
 ## Needs Confirmation
@@ -28,4 +29,6 @@
 - Formal commit message convention.
 - Production monitoring requirements.
 - Production retention requirements for logs.
+- Production rate-limit requirements.
+- Whether cloud AI is allowed in the target deployment network.
 - Whether future sample data should add more beverage types, label formats, and supported field categories.

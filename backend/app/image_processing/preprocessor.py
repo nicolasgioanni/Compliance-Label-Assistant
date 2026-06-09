@@ -59,7 +59,7 @@ def preprocess_image_for_extraction(
                 height=resized_image.height,
                 byte_count=len(output_bytes),
             )
-    except (OSError, UnidentifiedImageError) as exc:
+    except (OSError, UnidentifiedImageError, Image.DecompressionBombError) as exc:
         raise ImagePreprocessingError(
             "The uploaded image could not be processed. "
             f"Please upload a readable {SUPPORTED_IMAGE_DESCRIPTION} label image."

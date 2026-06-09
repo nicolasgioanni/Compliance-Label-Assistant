@@ -32,13 +32,14 @@ Source: `backend/requirements.txt`
 
 | Dependency | Version | Used for |
 | --- | --- | --- |
-| `fastapi` | `0.115.6` | Backend web framework and routing. |
+| `fastapi` | `0.136.3` | Backend web framework and routing. |
+| `starlette` | `1.0.1` | Explicit FastAPI ASGI framework dependency pin. |
 | `uvicorn[standard]` | `0.34.0` | ASGI server for local and deployment startup. |
-| `python-multipart` | `0.0.20` | Multipart form upload parsing. |
+| `python-multipart` | `0.0.32` | Multipart form upload parsing. |
 | `Pillow` | `12.2.0` | Image validation, orientation, resizing, conversion, and JPEG compression. |
 | `openai` | `>=2.38.0,<3.0.0` | OpenAI provider SDK. |
 | `httpx` | `0.28.1` | HTTP client dependency used by backend tests/framework ecosystem. |
-| `pytest` | `8.3.4` | Backend test runner. |
+| `pytest` | `9.0.3` | Backend test runner. |
 | `ruff` | `0.8.6` | Backend linting. |
 
 Transitive dependencies are not documented individually.

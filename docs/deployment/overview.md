@@ -7,9 +7,9 @@ The repository is intended for:
 - Frontend: Vercel static frontend deployment from `frontend/`.
 - Backend: Render Starter web service deployment from `backend/`.
 
-No deployment platform config files are checked in:
+Deployment config files:
 
-- No `vercel.json`
+- `frontend/vercel.json` is checked in for lightweight static response headers.
 - No `render.yaml`
 - No `Dockerfile`
 - No `docker-compose.yml`
@@ -34,6 +34,13 @@ ALLOWED_ORIGINS=<FRONTEND_URL>
 ## Secrets
 
 Only the backend needs provider secrets. Do not configure `OPENAI_API_KEY` in Vercel or any frontend runtime.
+
+## Security Configuration
+
+- Set backend `ALLOWED_ORIGINS` to the deployed Vercel origin.
+- Keep `OPENAI_API_KEY` only in Render backend environment settings.
+- Confirm Vercel `VITE_API_BASE_URL` points to the Render backend URL.
+- Do not deploy this prototype to restricted government networks without review of PII, retention, audit logging, network egress, approved AI/OCR provider, access control, monitoring, and rate limiting.
 
 ## Related Docs
 

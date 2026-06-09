@@ -63,3 +63,11 @@ Request-level errors return:
   "detail": "User-facing error message."
 }
 ```
+
+## Response Headers
+
+Backend responses include lightweight defensive headers:
+
+- `X-Content-Type-Options: nosniff`
+- `Referrer-Policy: no-referrer`
+- `Cache-Control: no-store`

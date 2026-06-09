@@ -1,9 +1,10 @@
 from io import BytesIO
 
+import pytest
 from PIL import Image
 
 from app.config import Settings
-from app.image_processing.preprocessor import preprocess_image_for_extraction
+from app.image_processing.preprocessor import ImagePreprocessingError, preprocess_image_for_extraction
 
 
 def _image_bytes(mode: str = "RGBA", size: tuple[int, int] = (2000, 400)) -> bytes:
@@ -72,3 +73,13 @@ def test_preprocess_default_jpeg_quality_is_fast_profile_quality() -> None:
     explicit_fast_quality = preprocess_image_for_extraction(source_bytes, max_width=400, jpeg_quality=60)
 
     assert default_quality.byte_count == explicit_fast_quality.byte_count
+
+
+def test_preprocess_returns_clean_error_for_decompression_bomb(monkeypatch) -> None:
+    def raise_decompression_bomb_error(_buffer):
+        raise Image.DecompressionBombError("image is too large")
+
+    monkeypatch.setattr(Image, "open", raise_decompression_bomb_error)
+
+    with pytest.raises(ImagePreprocessingError, match="could not be processed"):
+        preprocess_image_for_extraction(b"image-bytes", max_width=640)

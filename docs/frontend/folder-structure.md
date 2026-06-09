@@ -17,6 +17,7 @@ frontend/
 |-- jsconfig.json
 |-- package.json
 |-- postcss.config.cjs
+|-- vercel.json
 `-- vite.config.js
 ```
 
@@ -54,3 +55,4 @@ These are not documented in detail:
 - API client: `frontend/src/api/verificationApi.js`
 - File validation: `frontend/src/utils/fileValidation.js`
 - Export: `frontend/src/utils/resultExport.js`
+- Vercel static headers: `frontend/vercel.json`

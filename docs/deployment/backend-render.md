@@ -82,6 +82,7 @@ Provider configuration error:
 CORS error:
 
 - Check `ALLOWED_ORIGINS` includes the deployed frontend origin.
+- Avoid wildcard origins in deployed environments.
 
 Upload errors:
 
@@ -95,4 +96,5 @@ Upload errors:
 - `OPENAI_API_KEY` is configured as a backend secret.
 - `ALLOWED_ORIGINS` includes the deployed Vercel origin.
 - File, image, batch, and provider settings are intentionally chosen.
+- API responses include lightweight defensive headers.
 - Backend pytest, ruff, and import check pass locally.

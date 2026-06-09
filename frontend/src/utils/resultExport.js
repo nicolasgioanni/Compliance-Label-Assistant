@@ -4,6 +4,7 @@ import {
 } from './statusResolution';
 
 export const EXPORT_FILE_BASENAME = 'label-compliance-verification-results';
+const CSV_FORMULA_PREFIX_PATTERN = /^[=+\-@\t\r]/;
 
 export const EXPORT_COLUMNS = [
   ['filename', 'filename'],
@@ -105,12 +106,13 @@ function getFieldStatus(result, fieldName) {
 
 function escapeCsvValue(value) {
   const stringValue = value === null || value === undefined ? '' : String(value);
+  const safeValue = CSV_FORMULA_PREFIX_PATTERN.test(stringValue) ? `'${stringValue}` : stringValue;
 
-  if (/[",\n\r]/.test(stringValue)) {
-    return `"${stringValue.replaceAll('"', '""')}"`;
+  if (/[",\n\r]/.test(safeValue)) {
+    return `"${safeValue.replaceAll('"', '""')}"`;
   }
 
-  return stringValue;
+  return safeValue;
 }
 
 function padDatePart(value) {

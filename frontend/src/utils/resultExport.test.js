@@ -106,6 +106,52 @@ describe('result export utilities', () => {
     );
   });
 
+  it('neutralizes formula-like CSV cell prefixes before export', () => {
+    const csv = buildQueueResultsCsv([
+      makeQueueItem({
+        filename: '=formula-label.png',
+        result: {
+          overall_status: '+status',
+          processing_time_ms: '@time',
+          field_results: [
+            { field_name: 'brand_name', status: '-brand' },
+            { field_name: 'class_type', status: '\ttabbed' },
+            { field_name: 'alcohol_content', status: '\rcarriage' },
+          ],
+        },
+      }),
+    ]);
+
+    expect(csv).toContain("'=formula-label.png");
+    expect(csv).toContain("'+status");
+    expect(csv).toContain("'-brand");
+    expect(csv).toContain("'\ttabbed");
+    expect(csv).toContain("\"'\rcarriage\"");
+    expect(csv).toContain("'@time");
+  });
+
+  it('keeps normal CSV quoting and excludes raw extracted text', () => {
+    const csv = buildQueueResultsCsv([
+      makeQueueItem({
+        filename: 'label, "one".png',
+        result: {
+          overall_status: 'pass',
+          extracted_fields: {
+            raw_text: '=do not export',
+          },
+          processing_time_ms: 123,
+          field_results: [
+            { field_name: 'brand_name', status: 'pass\nwith newline' },
+          ],
+        },
+      }),
+    ]);
+
+    expect(csv).toContain('"label, ""one"".png"');
+    expect(csv).toContain('"pass\nwith newline"');
+    expect(csv).not.toContain('do not export');
+  });
+
   it('exports backend overall status without override fields', () => {
     const csv = buildQueueResultsCsv([
       makeQueueItem({

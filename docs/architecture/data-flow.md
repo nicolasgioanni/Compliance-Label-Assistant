@@ -87,4 +87,4 @@ Backend batch endpoint:
 
 ## Export Flow
 
-CSV and Excel exports are built in the browser from current queue state by `frontend/src/utils/resultExport.js`. Only current verification results are exported; unverified and stale items are skipped.
+CSV and Excel exports are built in the browser from current queue state by `frontend/src/utils/resultExport.js`. Only current verification results are exported; unverified, stale, and raw extracted text values are skipped. CSV export neutralizes spreadsheet formula prefixes.

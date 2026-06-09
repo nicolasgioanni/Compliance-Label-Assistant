@@ -32,6 +32,17 @@ The React and Vite frontend handles image selection, queue state, expected field
 
 More detail is available in [docs/architecture/data-flow.md](docs/architecture/data-flow.md) and [docs/take-home/project-brief.md](docs/take-home/project-brief.md).
 
+## Security Posture
+
+- `OPENAI_API_KEY` is backend-only; the frontend never calls OpenAI directly.
+- Uploaded images are validated and processed in memory by the backend and are not persistently stored by application code.
+- Backend validation checks supported type, size, decoded readability, and decoded pixel count before extraction.
+- Queue, batch, upload-size, pixel-count, timeout, and concurrency limits help control cost and basic abuse.
+- Deployed Render CORS must set `ALLOWED_ORIGINS` to the deployed Vercel origin.
+- CSV export neutralizes spreadsheet formula prefixes and excludes raw extracted text.
+
+The prototype is not production-ready for government use. Production deployment would need authentication, access control, audit logging, PII handling, retention policy, network egress review, production monitoring, stronger rate limiting, larger batch-job processing, and an agency-approved AI/OCR provider. Cloud AI providers may not be allowed in restricted government networks.
+
 ## Tools and Technologies
 
 - Frontend: React 18, Vite 6, JavaScript, CSS, Vitest, Testing Library, ESLint.
@@ -48,11 +59,12 @@ More detail is available in [docs/architecture/data-flow.md](docs/architecture/d
 - Human review remains final, especially for ambiguous, low-quality, or unusual labels.
 - The system verifies selected fields only; it does not validate every possible TTB requirement.
 - Uploaded files are processed temporarily and are not persisted by the application code.
+- The OpenAI extraction boundary can be replaced later by an approved OCR or AI provider.
 - Provider latency and deployment tier can affect verification speed.
 
 ## Trade-Offs and Limitations
 
-- The prototype is not production compliance hardened.
+- The prototype is not production compliance or security hardened.
 - It does not include authentication, audit logging, a database, or persistent file storage.
 - OpenAI extraction may be imperfect on glare, blur, poor lighting, tiny text, or unusual layouts.
 - Government warning verification checks extracted text, not label typography, placement, or visual formatting.

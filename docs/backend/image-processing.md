@@ -19,7 +19,7 @@ Validation steps:
 4. Read uploaded bytes.
 5. Reject empty files.
 6. Reject files larger than `MAX_FILE_SIZE_MB`.
-7. Open image with Pillow.
+7. Open image with Pillow and reject unreadable or decompression-bomb style images.
 8. Check decoded pixel count against `MAX_IMAGE_PIXELS`.
 9. Verify decoded image content.
 10. Ensure decoded format matches extension and MIME type.

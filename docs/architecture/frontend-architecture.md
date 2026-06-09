@@ -70,7 +70,7 @@ The frontend does not call `POST /verify-batch`.
 
 ## Export Behavior
 
-`frontend/src/utils/resultExport.js` builds CSV and Excel exports from current, non-stale verification results only. Exports include status columns and processing time, but not raw extracted text.
+`frontend/src/utils/resultExport.js` builds CSV and Excel exports from current, non-stale verification results only. Exports include status columns and processing time, but not raw extracted text. CSV export neutralizes spreadsheet formula prefixes.
 
 ## Styling
 

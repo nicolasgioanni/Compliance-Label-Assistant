@@ -31,7 +31,7 @@ The frontend provides the browser workflow for label queue management, expected 
 - Call `/verify` for selected or ready labels.
 - Store backend responses as current or stale evidence.
 - Render selected label status, field comparisons, extracted fields, and processing time.
-- Export current verified queue results to CSV or Excel.
+- Export current verified queue results to CSV or Excel. CSV export neutralizes spreadsheet formula prefixes and excludes raw extracted text.
 
 ## Important Non-Responsibilities
 
@@ -40,6 +40,7 @@ The frontend provides the browser workflow for label queue management, expected 
 - The frontend does not call `/verify-batch`.
 - The frontend does not persist uploaded files or results to a database.
 - The frontend does not use `dangerouslySetInnerHTML` for extracted or provider-produced text.
+- The frontend does not receive `OPENAI_API_KEY` or other provider secrets.
 
 ## Related Reference
 

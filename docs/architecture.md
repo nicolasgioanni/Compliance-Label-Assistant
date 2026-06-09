@@ -11,3 +11,5 @@ Current architecture documentation:
 - [Extraction And Verification Flow](architecture/extraction-verification-flow.md)
 - [Error Handling](architecture/error-handling.md)
 - [Performance And Cost](architecture/performance-and-cost.md)
+
+Security-relevant architecture notes are maintained in [Security](security.md).

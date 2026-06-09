@@ -4,6 +4,8 @@
 
 Provider calls happen only in `backend/app/providers/openai/extraction.py`. The frontend never calls the provider directly.
 
+Queue, batch, upload-size, pixel-count, timeout, and concurrency limits are the current lightweight cost and abuse controls. They do not replace production authentication or rate limiting.
+
 Speed and cost-sensitive settings are centralized in `backend/app/config.py`:
 
 | Setting | Default | Purpose |

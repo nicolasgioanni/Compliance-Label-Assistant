@@ -26,7 +26,8 @@ Example files must contain placeholders or safe defaults only.
 Current backend behavior:
 
 - Reads uploaded files into memory for validation.
-- Validates extension, MIME type, decoded image format, file size, and decoded pixel count.
+- Validates extension, MIME type, decoded image format, file size, readability, and decoded pixel count.
+- Converts Pillow openability and decompression-bomb failures into clean user-facing errors.
 - Preprocesses image bytes in memory.
 - Does not persist uploaded files.
 
@@ -52,6 +53,14 @@ Backend CORS is configured from `ALLOWED_ORIGINS`.
 
 Production should use explicit frontend origins, not `*`.
 
+## Browser And Export Safety
+
+- Extracted text and user-entered values are rendered through React text nodes, not HTML injection.
+- CSV export neutralizes formula-like cell prefixes before download.
+- CSV export omits raw extracted text.
+- Vercel static responses use lightweight headers from `frontend/vercel.json`.
+- Backend API responses include lightweight defensive headers from `backend/app/utils/security_headers.py`.
+
 ## Error Responses
 
 Return safe user-facing error messages. Do not return stack traces, provider secrets, raw provider payloads, or sensitive configuration values.
@@ -75,5 +84,7 @@ The current prototype does not include:
 - audit logs
 - encrypted file storage
 - malware scanning
+- production rate limiting
+- production monitoring
 
 These are not current features and should not be claimed in docs or user interface copy.

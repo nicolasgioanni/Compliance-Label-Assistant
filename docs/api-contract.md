@@ -8,3 +8,5 @@ Current API documentation:
 - [API Endpoints](api/endpoints.md)
 - [Request And Response Contracts](api/request-response-contracts.md)
 - [Error Responses](api/error-responses.md)
+
+Security-related headers and upload validation notes are documented in [Security](security.md).

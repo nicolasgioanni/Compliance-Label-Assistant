@@ -13,6 +13,12 @@ from app.services import single_verification_service
 
 client = TestClient(app)
 
+EXPECTED_SECURITY_HEADERS = {
+    "cache-control": "no-store",
+    "referrer-policy": "no-referrer",
+    "x-content-type-options": "nosniff",
+}
+
 
 def _image_bytes(image_format: str = "PNG") -> bytes:
     buffer = BytesIO()
@@ -28,6 +34,7 @@ def test_health_contract() -> None:
         "status": "ok",
         "service": "alcohol-label-verification-api",
     }
+    assert_security_headers(response)
 
 
 def test_warmup_contract() -> None:
@@ -302,6 +309,7 @@ def test_unexpected_verify_error_returns_safe_json(monkeypatch) -> None:
     assert response.status_code == 500
     assert body == {"detail": "An unexpected server error occurred. Please try again."}
     assert "internal stack detail" not in str(body)
+    assert_security_headers(response)
 
 
 def test_verify_batch_rejects_too_few_files(monkeypatch) -> None:
@@ -457,3 +465,8 @@ def test_verify_batch_returns_partial_per_file_errors(monkeypatch) -> None:
     assert body["results"][1]["preprocessed_image_bytes"] == 0
     assert body["results"][1]["preprocessed_image_width"] == 0
     assert "openai_image_detail" not in body["results"][1]
+
+
+def assert_security_headers(response) -> None:
+    for header_name, expected_value in EXPECTED_SECURITY_HEADERS.items():
+        assert response.headers[header_name] == expected_value

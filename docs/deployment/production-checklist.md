@@ -15,6 +15,7 @@
 - Output directory is `dist`.
 - `VITE_API_BASE_URL` is set to `<BACKEND_URL>`.
 - No provider secret is configured in Vercel.
+- Static security headers from `frontend/vercel.json` are present.
 
 ## Render Backend
 
@@ -42,7 +43,6 @@ After deployment:
 
 ## Known Deployment Gaps
 
-- No checked-in Vercel config.
 - No checked-in Render config.
 - No checked-in CI workflow.
 - No deployment health monitor configuration documented in code.

@@ -179,6 +179,7 @@ Validation rules:
 - Extension, MIME type, decoded image format, and decoded content must match supported image types.
 - File must be non-empty and smaller than `MAX_FILE_SIZE_MB`.
 - Decoded pixel count must be at or below `MAX_IMAGE_PIXELS` when that setting is positive.
+- Unreadable and decompression-bomb style images are rejected before extraction.
 
 Performance notes:
 
