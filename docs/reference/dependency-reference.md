@@ -8,7 +8,7 @@ Runtime dependencies:
 
 | Dependency | Version | Used for |
 | --- | --- | --- |
-| `react` | `18.3.1` | UI rendering. |
+| `react` | `18.3.1` | User interface rendering. |
 | `react-dom` | `18.3.1` | React DOM root rendering. |
 | `vite` | `6.4.3` | Dev server and build tool. |
 | `@vitejs/plugin-react` | `4.3.4` | React support in Vite. |

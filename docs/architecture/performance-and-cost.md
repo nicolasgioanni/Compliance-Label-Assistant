@@ -25,7 +25,7 @@ Images are resized and compressed before provider calls. This reduces request pa
 
 Frontend:
 
-- Ready-label verification uses `VERIFY_ALL_CONCURRENCY = 2`.
+- Ready-label verification uses the `VERIFY_ALL_CONCURRENCY` setting. The current value is `2`.
 - The frontend sends one `/verify` request per ready queued item.
 
 Backend:

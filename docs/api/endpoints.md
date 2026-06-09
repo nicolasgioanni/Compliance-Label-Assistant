@@ -86,7 +86,7 @@ Required form fields:
 | --- | --- | --- |
 | `file` | file | Label image. |
 | `brand_name` | string | Expected brand name. |
-| `class_type` | string | Expected class/type; backend skips this check when blank. |
+| `class_type` | string | Expected class or type; backend skips this check when blank. |
 | `alcohol_content` | string | Expected ABV/proof text; backend skips this check when blank. |
 | `net_contents` | string | Expected net contents; backend skips this check when blank. |
 | `government_warning` | string | Accepted for API compatibility; backend verifies against server-owned standard text. |
@@ -201,7 +201,7 @@ Required form fields:
 | --- | --- | --- |
 | `files` | file list | Label images. |
 | `brand_name` | string | Shared expected brand name. |
-| `class_type` | string | Shared expected class/type. |
+| `class_type` | string | Shared expected class or type. |
 | `alcohol_content` | string | Shared expected ABV/proof text. |
 | `net_contents` | string | Shared expected net contents. |
 | `government_warning` | string | Accepted for API compatibility; backend verifies against server-owned standard text. |

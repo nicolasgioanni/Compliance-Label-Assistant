@@ -20,7 +20,7 @@ label-compliance-verifier/
 | Path | Purpose |
 | --- | --- |
 | `backend/` | FastAPI backend, provider integration, image processing, verification rules, tests, runtime files. |
-| `frontend/` | Vite React frontend, queue UI, API client, hooks, components, styles, frontend tests. |
+| `frontend/` | Vite React frontend, queue user interface, API client, hooks, components, styles, frontend tests. |
 | `docs/` | Documentation system and compatibility navigation pages. |
 | `scripts/` | PowerShell local setup/start scripts and shared local-development helpers. |
 | `sample-data/` | Synthetic label fixtures, manual test matrix, fixture manifest, and backend fixture-test data. |

@@ -30,7 +30,7 @@ Brand name:
 - Ambiguous punctuation differences can produce `normalized_match`.
 - High similarity can produce `needs_review`.
 
-Class/type:
+Class or type:
 
 - Exact and capitalization-and-spacing-normalized matches pass.
 - Partial token containment and high similarity can produce `needs_review`.
@@ -54,7 +54,7 @@ Government warning:
 
 ## Optional Expected Fields
 
-`verify_expected_fields` always checks brand name and government warning. It skips class/type, alcohol content, and net contents when the expected value is blank.
+`verify_expected_fields` always checks brand name and government warning. It skips class or type, alcohol content, and net contents when the expected value is blank.
 
 ## Overall Status
 

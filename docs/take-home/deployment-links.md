@@ -6,10 +6,10 @@ Last updated: 2026-06-08
 
 | Target | URL |
 | --- | --- |
-| Frontend deployed URL | TBD before submission |
-| Backend API URL | TBD before submission |
+| Frontend deployed URL | To be added before submission |
+| Backend API URL | To be added before submission |
 
-Replace the TBD values before final submission.
+Replace these placeholder values before final submission.
 
 ## Deployment Platform
 

@@ -213,7 +213,7 @@ Check:
 
 - `backend/app/verification/rules.py`
 - `backend/app/utils/text_normalization.py`
-- selected result field reasons in the UI
+- selected result field reasons in the user interface
 
 Safe fix:
 

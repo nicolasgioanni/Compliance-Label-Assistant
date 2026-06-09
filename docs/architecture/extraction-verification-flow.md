@@ -42,13 +42,13 @@ The route accepts `government_warning` for API compatibility, but `_build_expect
 Brand name:
 
 - Passes exact, capitalization-normalized, spacing-normalized, capitalization-and-spacing-normalized, or safe punctuation-normalized matches.
-- Uses similarity threshold `BRAND_REVIEW_THRESHOLD = 0.88` for reviewable near matches.
+- Uses the `BRAND_REVIEW_THRESHOLD` setting for reviewable near matches. The current value is `0.88`.
 - Marks missing values as `missing` and conflicts as `fail`.
 
-Class/type:
+Class or type:
 
 - Passes exact or capitalization-and-spacing-normalized matches.
-- Marks partial token containment or similarity above `CLASS_REVIEW_THRESHOLD = 0.82` as `needs_review`.
+- Marks partial token containment or similarity above the `CLASS_REVIEW_THRESHOLD` setting as `needs_review`. The current threshold is `0.82`.
 - Marks missing values as `missing` and conflicts as `fail`.
 
 Alcohol content:
@@ -56,12 +56,12 @@ Alcohol content:
 - Parses ABV from percent notation.
 - Parses proof from `proof` or `prf`.
 - Treats ABV and proof as equivalent when numerically consistent.
-- Uses `ABV_TOLERANCE = 0.1` and `PROOF_TOLERANCE = 0.2`.
+- Uses the `ABV_TOLERANCE` and `PROOF_TOLERANCE` settings. Their current values are `0.1` and `0.2`.
 
 Net contents:
 
 - Normalizes milliliters and liters to milliliters.
-- Uses `NET_CONTENTS_TOLERANCE_ML = 0.5`.
+- Uses the `NET_CONTENTS_TOLERANCE_ML` setting. The current value is `0.5`.
 
 Government warning:
 

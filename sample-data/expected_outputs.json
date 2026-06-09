@@ -222,7 +222,7 @@
     },
     {
       "id": "TC07",
-      "title": "Class/type mismatch",
+      "title": "Class or type mismatch",
       "image_file": "images/tc07_class_type_mismatch.png",
       "application_fields": {
         "brand_name": "GOLDEN BARREL",
@@ -251,7 +251,7 @@
         "government_warning": "pass"
       },
       "notes": [
-        "Class/type should fail because the application expects Vodka and the label shows Spiced Rum."
+        "Class or type should fail because the application expects Vodka and the label shows Spiced Rum."
       ]
     },
     {

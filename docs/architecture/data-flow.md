@@ -58,7 +58,7 @@ Backend:
 `verify_expected_fields`:
 
 - Always verifies brand name.
-- Verifies class/type, alcohol content, and net contents only when corresponding expected values are not blank.
+- Verifies class or type, alcohol content, and net contents only when corresponding expected values are not blank.
 - Always verifies the backend standard government warning text.
 - Returns one `FieldResult` per checked field.
 
@@ -74,7 +74,7 @@ Backend:
 Frontend queue:
 
 - Calls `/verify` once per selected label or once per ready label.
-- Uses `VERIFY_ALL_CONCURRENCY = 2` for ready-label verification.
+- Uses the `VERIFY_ALL_CONCURRENCY` setting for ready-label verification. The current value is `2`.
 - Stores each response on its queue item.
 
 Backend batch endpoint:

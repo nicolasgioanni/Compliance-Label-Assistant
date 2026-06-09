@@ -8,7 +8,7 @@ The application does not provide a final legal compliance decision. It presents 
 
 ## Audience
 
-The UI is built for reviewers who need to compare label artwork against application values. The codebase is organized for contributors working on the React frontend, FastAPI backend, provider integration, deterministic verification rules, deployment, and tests.
+The user interface is built for reviewers who need to compare label artwork against application values. The codebase is organized for contributors working on the React frontend, FastAPI backend, provider integration, deterministic verification rules, deployment, and tests.
 
 ## Major User Workflow
 

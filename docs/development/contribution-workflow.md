@@ -8,7 +8,7 @@ Keep changes small, accurate, and aligned with the frontend/backend boundaries a
 
 1. Put endpoint calls in `frontend/src/api/verificationApi.js`.
 2. Put reusable logic in `frontend/src/utils`.
-3. Put reusable stateful UI logic in `frontend/src/hooks`.
+3. Put reusable stateful user interface logic in `frontend/src/hooks`.
 4. Keep components focused on rendering and event wiring.
 5. Add or update tests near the behavior being changed.
 6. Update docs when commands, env vars, queue behavior, export behavior, or API calls change.

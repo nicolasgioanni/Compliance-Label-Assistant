@@ -67,7 +67,7 @@ Before committing:
 
 ## Not Implemented
 
-The current MVP does not include:
+The current prototype does not include:
 
 - authentication
 - authorization
@@ -76,4 +76,4 @@ The current MVP does not include:
 - encrypted file storage
 - malware scanning
 
-These are not current features and should not be claimed in docs or UI copy.
+These are not current features and should not be claimed in docs or user interface copy.

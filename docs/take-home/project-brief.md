@@ -7,9 +7,9 @@ Compliance reviewers manually compare alcohol label artwork to expected applicat
 ## Goals
 
 - Provide fast label verification assistance for selected alcohol label fields.
-- Keep the UI simple enough for quick review.
+- Keep the user interface simple enough for quick review.
 - Show clear field-level and overall verification results.
-- Support key fields currently implemented in code: brand name, class/type, alcohol content, net contents, and government warning.
+- Support key fields currently implemented in code: brand name, class or type, alcohol content, net contents, and government warning.
 - Support prototype-level local development and cloud deployment.
 - Keep frontend, backend, extraction, image processing, and verification concerns separated.
 
@@ -26,7 +26,7 @@ Compliance reviewers manually compare alcohol label artwork to expected applicat
 
 - Frontend queue for up to 10 label images.
 - Client-side validation for JPG, PNG, WebP, and TIFF uploads up to 5 MB.
-- Expected field entry for brand name, class/type, alcohol content, net contents, and government warning.
+- Expected field entry for brand name, class or type, alcohol content, net contents, and government warning.
 - Backend upload validation for file type, size, and image dimensions.
 - In-memory image preprocessing with Pillow.
 - Backend OpenAI vision-model extraction for visible label fields.
@@ -44,7 +44,7 @@ Compliance reviewers manually compare alcohol label artwork to expected applicat
 
 ### Frontend
 
-The frontend is a React/Vite application under `frontend/`. It owns the upload UI, queue state, expected field forms, API calls, result display, filtering, and exports. API calls are centralized in `frontend/src/api/verificationApi.js`.
+The frontend is a React and Vite application under `frontend/`. It owns the upload user interface, queue state, expected field forms, API calls, result display, filtering, and exports. API calls are centralized in `frontend/src/api/verificationApi.js`.
 
 ### Backend
 
@@ -97,7 +97,7 @@ The system reduces provider payload size through image preprocessing and configu
 - Speed vs accuracy: resized images reduce payload size and latency, but tiny text or poor image quality may become harder to extract.
 - Prototype simplicity vs production hardening: the app avoids authentication, persistence, audit controls, and deployment-specific security controls that a production system would need.
 - OpenAI extraction vs deterministic verification: extraction handles visual text recognition, while deterministic rules keep comparison behavior explicit and testable.
-- Frontend queue vs backend batch: the UI currently verifies ready labels by calling `POST /verify` per label; the backend also exposes `POST /verify-batch` for shared expected fields.
+- Frontend queue compared with backend batch: the user interface currently verifies ready labels by calling `POST /verify` per label; the backend also exposes `POST /verify-batch` for shared expected fields.
 - Cloud provider use vs restricted environments: the prototype uses an external provider integration and is not designed for restricted government network operation.
 
 ## Limitations

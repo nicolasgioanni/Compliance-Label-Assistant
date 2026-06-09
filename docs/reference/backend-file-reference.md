@@ -70,7 +70,7 @@
 | `backend/app/tests/test_openai_client.py` | Tests OpenAI client cache behavior. | provider client module, settings | Patches constructor behavior. |
 | `backend/app/tests/test_openai_extraction_service.py` | Tests extraction configuration, provider call parameters, and safe error mapping. | OpenAI errors, settings, extraction module | Does not require real provider calls. |
 | `backend/app/tests/test_text_normalization.py` | Tests text normalization and parsing helpers. | text normalization utilities | Covers ABV, proof, and net contents. |
-| `backend/app/tests/test_verification_service.py` | Tests deterministic verification rules and overall status. | schemas, constants, verification rules | Covers brand, class/type, alcohol, net contents, warning, and optional fields. |
+| `backend/app/tests/test_verification_service.py` | Tests deterministic verification rules and overall status. | schemas, constants, verification rules | Covers brand, class or type, alcohol, net contents, warning, and optional fields. |
 | `backend/app/tests/test_warmup_service.py` | Tests warmup behavior. | settings, warmup service | Covers key present, key missing, and swallowed errors. |
 
 ## Runtime And Dependency Files

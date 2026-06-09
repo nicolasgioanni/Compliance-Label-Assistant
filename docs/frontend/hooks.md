@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Hooks coordinate stateful UI behavior and keep components focused on rendering.
+Hooks coordinate stateful user interface behavior and keep components focused on rendering.
 
 ## Hook Reference
 
@@ -23,7 +23,7 @@ Hooks coordinate stateful UI behavior and keep components focused on rendering.
 - `verificationInFlightRef` to prevent overlapping verification runs.
 - queue item status checks for item-level verification state.
 
-Ready-label verification uses `VERIFY_ALL_CONCURRENCY = 2`.
+Ready-label verification uses the `VERIFY_ALL_CONCURRENCY` setting. The current value is `2`.
 
 ## Warmup Behavior
 
@@ -31,4 +31,4 @@ Ready-label verification uses `VERIFY_ALL_CONCURRENCY = 2`.
 
 ## Removal Behavior
 
-`useQueueRemovalAnimation` delays actual removal by `QUEUE_REMOVAL_ANIMATION_MS + QUEUE_REMOVAL_SNAP_PAUSE_MS`. If the selected item is removed, selection moves to the next active item, then previous active item, then `null`.
+`useQueueRemovalAnimation` delays actual removal by adding `QUEUE_REMOVAL_ANIMATION_MS` and `QUEUE_REMOVAL_SNAP_PAUSE_MS`. If the selected item is removed, selection moves to the next active item, then previous active item, then `null`.

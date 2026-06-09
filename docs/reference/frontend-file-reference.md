@@ -52,12 +52,12 @@
 
 | Path | Purpose | Main exports | Main dependencies | Used by | Notes |
 | --- | --- | --- | --- | --- | --- |
-| `frontend/src/components/shared/AppFooter.jsx` | Footer component. | `AppFooter` default | none | `App` | Static UI. |
+| `frontend/src/components/shared/AppFooter.jsx` | Footer component. | `AppFooter` default | none | `App` | Static user interface content. |
 | `frontend/src/components/shared/ErrorBanner.jsx` | Dismissible alert banner. | `ErrorBanner` default | React hooks | `App` | Supports error, info, and warning tone classes. |
 | `frontend/src/components/shared/ErrorBanner.test.jsx` | Tests banner tones and dismissal. | none | Testing Library, `ErrorBanner` | Test runner | Covers default, info, warning, and auto-dismiss behavior. |
 | `frontend/src/components/shared/Header.jsx` | Header with service status indicator. | `Header` default | none | `App` | `isOnline` controls status display. |
 | `frontend/src/components/shared/InfoTooltip.jsx` | Portal-based tooltip. | `InfoTooltip` default | React hooks, `createPortal` | many components | Measures trigger and tooltip position with viewport padding. |
-| `frontend/src/components/shared/LoadingState.jsx` | Verifying loading state. | `LoadingState` default | none | `SelectedLabelWorkspace` | Static loading UI. |
+| `frontend/src/components/shared/LoadingState.jsx` | Verifying loading state. | `LoadingState` default | none | `SelectedLabelWorkspace` | Static loading user interface content. |
 
 ## Upload Components
 
@@ -70,7 +70,7 @@
 
 | Path | Purpose | Main exports | Main dependencies | Used by | Notes |
 | --- | --- | --- | --- | --- | --- |
-| `frontend/src/components/verification/VerificationForm.jsx` | Main verification workflow composition. | `VerificationForm` default | queue, dialog, workspace components, `useQueueItems`, export utilities | `App` | Connects hook state to UI. |
+| `frontend/src/components/verification/VerificationForm.jsx` | Main verification workflow composition. | `VerificationForm` default | queue, dialog, workspace components, `useQueueItems`, export utilities | `App` | Connects hook state to user interface components. |
 | `frontend/src/components/verification/ExpectedFieldsForm.jsx` | Expected field input form. | `ExpectedFieldsForm` default | default warning, expected-field definitions, `InfoTooltip` | `SelectedLabelWorkspace` | Includes load example, clear fields, back-to-results, and copy-data controls. |
 | `frontend/src/components/verification/ExtractedTextPanel.jsx` | Displays extracted structured fields and raw text when present. | `ExtractedTextPanel` default | none | `SelectedResultDetail` | Current backend provider returns `raw_text: null`. |
 | `frontend/src/components/verification/FieldResultCard.jsx` | Displays one `FieldResult`. | `FieldResultCard` default | status style utilities | `SelectedResultDetail` | Shows expected, observed, reason, and confidence. |
@@ -113,7 +113,7 @@
 | `frontend/src/styles/components.css` | Imports component CSS partials. | CSS | component partials | `frontend/src/main.jsx` | Central style bundle. |
 | `frontend/src/styles/components/layout.css` | Layout styles. | CSS | none | `components.css` | App shell and workflow layout. |
 | `frontend/src/styles/components/forms-controls.css` | Form and button styles. | CSS | none | `components.css` | Inputs, controls, and shared buttons. |
-| `frontend/src/styles/components/queue.css` | Queue UI styles. | CSS | none | `components.css` | Queue list, cards, filters, and actions. |
+| `frontend/src/styles/components/queue.css` | Queue user interface styles. | CSS | none | `components.css` | Queue list, cards, filters, and actions. |
 | `frontend/src/styles/components/selected-workspace.css` | Selected label workspace styles. | CSS | none | `components.css` | Workspace panel, states, and expected data area. |
 | `frontend/src/styles/components/status-results.css` | Status and result styles. | CSS | none | `components.css` | Status labels, field cards, summaries, extracted text. |
 | `frontend/src/styles/components/dialogs-feedback.css` | Dialog and feedback styles. | CSS | none | `components.css` | Modals, banners, tooltips, feedback states. |

@@ -30,8 +30,8 @@ frontend/
 | `frontend/src/components/shared` | Shared shell, feedback, tooltip, and loading components. |
 | `frontend/src/components/upload` | File and folder upload controls. |
 | `frontend/src/components/verification` | Selected-label workspace and verification result rendering. |
-| `frontend/src/constants` | Shared UI messages and default warning text. |
-| `frontend/src/hooks` | Queue orchestration and small reusable UI hooks. |
+| `frontend/src/constants` | Shared user interface messages and default warning text. |
+| `frontend/src/hooks` | Queue orchestration and small reusable user interface hooks. |
 | `frontend/src/styles` | Global CSS and component partials. |
 | `frontend/src/utils` | Reusable frontend logic for validation, queue state, statuses, export, and browser support. |
 
@@ -47,7 +47,7 @@ These are not documented in detail:
 
 ## Where To Start
 
-- UI shell: `frontend/src/App.jsx`
+- User interface shell: `frontend/src/App.jsx`
 - Main workflow: `frontend/src/components/verification/VerificationForm.jsx`
 - Queue state: `frontend/src/hooks/useQueueItems.js`
 - Verification calls: `frontend/src/hooks/useQueueVerification.js`

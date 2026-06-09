@@ -4,8 +4,8 @@ Compliance Label Assistant is an AI-powered alcohol label verification prototype
 
 ## Deployed Application
 
-- Frontend URL: TBD before submission
-- Backend API URL: TBD before submission
+- Frontend URL: To be added before submission
+- Backend API URL: To be added before submission
 
 Update these values before final submission. Do not include private dashboard links or secrets.
 
@@ -13,7 +13,7 @@ Update these values before final submission. Do not include private dashboard li
 
 - Upload JPG, PNG, WebP, or TIFF alcohol label images.
 - Queue up to 10 label images in the frontend.
-- Enter expected values for brand name, class/type, alcohol content, net contents, and government warning.
+- Enter expected values for brand name, class or type, alcohol content, net contents, and government warning.
 - Extract visible label fields through the backend OpenAI vision-model integration.
 - Compare extracted fields with expected fields using deterministic backend verification rules.
 - Display field-level pass, normalized match, fail, missing, needs-review, and error results.
@@ -24,11 +24,11 @@ Update these values before final submission. Do not include private dashboard li
 
 ## Stakeholder Problem Addressed
 
-Compliance reviewers manually compare label artwork to application data. This prototype targets routine matching work where a simple, fast UI can help reviewers identify likely matches, mismatches, and items that need manual review. Batch-oriented workflows matter because reviewers may need to process many labels, and slow tools are less likely to be adopted.
+Compliance reviewers manually compare label artwork to application data. This prototype targets routine matching work where a simple, fast user interface can help reviewers identify likely matches, mismatches, and items that need manual review. Batch-oriented workflows matter because reviewers may need to process many labels, and slow tools are less likely to be adopted.
 
 ## Technical Approach
 
-The React/Vite frontend handles image selection, queue state, expected field entry, API calls, result display, and exports. The FastAPI backend validates uploads, preprocesses images in memory, extracts label fields with an OpenAI vision model, and applies deterministic verification rules for selected fields. Extraction and verification are separate so provider output stays isolated from the comparison rules.
+The React and Vite frontend handles image selection, queue state, expected field entry, API calls, result display, and exports. The FastAPI backend validates uploads, preprocesses images in memory, extracts label fields with an OpenAI vision model, and applies deterministic verification rules for selected fields. Extraction and verification are separate so provider output stays isolated from the comparison rules.
 
 More detail is available in [docs/architecture/data-flow.md](docs/architecture/data-flow.md) and [docs/take-home/project-brief.md](docs/take-home/project-brief.md).
 
@@ -56,7 +56,7 @@ More detail is available in [docs/architecture/data-flow.md](docs/architecture/d
 - It does not include authentication, audit logging, a database, or persistent file storage.
 - OpenAI extraction may be imperfect on glare, blur, poor lighting, tiny text, or unusual layouts.
 - Government warning verification checks extracted text, not label typography, placement, or visual formatting.
-- The UI verifies queued labels by calling the single-label endpoint for each ready item; the backend also exposes a shared expected-field `/verify-batch` endpoint that the current UI does not call.
+- The user interface verifies queued labels by calling the single-label endpoint for each ready item; the backend also exposes a shared expected-field `/verify-batch` endpoint that the current user interface does not call.
 - Performance depends on provider response time, image size, preprocessing settings, and deployment tier.
 
 ## Local Setup and Run Instructions

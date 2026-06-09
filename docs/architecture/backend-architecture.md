@@ -43,7 +43,7 @@ sequenceDiagram
   participant Rules as verification rules
 
   Frontend->>Route: multipart/form-data
-  Route->>Service: UploadFile + ExpectedFields
+  Route->>Service: UploadFile and ExpectedFields
   Service->>Image: validate_upload_file
   Image-->>Service: original bytes
   Service->>Image: preprocess_image_for_extraction
