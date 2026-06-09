@@ -6,6 +6,7 @@ This folder is the source of truth for repository documentation. It describes th
 
 These evaluator-facing docs summarize the project deliverables without duplicating the deeper implementation reference:
 
+- [Reviewer Guide](../REVIEWER_GUIDE.md)
 - [Take-Home Project Brief](take-home/project-brief.md)
 - [Engineering Decisions](take-home/engineering-decisions.md)
 - [Setup And Run Guide](take-home/setup-and-run.md)
@@ -14,18 +15,19 @@ These evaluator-facing docs summarize the project deliverables without duplicati
 
 ## Reading Order
 
-1. [Take-Home Project Brief](take-home/project-brief.md)
-2. [Engineering Decisions](take-home/engineering-decisions.md)
-3. [Setup And Run Guide](take-home/setup-and-run.md)
-4. [Architecture: System Overview](architecture/system-overview.md)
-5. [Architecture: Data Flow](architecture/data-flow.md)
-6. [Frontend Overview](frontend/overview.md)
-7. [Backend Overview](backend/overview.md)
-8. [API Overview](api/overview.md)
-9. [Development: Local Development](development/local-development.md)
-10. [Development: Testing And Validation](development/testing-and-validation.md)
-11. [Deployment Overview](deployment/overview.md)
-12. [Reference: Repository Map](reference/repository-map.md)
+1. [Reviewer Guide](../REVIEWER_GUIDE.md)
+2. [Take-Home Project Brief](take-home/project-brief.md)
+3. [Engineering Decisions](take-home/engineering-decisions.md)
+4. [Setup And Run Guide](take-home/setup-and-run.md)
+5. [Architecture: System Overview](architecture/system-overview.md)
+6. [Architecture: Data Flow](architecture/data-flow.md)
+7. [Frontend Overview](frontend/overview.md)
+8. [Backend Overview](backend/overview.md)
+9. [API Overview](api/overview.md)
+10. [Development: Local Development](development/local-development.md)
+11. [Development: Testing And Validation](development/testing-and-validation.md)
+12. [Deployment Overview](deployment/overview.md)
+13. [Reference: Repository Map](reference/repository-map.md)
 
 ## Architecture
 

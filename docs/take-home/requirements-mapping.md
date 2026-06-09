@@ -5,6 +5,7 @@ This table maps the take-home deliverables and stakeholder needs to the current 
 | Requirement / Need | Where Addressed | Notes |
 | --- | --- | --- |
 | Source code repository | Repository root, `frontend/`, `backend/`, `scripts/`, `docs/` | Source code and documentation are contained in this repository. |
+| Fast evaluator review path | [../../REVIEWER_GUIDE.md](../../REVIEWER_GUIDE.md), [../../README.md](../../README.md) | Lists deployed URLs, access expectations, supported fields, sample data, smoke-test steps, and known gaps. |
 | README with setup and run instructions | [../../README.md](../../README.md), [setup-and-run.md](setup-and-run.md) | README provides the short path; the setup guide provides detailed commands. |
 | Brief documentation of approach, tools used, and assumptions made | [project-brief.md](project-brief.md), [../../README.md](../../README.md) | Covers business problem, technical approach, tools, assumptions, trade-offs, and limitations. |
 | Engineering reasoning behind scope and architecture | [engineering-decisions.md](engineering-decisions.md) | Explains project interpretation, assumptions, alternatives considered, implementation trade-offs, development approach, and production considerations. |
