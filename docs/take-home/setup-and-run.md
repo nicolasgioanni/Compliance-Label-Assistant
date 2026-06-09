@@ -146,6 +146,8 @@ There is no checked-in backend build script. Render should install `backend/requ
 10. Export current results to CSV or XLSX.
 11. Try an unsupported file type and confirm that a validation message appears.
 
+For repeatable manual smoke tests, use the synthetic fixture matrix in [../../sample-data/README.md](../../sample-data/README.md).
+
 ## Common Setup Issues
 
 | Symptom | Likely cause | Safe fix |

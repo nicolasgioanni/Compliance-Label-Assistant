@@ -1,0 +1,362 @@
+{
+  "schema_version": 1,
+  "description": "Synthetic alcohol label fixtures for manual review and deterministic backend tests.",
+  "standard_government_warning": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems.",
+  "supported_verification_fields": [
+    "brand_name",
+    "class_type",
+    "alcohol_content",
+    "net_contents",
+    "government_warning"
+  ],
+  "context_only_fields": [
+    "bottler_producer",
+    "country_of_origin",
+    "label_country_of_origin",
+    "government_warning_required"
+  ],
+  "test_cases": [
+    {
+      "id": "TC01",
+      "title": "Valid bourbon baseline",
+      "image_file": "images/tc01_valid_bourbon.png",
+      "application_fields": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL"
+      },
+      "context_fields": {
+        "bottler_producer": "Old Tom Distillery, Louisville, KY",
+        "country_of_origin": "USA",
+        "government_warning_required": true
+      },
+      "mock_extracted_fields": {
+        "brand_name": "OLD TOM DISTILLERY",
+        "class_type": "Kentucky Straight Bourbon Whiskey",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL",
+        "government_warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems."
+      },
+      "expected_overall_status": "pass",
+      "expected_field_statuses": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "government_warning": "pass"
+      },
+      "notes": [
+        "Baseline case where all currently supported fields match."
+      ]
+    },
+    {
+      "id": "TC02",
+      "title": "Brand capitalization normalization",
+      "image_file": "images/tc02_brand_case_normalization.png",
+      "application_fields": {
+        "brand_name": "Stone's Throw",
+        "class_type": "American Single Malt Whiskey",
+        "alcohol_content": "46% Alc./Vol. (92 Proof)",
+        "net_contents": "750 mL"
+      },
+      "context_fields": {
+        "bottler_producer": "Stone's Throw Spirits, Portland, OR",
+        "country_of_origin": "USA",
+        "government_warning_required": true
+      },
+      "mock_extracted_fields": {
+        "brand_name": "STONE'S THROW",
+        "class_type": "American Single Malt Whiskey",
+        "alcohol_content": "46% Alc./Vol. (92 Proof)",
+        "net_contents": "750 mL",
+        "government_warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems."
+      },
+      "expected_overall_status": "pass",
+      "expected_field_statuses": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "government_warning": "pass"
+      },
+      "notes": [
+        "Brand name should pass after capitalization normalization."
+      ]
+    },
+    {
+      "id": "TC03",
+      "title": "Alcohol content mismatch",
+      "image_file": "images/tc03_abv_mismatch.png",
+      "application_fields": {
+        "brand_name": "RIVER BEND VODKA",
+        "class_type": "Vodka",
+        "alcohol_content": "45% Alc./Vol. (90 Proof)",
+        "net_contents": "750 mL"
+      },
+      "context_fields": {
+        "bottler_producer": "River Bend Spirits, Boise, ID",
+        "country_of_origin": "USA",
+        "government_warning_required": true
+      },
+      "mock_extracted_fields": {
+        "brand_name": "RIVER BEND VODKA",
+        "class_type": "Vodka",
+        "alcohol_content": "40% Alc./Vol. (80 Proof)",
+        "net_contents": "750 mL",
+        "government_warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems."
+      },
+      "expected_overall_status": "fail",
+      "expected_field_statuses": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "fail",
+        "net_contents": "pass",
+        "government_warning": "pass"
+      },
+      "notes": [
+        "Alcohol content should fail because the application expects 45% ABV / 90 proof and the label shows 40% ABV / 80 proof."
+      ]
+    },
+    {
+      "id": "TC04",
+      "title": "Missing standard government warning",
+      "image_file": "images/tc04_missing_government_warning.png",
+      "application_fields": {
+        "brand_name": "MOUNTAIN PEAK GIN",
+        "class_type": "Distilled Gin",
+        "alcohol_content": "43% Alc./Vol. (86 Proof)",
+        "net_contents": "750 mL"
+      },
+      "context_fields": {
+        "bottler_producer": "Mountain Peak Distilling, Denver, CO",
+        "country_of_origin": "USA",
+        "government_warning_required": true
+      },
+      "mock_extracted_fields": {
+        "brand_name": "MOUNTAIN PEAK GIN",
+        "class_type": "Distilled Gin",
+        "alcohol_content": "43% Alc./Vol. (86 Proof)",
+        "net_contents": "750 mL",
+        "government_warning_text": "NO GOVERNMENT WARNING STATEMENT PRINTED ON THIS LABEL"
+      },
+      "expected_overall_status": "fail",
+      "expected_field_statuses": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "government_warning": "fail"
+      },
+      "notes": [
+        "Government warning should fail because the standard warning text is not present."
+      ]
+    },
+    {
+      "id": "TC05",
+      "title": "Government warning heading wrong case",
+      "image_file": "images/tc05_warning_header_wrong_case.png",
+      "application_fields": {
+        "brand_name": "LAKEHOUSE MERLOT",
+        "class_type": "Merlot Red Wine",
+        "alcohol_content": "13.5% Alc./Vol.",
+        "net_contents": "750 mL"
+      },
+      "context_fields": {
+        "bottler_producer": "Lakehouse Winery, Napa, CA",
+        "country_of_origin": "USA",
+        "government_warning_required": true
+      },
+      "mock_extracted_fields": {
+        "brand_name": "LAKEHOUSE MERLOT",
+        "class_type": "Merlot Red Wine",
+        "alcohol_content": "13.5% Alc./Vol.",
+        "net_contents": "750 mL",
+        "government_warning_text": "Government Warning: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems."
+      },
+      "expected_overall_status": "fail",
+      "expected_field_statuses": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "government_warning": "fail"
+      },
+      "notes": [
+        "Government warning should fail because the heading is title case instead of uppercase."
+      ]
+    },
+    {
+      "id": "TC06",
+      "title": "Net contents mismatch",
+      "image_file": "images/tc06_net_contents_mismatch.png",
+      "application_fields": {
+        "brand_name": "NORTH STAR RUM",
+        "class_type": "Aged Rum",
+        "alcohol_content": "42% Alc./Vol. (84 Proof)",
+        "net_contents": "750 mL"
+      },
+      "context_fields": {
+        "bottler_producer": "North Star Rum Co., Miami, FL",
+        "country_of_origin": "USA",
+        "government_warning_required": true
+      },
+      "mock_extracted_fields": {
+        "brand_name": "NORTH STAR RUM",
+        "class_type": "Aged Rum",
+        "alcohol_content": "42% Alc./Vol. (84 Proof)",
+        "net_contents": "700 mL",
+        "government_warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems."
+      },
+      "expected_overall_status": "fail",
+      "expected_field_statuses": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "fail",
+        "government_warning": "pass"
+      },
+      "notes": [
+        "Net contents should fail because the application expects 750 mL and the label shows 700 mL."
+      ]
+    },
+    {
+      "id": "TC07",
+      "title": "Class/type mismatch",
+      "image_file": "images/tc07_class_type_mismatch.png",
+      "application_fields": {
+        "brand_name": "GOLDEN BARREL",
+        "class_type": "Vodka",
+        "alcohol_content": "35% Alc./Vol. (70 Proof)",
+        "net_contents": "750 mL"
+      },
+      "context_fields": {
+        "bottler_producer": "Golden Barrel Imports, Tampa, FL",
+        "country_of_origin": "Jamaica",
+        "government_warning_required": true
+      },
+      "mock_extracted_fields": {
+        "brand_name": "GOLDEN BARREL",
+        "class_type": "Spiced Rum",
+        "alcohol_content": "35% Alc./Vol. (70 Proof)",
+        "net_contents": "750 mL",
+        "government_warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems."
+      },
+      "expected_overall_status": "fail",
+      "expected_field_statuses": {
+        "brand_name": "pass",
+        "class_type": "fail",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "government_warning": "pass"
+      },
+      "notes": [
+        "Class/type should fail because the application expects Vodka and the label shows Spiced Rum."
+      ]
+    },
+    {
+      "id": "TC08",
+      "title": "Country-of-origin mismatch future-scope case",
+      "image_file": "images/tc08_country_origin_mismatch.png",
+      "application_fields": {
+        "brand_name": "HIGHLAND VALE",
+        "class_type": "Single Malt Scotch Whisky",
+        "alcohol_content": "40% Alc./Vol. (80 Proof)",
+        "net_contents": "750 mL"
+      },
+      "context_fields": {
+        "bottler_producer": "Atlantic Beverage Importers, New York, NY",
+        "country_of_origin": "Ireland",
+        "label_country_of_origin": "Scotland",
+        "government_warning_required": true
+      },
+      "mock_extracted_fields": {
+        "brand_name": "HIGHLAND VALE",
+        "class_type": "Single Malt Scotch Whisky",
+        "alcohol_content": "40% Alc./Vol. (80 Proof)",
+        "net_contents": "750 mL",
+        "government_warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems."
+      },
+      "expected_overall_status": "pass",
+      "expected_field_statuses": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "government_warning": "pass"
+      },
+      "notes": [
+        "Country of origin intentionally differs, but the current API does not verify country_of_origin. This fixture should pass for currently supported fields and remain documented as future scope."
+      ]
+    },
+    {
+      "id": "TC09",
+      "title": "Valid wine with rotation and glare",
+      "image_file": "images/tc09_valid_wine_rotated_glare.png",
+      "application_fields": {
+        "brand_name": "SUNSET RIDGE CHARDONNAY",
+        "class_type": "Chardonnay White Wine",
+        "alcohol_content": "14.2% Alc./Vol.",
+        "net_contents": "750 mL"
+      },
+      "context_fields": {
+        "bottler_producer": "Sunset Ridge Winery, Sonoma, CA",
+        "country_of_origin": "USA",
+        "government_warning_required": true
+      },
+      "mock_extracted_fields": {
+        "brand_name": "SUNSET RIDGE CHARDONNAY",
+        "class_type": "Chardonnay White Wine",
+        "alcohol_content": "14.2% Alc./Vol.",
+        "net_contents": "750 mL",
+        "government_warning_text": "GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems."
+      },
+      "expected_overall_status": "pass",
+      "expected_field_statuses": {
+        "brand_name": "pass",
+        "class_type": "pass",
+        "alcohol_content": "pass",
+        "net_contents": "pass",
+        "government_warning": "pass"
+      },
+      "notes": [
+        "Image is rotated with glare. Automated tests use mocked extraction, while manual testing exercises the real extraction provider."
+      ]
+    },
+    {
+      "id": "TC10",
+      "title": "Multiple supported-field errors in low light",
+      "image_file": "images/tc10_multiple_errors_low_light.png",
+      "application_fields": {
+        "brand_name": "BLUE HARBOR SILVER",
+        "class_type": "Tequila Blanco",
+        "alcohol_content": "40% Alc./Vol. (80 Proof)",
+        "net_contents": "750 mL"
+      },
+      "context_fields": {
+        "bottler_producer": "Blue Harbor Spirits, Austin, TX",
+        "country_of_origin": "Mexico",
+        "label_country_of_origin": "USA",
+        "government_warning_required": true
+      },
+      "mock_extracted_fields": {
+        "brand_name": "BLUE HARBOR",
+        "class_type": "Premium Tequila",
+        "alcohol_content": "38% Alc./Vol. (76 Proof)",
+        "net_contents": "1 L",
+        "government_warning_text": "GOVERNMENT WARNING: (1) Women should avoid alcohol during pregnancy. (2) Alcohol may affect driving and health."
+      },
+      "expected_overall_status": "fail",
+      "expected_field_statuses": {
+        "brand_name": "fail",
+        "class_type": "fail",
+        "alcohol_content": "fail",
+        "net_contents": "fail",
+        "government_warning": "fail"
+      },
+      "notes": [
+        "Low-light image with multiple intentional supported-field failures."
+      ]
+    }
+  ]
+}

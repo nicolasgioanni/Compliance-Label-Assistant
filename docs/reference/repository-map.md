@@ -23,7 +23,7 @@ label-compliance-verifier/
 | `frontend/` | Vite React frontend, queue UI, API client, hooks, components, styles, frontend tests. |
 | `docs/` | Documentation system and compatibility navigation pages. |
 | `scripts/` | PowerShell local setup/start scripts and shared local-development helpers. |
-| `sample-data/` | Placeholder README; no real sample label images are included. |
+| `sample-data/` | Synthetic label fixtures, manual test matrix, fixture manifest, and backend fixture-test data. |
 
 ## Important Root Files
 

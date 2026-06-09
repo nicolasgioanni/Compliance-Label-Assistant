@@ -122,6 +122,8 @@ Basic smoke test:
 6. Try an unsupported file type or oversized file and confirm a user-facing validation error.
 7. Export verified results to CSV or XLSX.
 
+Synthetic labels and expected manual inputs are available in [sample-data/README.md](sample-data/README.md).
+
 For the longer setup guide, see [docs/take-home/setup-and-run.md](docs/take-home/setup-and-run.md).
 
 ## Environment Variables
@@ -177,7 +179,7 @@ backend/      FastAPI app, schemas, routes, services, provider integration, test
 frontend/     React/Vite app, components, hooks, utilities, tests
 docs/         Take-home, architecture, frontend, backend, API, deployment, and reference docs
 scripts/      Local setup and development PowerShell scripts
-sample-data/  Sample label assets for local testing
+sample-data/  Synthetic label fixtures, manual test data, and backend fixture-test data
 ```
 
 ## Submission Notes
