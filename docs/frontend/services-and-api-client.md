@@ -31,6 +31,8 @@ The frontend should never receive provider secrets.
 - `class_type`
 - `alcohol_content`
 - `net_contents`
+- `bottler_producer`
+- `country_of_origin`
 - `government_warning`
 
 Frontend expected field names are camelCase. API form field names are snake_case. `appendExpectedFields` performs that mapping.

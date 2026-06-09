@@ -15,7 +15,7 @@ FieldStatus = Literal[
     "needs_review",
     "error",
 ]
-OverallStatus = Literal["pass", "fail", "needs_review", "error"]
+OverallStatus = Literal["pass", "fail", "error"]
 
 
 class ExpectedFields(BaseModel):
@@ -23,6 +23,8 @@ class ExpectedFields(BaseModel):
     class_type: str
     alcohol_content: str
     net_contents: str
+    bottler_producer: str = ""
+    country_of_origin: str = ""
     government_warning: str
 
 
@@ -31,6 +33,8 @@ class ExtractedFields(BaseModel):
     class_type: str | None = None
     alcohol_content: str | None = None
     net_contents: str | None = None
+    bottler_producer: str | None = None
+    country_of_origin: str | None = None
     government_warning_text: str | None = None
     raw_text: str | None = None
 

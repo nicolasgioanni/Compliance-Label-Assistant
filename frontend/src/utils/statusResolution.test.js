@@ -34,13 +34,13 @@ describe('status resolution', () => {
     expect(getAutomatedStatus(makeQueueItem({ isResultStale: true, status: 'ready' }))).toBe('ready');
   });
 
-  it('returns queue labels and classes from backend status', () => {
+  it('maps legacy needs-review result status to fail labels and classes', () => {
     const item = makeQueueItem({
       result: { overall_status: 'needs_review' },
     });
 
-    expect(getQueueItemStatusLabel(item)).toBe('Needs Review');
-    expect(getQueueItemStatusClass(item)).toBe('queue-status queue-status-needs-review');
+    expect(getQueueItemStatusLabel(item)).toBe('Fail');
+    expect(getQueueItemStatusClass(item)).toBe('queue-status queue-status-fail');
   });
 
   it('counts queue summaries from backend statuses', () => {
@@ -59,8 +59,7 @@ describe('status resolution', () => {
       passedCount: 1,
       failedCount: 3,
       passCount: 1,
-      failCount: 1,
-      needsReviewCount: 1,
+      failCount: 2,
       errorCount: 1,
     });
   });

@@ -58,16 +58,15 @@ Backend:
 `verify_expected_fields`:
 
 - Always verifies brand name.
-- Verifies class or type, alcohol content, and net contents only when corresponding expected values are not blank.
+- Verifies class or type, alcohol content, net contents, bottler/producer, and country of origin only when corresponding expected values are not blank.
 - Always verifies the backend standard government warning text.
 - Returns one `FieldResult` per checked field.
 
 `calculate_overall_status` derives the response status from field statuses:
 
 - `error` if any field status is `error`
-- `fail` if any field status is `fail`
-- `needs_review` if any field status is `missing`, `needs_review`, or `normalized_match`
-- `pass` otherwise
+- `pass` only when every checked field status is `pass`
+- `fail` if any checked field status is `fail`, `missing`, `needs_review`, or `normalized_match`
 
 ## Queue And Batch Flow
 

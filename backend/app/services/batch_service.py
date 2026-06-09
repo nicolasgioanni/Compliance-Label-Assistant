@@ -31,7 +31,7 @@ from app.services.timing_service import get_elapsed_ms, start_timer
 
 
 MIN_BATCH_SIZE = 2
-OVERALL_STATUS_KEYS: tuple[OverallStatus, ...] = ("pass", "fail", "needs_review", "error")
+OVERALL_STATUS_KEYS: tuple[OverallStatus, ...] = ("pass", "fail", "error")
 
 
 class BatchRequestValidationError(ValueError):

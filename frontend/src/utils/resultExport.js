@@ -13,6 +13,8 @@ export const EXPORT_COLUMNS = [
   ['class_type_status', 'class_type'],
   ['alcohol_content_status', 'alcohol_content'],
   ['net_contents_status', 'net_contents'],
+  ['bottler_producer_status', 'bottler_producer'],
+  ['country_of_origin_status', 'country_of_origin'],
   ['government_warning_status', 'government_warning'],
   ['processing_time_ms', 'processing_time_ms'],
 ];

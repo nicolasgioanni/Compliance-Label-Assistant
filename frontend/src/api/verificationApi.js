@@ -18,6 +18,8 @@ function appendExpectedFields(formData, expectedFields) {
   formData.append('class_type', expectedFields.classType);
   formData.append('alcohol_content', expectedFields.alcoholContent);
   formData.append('net_contents', expectedFields.netContents);
+  formData.append('bottler_producer', expectedFields.bottlerProducer || '');
+  formData.append('country_of_origin', expectedFields.countryOfOrigin || '');
   formData.append('government_warning', expectedFields.governmentWarning || DEFAULT_GOVERNMENT_WARNING);
 }
 

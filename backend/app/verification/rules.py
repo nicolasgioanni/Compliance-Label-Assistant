@@ -27,6 +27,8 @@ from app.verification.results import build_field_result
 
 BRAND_REVIEW_THRESHOLD = 0.88
 CLASS_REVIEW_THRESHOLD = 0.82
+BOTTLER_PRODUCER_REVIEW_THRESHOLD = 0.82
+COUNTRY_REVIEW_THRESHOLD = 0.88
 WARNING_REVIEW_THRESHOLD = 0.92
 ABV_TOLERANCE = 0.1
 PROOF_TOLERANCE = 0.2
@@ -295,6 +297,89 @@ def verify_net_contents(expected: str, found: str | None) -> FieldResult:
     return build_field_result("net_contents", expected, found, "fail", "Net contents conflict with expected value.", 0.95)
 
 
+def verify_text_field(
+    field_name: str,
+    display_name: str,
+    expected: str,
+    found: str | None,
+    review_threshold: float,
+) -> FieldResult:
+    if _is_missing(found):
+        return build_field_result(
+            field_name,
+            expected,
+            found,
+            "missing",
+            f"{display_name} was not found on the label.",
+            0.6,
+        )
+
+    found_value = found or ""
+    if (
+        _exact_text_match(expected, found_value)
+        or matches_after_case_and_spacing_normalization(expected, found_value)
+        or _safe_punctuation_match(expected, found_value)
+    ):
+        return build_field_result(
+            field_name,
+            expected,
+            found,
+            "pass",
+            f"{display_name} matches expected value.",
+            1.0,
+        )
+
+    if _normalized_match(expected, found_value):
+        return build_field_result(
+            field_name,
+            expected,
+            found,
+            "needs_review",
+            f"{display_name} is similar after normalization and should be reviewed by a human.",
+            0.9,
+        )
+
+    similarity = calculate_similarity(expected, found_value)
+    if _has_token_containment(expected, found_value) or similarity >= review_threshold:
+        return build_field_result(
+            field_name,
+            expected,
+            found,
+            "needs_review",
+            f"{display_name} is partial or similar and should be reviewed by a human.",
+            round(max(similarity, review_threshold), 2),
+        )
+
+    return build_field_result(
+        field_name,
+        expected,
+        found,
+        "fail",
+        f"{display_name} conflicts with expected value.",
+        0.95,
+    )
+
+
+def verify_bottler_producer(expected: str, found: str | None) -> FieldResult:
+    return verify_text_field(
+        "bottler_producer",
+        "Bottler/producer",
+        expected,
+        found,
+        BOTTLER_PRODUCER_REVIEW_THRESHOLD,
+    )
+
+
+def verify_country_of_origin(expected: str, found: str | None) -> FieldResult:
+    return verify_text_field(
+        "country_of_origin",
+        "Country of origin",
+        expected,
+        found,
+        COUNTRY_REVIEW_THRESHOLD,
+    )
+
+
 def _has_required_government_warning_heading(found: str) -> bool:
     return remove_extra_whitespace(found).startswith("GOVERNMENT WARNING")
 
@@ -380,15 +465,9 @@ def calculate_overall_status(field_results: list[FieldResult]) -> OverallStatus:
     statuses = [field_result.status for field_result in field_results]
     if "error" in statuses:
         return "error"
-    if "fail" in statuses:
-        return "fail"
-    if "missing" in statuses:
-        return "needs_review"
-    if "needs_review" in statuses:
-        return "needs_review"
-    if "normalized_match" in statuses:
-        return "needs_review"
-    return "pass"
+    if all(status == "pass" for status in statuses):
+        return "pass"
+    return "fail"
 
 
 def verify_expected_fields(expected_fields: ExpectedFields, extracted_fields: ExtractedFields) -> list[FieldResult]:
@@ -404,6 +483,16 @@ def verify_expected_fields(expected_fields: ExpectedFields, extracted_fields: Ex
 
     if not _is_missing(expected_fields.net_contents):
         field_results.append(verify_net_contents(expected_fields.net_contents, extracted_fields.net_contents))
+
+    if not _is_missing(expected_fields.bottler_producer):
+        field_results.append(
+            verify_bottler_producer(expected_fields.bottler_producer, extracted_fields.bottler_producer),
+        )
+
+    if not _is_missing(expected_fields.country_of_origin):
+        field_results.append(
+            verify_country_of_origin(expected_fields.country_of_origin, extracted_fields.country_of_origin),
+        )
 
     field_results.append(
         verify_government_warning(STANDARD_GOVERNMENT_WARNING, extracted_fields.government_warning_text),

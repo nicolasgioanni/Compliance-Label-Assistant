@@ -3,6 +3,8 @@ const EXTRACTED_FIELD_LABELS = {
   class_type: 'Class/Type',
   alcohol_content: 'Alcohol Content',
   net_contents: 'Net Contents',
+  bottler_producer: 'Bottler/Producer',
+  country_of_origin: 'Country of Origin',
   government_warning_text: 'Government Warning',
 };
 

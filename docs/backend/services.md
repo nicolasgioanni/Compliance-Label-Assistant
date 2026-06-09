@@ -43,7 +43,7 @@ Responsibilities:
 - Run per-file processing through `process_single_label`.
 - Limit concurrent work with `settings.batch_concurrency`.
 - Convert per-file failures into `BatchVerificationItem` error results.
-- Build status counts for `pass`, `fail`, `needs_review`, and `error`.
+- Build status counts for `pass`, `fail`, and `error`.
 
 ## `warmup_service.py`
 

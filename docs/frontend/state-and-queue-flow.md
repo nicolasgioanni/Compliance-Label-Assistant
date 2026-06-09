@@ -30,10 +30,9 @@ Backend result statuses may also appear on queue items after success:
 
 - `pass`
 - `fail`
-- `needs_review`
 - `error`
 
-`frontend/src/utils/statusResolution.js` decides when to use a current backend result versus a frontend workflow status.
+`frontend/src/utils/statusResolution.js` decides when to use a current backend result versus a frontend workflow status. Legacy `needs_review` result statuses are treated as `fail`.
 
 ## Queue Addition
 

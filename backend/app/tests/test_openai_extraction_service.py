@@ -30,6 +30,8 @@ def test_parse_uses_fast_field_only_responses_parameters(monkeypatch) -> None:
                     "class_type": "Kentucky Straight Bourbon Whiskey",
                     "alcohol_content": "45% Alc./Vol. (90 Proof)",
                     "net_contents": "750 mL",
+                    "bottler_producer": "Old Tom Distillery, Louisville, KY",
+                    "country_of_origin": "USA",
                     "government_warning_text": "GOVERNMENT WARNING: Standard text.",
                 }
             )
@@ -50,6 +52,8 @@ def test_parse_uses_fast_field_only_responses_parameters(monkeypatch) -> None:
     extracted = _extract_label_fields_sync(b"image bytes", settings)
 
     assert extracted.brand_name == "OLD TOM DISTILLERY"
+    assert extracted.bottler_producer == "Old Tom Distillery, Louisville, KY"
+    assert extracted.country_of_origin == "USA"
     assert extracted.raw_text is None
     assert captured["client_settings"] is settings
     assert captured["model"] == "gpt-test"
@@ -61,6 +65,8 @@ def test_parse_uses_fast_field_only_responses_parameters(monkeypatch) -> None:
         "class_type",
         "alcohol_content",
         "net_contents",
+        "bottler_producer",
+        "country_of_origin",
         "government_warning_text",
     }
     image_item = captured["input"][0]["content"][1]

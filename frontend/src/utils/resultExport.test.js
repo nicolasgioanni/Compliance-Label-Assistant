@@ -34,6 +34,8 @@ function makeQueueItem(overrides = {}) {
         { field_name: 'class_type', status: 'fail' },
         { field_name: 'alcohol_content', status: 'needs_review' },
         { field_name: 'net_contents', status: 'missing' },
+        { field_name: 'bottler_producer', status: 'pass' },
+        { field_name: 'country_of_origin', status: 'fail' },
         { field_name: 'government_warning', status: 'pass' },
       ],
     },
@@ -100,8 +102,8 @@ describe('result export utilities', () => {
 
     expect(csv).toBe(
       [
-        'filename,overall_status,brand_name_status,class_type_status,alcohol_content_status,net_contents_status,government_warning_status,processing_time_ms',
-        'label-one.png,pass,pass,fail,needs_review,missing,pass,123',
+        'filename,overall_status,brand_name_status,class_type_status,alcohol_content_status,net_contents_status,bottler_producer_status,country_of_origin_status,government_warning_status,processing_time_ms',
+        'label-one.png,pass,pass,fail,needs_review,missing,pass,fail,pass,123',
       ].join('\n'),
     );
   });
@@ -168,8 +170,8 @@ describe('result export utilities', () => {
 
     expect(csv).toBe(
       [
-        'filename,overall_status,brand_name_status,class_type_status,alcohol_content_status,net_contents_status,government_warning_status,processing_time_ms',
-        'label-one.png,fail,fail,pass,,,,321',
+        'filename,overall_status,brand_name_status,class_type_status,alcohol_content_status,net_contents_status,bottler_producer_status,country_of_origin_status,government_warning_status,processing_time_ms',
+        'label-one.png,fail,fail,pass,,,,,,321',
       ].join('\n'),
     );
   });
@@ -194,10 +196,12 @@ describe('result export utilities', () => {
           'class_type_status',
           'alcohol_content_status',
           'net_contents_status',
+          'bottler_producer_status',
+          'country_of_origin_status',
           'government_warning_status',
           'processing_time_ms',
         ],
-        ['label-one.png', 'pass', 'pass', 'fail', 'needs_review', 'missing', 'pass', 123],
+        ['label-one.png', 'pass', 'pass', 'fail', 'needs_review', 'missing', 'pass', 'fail', 'pass', 123],
       ],
       { sheet: 'Verification Results' },
     );
@@ -224,10 +228,12 @@ describe('result export utilities', () => {
         'class_type_status',
         'alcohol_content_status',
         'net_contents_status',
+        'bottler_producer_status',
+        'country_of_origin_status',
         'government_warning_status',
         'processing_time_ms',
       ],
-      ['label-one.png', 'pass', 'pass', 'fail', 'needs_review', 'missing', 'pass', 123],
+      ['label-one.png', 'pass', 'pass', 'fail', 'needs_review', 'missing', 'pass', 'fail', 'pass', 123],
     ]);
   });
 });

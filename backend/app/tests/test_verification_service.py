@@ -3,8 +3,10 @@ from app.schemas import ExpectedFields, ExtractedFields
 from app.verification.rules import (
     calculate_overall_status,
     verify_alcohol_content,
+    verify_bottler_producer,
     verify_brand_name,
     verify_class_type,
+    verify_country_of_origin,
     verify_expected_fields,
     verify_government_warning,
     verify_net_contents,
@@ -130,6 +132,55 @@ def test_net_contents_missing_value() -> None:
     assert result.status == "missing"
 
 
+def test_bottler_producer_exact_match_passes() -> None:
+    result = verify_bottler_producer(
+        "Old Tom Distillery, Louisville, KY",
+        "Old Tom Distillery, Louisville, KY",
+    )
+    assert result.status == "pass"
+
+
+def test_bottler_producer_partial_match_needs_review() -> None:
+    result = verify_bottler_producer(
+        "Old Tom Distillery, Louisville, KY",
+        "Old Tom Distillery",
+    )
+    assert result.status == "needs_review"
+
+
+def test_bottler_producer_missing_value() -> None:
+    result = verify_bottler_producer("Old Tom Distillery, Louisville, KY", None)
+    assert result.status == "missing"
+
+
+def test_bottler_producer_conflict_fails() -> None:
+    result = verify_bottler_producer(
+        "Old Tom Distillery, Louisville, KY",
+        "New Tom Bottling, Boston, MA",
+    )
+    assert result.status == "fail"
+
+
+def test_country_of_origin_exact_match_passes() -> None:
+    result = verify_country_of_origin("Ireland", "Ireland")
+    assert result.status == "pass"
+
+
+def test_country_of_origin_partial_match_needs_review() -> None:
+    result = verify_country_of_origin("Ireland", "Product of Ireland")
+    assert result.status == "needs_review"
+
+
+def test_country_of_origin_missing_value() -> None:
+    result = verify_country_of_origin("Ireland", None)
+    assert result.status == "missing"
+
+
+def test_country_of_origin_conflict_fails() -> None:
+    result = verify_country_of_origin("Ireland", "Scotland")
+    assert result.status == "fail"
+
+
 def test_government_warning_exact_uppercase_passes() -> None:
     result = verify_government_warning(STANDARD_WARNING, STANDARD_WARNING)
     assert result.status == "pass"
@@ -191,8 +242,8 @@ def test_overall_status_rules() -> None:
     fail_result = verify_brand_name("OLD TOM", "NEW TOM")
 
     assert calculate_overall_status([pass_result]) == "pass"
-    assert calculate_overall_status([normalized_result]) == "needs_review"
-    assert calculate_overall_status([missing_result]) == "needs_review"
+    assert calculate_overall_status([normalized_result]) == "fail"
+    assert calculate_overall_status([missing_result]) == "fail"
     assert calculate_overall_status([fail_result]) == "fail"
 
 
@@ -202,6 +253,8 @@ def test_verify_expected_fields_returns_field_results() -> None:
         class_type="Kentucky Straight Bourbon Whiskey",
         alcohol_content="45% Alc./Vol. (90 Proof)",
         net_contents="750 mL",
+        bottler_producer="Old Tom Distillery, Louisville, KY",
+        country_of_origin="USA",
         government_warning=STANDARD_WARNING,
     )
     extracted = ExtractedFields(
@@ -209,12 +262,14 @@ def test_verify_expected_fields_returns_field_results() -> None:
         class_type="Kentucky Straight Bourbon Whiskey",
         alcohol_content="90 Proof",
         net_contents="0.75 L",
+        bottler_producer="Old Tom Distillery, Louisville, KY",
+        country_of_origin="USA",
         government_warning_text=STANDARD_WARNING,
     )
 
     results = verify_expected_fields(expected, extracted)
 
-    assert [result.status for result in results] == ["pass", "pass", "pass", "pass", "pass"]
+    assert [result.status for result in results] == ["pass", "pass", "pass", "pass", "pass", "pass", "pass"]
 
 
 def test_verify_expected_fields_normalized_matches_return_overall_pass() -> None:
@@ -223,6 +278,8 @@ def test_verify_expected_fields_normalized_matches_return_overall_pass() -> None
         class_type="Kentucky Straight Bourbon Whiskey",
         alcohol_content="45% Alc./Vol. (90 Proof)",
         net_contents="750 mL",
+        bottler_producer="OLD TOM DISTILLERY, LOUISVILLE, KY",
+        country_of_origin="USA",
         government_warning=STANDARD_WARNING,
     )
     extracted = ExtractedFields(
@@ -230,12 +287,14 @@ def test_verify_expected_fields_normalized_matches_return_overall_pass() -> None
         class_type="kentucky   straight\nbourbon whiskey",
         alcohol_content="45 % alc/vol (90 proof)",
         net_contents="750 ml",
+        bottler_producer="Old Tom Distillery, Louisville, KY",
+        country_of_origin="usa",
         government_warning_text=STANDARD_WARNING,
     )
 
     results = verify_expected_fields(expected, extracted)
 
-    assert [result.status for result in results] == ["pass", "pass", "pass", "pass", "pass"]
+    assert [result.status for result in results] == ["pass", "pass", "pass", "pass", "pass", "pass", "pass"]
     assert calculate_overall_status(results) == "pass"
 
 

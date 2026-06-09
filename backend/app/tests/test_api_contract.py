@@ -144,6 +144,36 @@ def test_verify_returns_pass_when_all_fields_match_after_normalization(monkeypat
     assert body["field_results"][0]["reason"] == "Brand name matches after capitalization normalization."
 
 
+def test_verify_includes_bottler_and_country_when_expected(monkeypatch) -> None:
+    response = _post_verify_with_extracted(
+        monkeypatch,
+        ExtractedFields(
+            brand_name="OLD TOM DISTILLERY",
+            class_type="Kentucky Straight Bourbon Whiskey",
+            alcohol_content="90 Proof",
+            net_contents="750 mL",
+            bottler_producer="Old Tom Distillery, Louisville, KY",
+            country_of_origin="USA",
+            government_warning_text=STANDARD_WARNING,
+            raw_text="Old Tom Distillery, Louisville, KY\nUSA",
+        ),
+        bottler_producer="Old Tom Distillery, Louisville, KY",
+        country_of_origin="USA",
+    )
+
+    body = response.json()
+    field_statuses = {field["field_name"]: field["status"] for field in body["field_results"]}
+
+    assert response.status_code == 200
+    assert body["overall_status"] == "pass"
+    assert body["expected_fields"]["bottler_producer"] == "Old Tom Distillery, Louisville, KY"
+    assert body["expected_fields"]["country_of_origin"] == "USA"
+    assert body["extracted_fields"]["bottler_producer"] == "Old Tom Distillery, Louisville, KY"
+    assert body["extracted_fields"]["country_of_origin"] == "USA"
+    assert field_statuses["bottler_producer"] == "pass"
+    assert field_statuses["country_of_origin"] == "pass"
+
+
 def test_verify_uses_backend_standard_warning_when_client_submits_stale_text(monkeypatch) -> None:
     response = _post_verify_with_extracted(
         monkeypatch,
@@ -188,7 +218,7 @@ def test_verify_returns_fail_when_extracted_value_conflicts(monkeypatch) -> None
     assert body["field_results"][0]["status"] == "fail"
 
 
-def test_verify_returns_needs_review_when_field_missing(monkeypatch) -> None:
+def test_verify_returns_fail_when_field_missing(monkeypatch) -> None:
     response = _post_verify_with_extracted(
         monkeypatch,
         ExtractedFields(
@@ -204,11 +234,11 @@ def test_verify_returns_needs_review_when_field_missing(monkeypatch) -> None:
     body = response.json()
 
     assert response.status_code == 200
-    assert body["overall_status"] == "needs_review"
+    assert body["overall_status"] == "fail"
     assert body["field_results"][0]["status"] == "missing"
 
 
-def test_verify_returns_needs_review_for_similar_brand(monkeypatch) -> None:
+def test_verify_returns_fail_for_similar_brand(monkeypatch) -> None:
     response = _post_verify_with_extracted(
         monkeypatch,
         ExtractedFields(
@@ -224,7 +254,7 @@ def test_verify_returns_needs_review_for_similar_brand(monkeypatch) -> None:
     body = response.json()
 
     assert response.status_code == 200
-    assert body["overall_status"] == "needs_review"
+    assert body["overall_status"] == "fail"
     assert body["field_results"][0]["status"] == "needs_review"
 
 
@@ -417,7 +447,7 @@ def test_verify_batch_returns_one_result_per_valid_file(monkeypatch) -> None:
     assert body["mode"] == "batch"
     assert body["total_labels"] == 2
     assert body["completed"] == 2
-    assert body["status_counts"] == {"pass": 2, "fail": 0, "needs_review": 0, "error": 0}
+    assert body["status_counts"] == {"pass": 2, "fail": 0, "error": 0}
     assert len(body["results"]) == 2
     assert body["results"][0]["filename"] == "old-tom-a.png"
     assert "expected_fields" in body["results"][0]
@@ -455,7 +485,7 @@ def test_verify_batch_returns_partial_per_file_errors(monkeypatch) -> None:
     assert response.status_code == 200
     assert body["total_labels"] == 2
     assert body["completed"] == 1
-    assert body["status_counts"] == {"pass": 1, "fail": 0, "needs_review": 0, "error": 1}
+    assert body["status_counts"] == {"pass": 1, "fail": 0, "error": 1}
     assert [result["overall_status"] for result in body["results"]] == ["pass", "error"]
     assert "Unsupported file extension" in body["results"][1]["error"]
     assert body["results"][1]["validation_time_ms"] == 0

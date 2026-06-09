@@ -20,6 +20,8 @@ Extraction and verification are deliberately separate. Provider code extracts vi
 - `class_type`
 - `alcohol_content`
 - `net_contents`
+- `bottler_producer`
+- `country_of_origin`
 - `government_warning_text`
 - `raw_text`
 
@@ -33,6 +35,8 @@ The current provider parser sets `raw_text` to `null`.
 - `class_type`
 - `alcohol_content`
 - `net_contents`
+- `bottler_producer`
+- `country_of_origin`
 - `government_warning`
 
 The route accepts `government_warning` for API compatibility, but `_build_expected_fields` replaces it with the backend standard warning from `backend/app/constants.py`.
@@ -62,6 +66,12 @@ Net contents:
 
 - Normalizes milliliters and liters to milliliters.
 - Uses the `NET_CONTENTS_TOLERANCE_ML` setting. The current value is `0.5`.
+
+Bottler/producer and country of origin:
+
+- Pass exact, capitalization-and-spacing-normalized, and safe punctuation-normalized text matches.
+- Mark partial token containment or high similarity as `needs_review`.
+- Mark missing values as `missing` and conflicts as `fail`.
 
 Government warning:
 

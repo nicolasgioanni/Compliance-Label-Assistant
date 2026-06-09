@@ -51,7 +51,6 @@ Overall statuses:
 
 - `pass`
 - `fail`
-- `needs_review`
 - `error`
 
 ## Error Shape

@@ -28,11 +28,11 @@ SUPPORTED_FIELD_NAMES = {
     "class_type",
     "alcohol_content",
     "net_contents",
+    "bottler_producer",
+    "country_of_origin",
     "government_warning",
 }
 CONTEXT_ONLY_FIELD_NAMES = {
-    "bottler_producer",
-    "country_of_origin",
     "label_country_of_origin",
     "government_warning_required",
 }
@@ -55,6 +55,8 @@ def _form_data(case: dict[str, Any]) -> dict[str, str]:
         "class_type": application_fields["class_type"],
         "alcohol_content": application_fields["alcohol_content"],
         "net_contents": application_fields["net_contents"],
+        "bottler_producer": application_fields["bottler_producer"],
+        "country_of_origin": application_fields["country_of_origin"],
         "government_warning": STANDARD_GOVERNMENT_WARNING,
     }
 

@@ -26,6 +26,9 @@ import {
   waitFor,
   within,
 } from './VerificationForm.testUtils';
+
+const OVERWRITE_WARNING_TEXT = 'Selected labels with existing expected data will be overwritten.';
+
 describe('VerificationForm.copyData', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -118,6 +121,10 @@ describe('VerificationForm.copyData', () => {
     });
     addBrandName('Shared Brand');
     fireEvent.change(screen.getByLabelText(/Class \/ Type Designation/i), { target: { value: 'Whiskey' } });
+    fireEvent.change(screen.getByLabelText(/Name and address of bottler\/producer/i), {
+      target: { value: 'Shared Bottler, Louisville, KY' },
+    });
+    fireEvent.change(screen.getByLabelText(/Country of Origin/i), { target: { value: 'USA' } });
     fireEvent.click(screen.getByRole('button', { name: 'Copy Claim Data' }));
 
     const dialog = screen.getByRole('dialog', { name: 'Copy Expected Data to Labels' });
@@ -127,10 +134,16 @@ describe('VerificationForm.copyData', () => {
     selectQueueLabel('second-label.png');
     expect(screen.getByLabelText(/Brand Name/i)).toHaveValue('Shared Brand');
     expect(screen.getByLabelText(/Class \/ Type Designation/i)).toHaveValue('Whiskey');
+    expect(screen.getByLabelText(/Name and address of bottler\/producer/i)).toHaveValue(
+      'Shared Bottler, Louisville, KY',
+    );
+    expect(screen.getByLabelText(/Country of Origin/i)).toHaveValue('USA');
 
     selectQueueLabel('third-label.png');
     expect(screen.getByLabelText(/Brand Name/i)).toHaveValue('');
     expect(screen.getByLabelText(/Class \/ Type Designation/i)).toHaveValue('');
+    expect(screen.getByLabelText(/Name and address of bottler\/producer/i)).toHaveValue('');
+    expect(screen.getByLabelText(/Country of Origin/i)).toHaveValue('');
   });
 
   it('does not show the old missing-data modal warning after requiring source brand before opening', () => {
@@ -178,7 +191,7 @@ describe('VerificationForm.copyData', () => {
     expect(within(dialog).queryByRole('alert')).not.toBeInTheDocument();
   });
 
-  it('shows overwrite and blank-field warnings together in the top popdown area', () => {
+  it('shows overwrite and blank-field warnings together in the top popdown area', async () => {
     const showError = vi.fn();
     const { container } = render(<VerificationForm showError={showError} />);
     const [fileInput] = fileInputs(container);
@@ -195,19 +208,25 @@ describe('VerificationForm.copyData', () => {
     const dialog = screen.getByRole('dialog', { name: 'Copy Expected Data to Labels' });
     fireEvent.click(within(dialog).getByRole('checkbox', { name: /target-label\.png/i }));
 
+    await waitFor(() => {
+      expect(within(dialog).getByRole('alert')).toHaveTextContent(OVERWRITE_WARNING_TEXT);
+    });
+
     let warningStack = within(dialog).getByRole('alert');
     expect(warningStack).toHaveTextContent('Blank fields will also be copied.');
-    expect(warningStack).toHaveTextContent('Selected labels with existing expected data will be overwritten.');
+    expect(warningStack).toHaveTextContent(OVERWRITE_WARNING_TEXT);
     expect(within(dialog).getByRole('button', { name: 'Dismiss blank field warning' })).toBeInTheDocument();
+    expect(within(dialog).getByRole('button', { name: 'Dismiss overwrite warning' })).toBeInTheDocument();
+    expect(dialog.querySelector('.copy-data-message-info')).not.toBeInTheDocument();
 
     fireEvent.click(within(dialog).getByRole('button', { name: 'Clear Selection' }));
 
     warningStack = within(dialog).getByRole('alert');
     expect(warningStack).toHaveTextContent('Blank fields will also be copied.');
-    expect(warningStack).not.toHaveTextContent('Selected labels with existing expected data will be overwritten.');
+    expect(warningStack).not.toHaveTextContent(OVERWRITE_WARNING_TEXT);
   });
 
-  it('shows only the overwrite warning when the blank-field warning is dismissed', () => {
+  it('dismisses the overwrite warning without closing the copy dialog', async () => {
     const showError = vi.fn();
     const { container } = render(<VerificationForm showError={showError} />);
     const [fileInput] = fileInputs(container);
@@ -225,10 +244,21 @@ describe('VerificationForm.copyData', () => {
     fireEvent.click(within(dialog).getByRole('button', { name: 'Dismiss blank field warning' }));
     fireEvent.click(within(dialog).getByRole('checkbox', { name: /target-label\.png/i }));
 
+    await waitFor(() => {
+      expect(within(dialog).getByRole('alert')).toHaveTextContent(OVERWRITE_WARNING_TEXT);
+    });
+
     const warningStack = within(dialog).getByRole('alert');
     expect(warningStack).not.toHaveTextContent('Blank fields will also be copied.');
-    expect(warningStack).toHaveTextContent('Selected labels with existing expected data will be overwritten.');
+    expect(warningStack).toHaveTextContent(OVERWRITE_WARNING_TEXT);
     expect(within(dialog).queryByRole('button', { name: 'Dismiss blank field warning' })).not.toBeInTheDocument();
+    expect(within(dialog).getByRole('button', { name: 'Dismiss overwrite warning' })).toBeInTheDocument();
+    expect(dialog.querySelector('.copy-data-message-info')).not.toBeInTheDocument();
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Dismiss overwrite warning' }));
+
+    expect(within(dialog).queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.getByRole('dialog', { name: 'Copy Expected Data to Labels' })).toBeInTheDocument();
   });
 
   it('auto-dismisses the blank-field popdown warning after 10 seconds', () => {
@@ -251,6 +281,105 @@ describe('VerificationForm.copyData', () => {
     });
 
     expect(within(dialog).queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('auto-dismisses the overwrite warning after 10 seconds and keeps it hidden for the session', () => {
+    vi.useFakeTimers();
+    const showError = vi.fn();
+    const { container } = render(<VerificationForm showError={showError} />);
+    const [fileInput] = fileInputs(container);
+
+    fireEvent.change(fileInput, {
+      target: { files: [makeFile('source-label.png'), makeFile('target-label.png')] },
+    });
+    addBrandName('Source Brand');
+    selectQueueLabel('target-label.png');
+    addBrandName('Existing Target Brand');
+    selectQueueLabel('source-label.png');
+    fireEvent.click(screen.getByRole('button', { name: 'Copy Claim Data' }));
+
+    const dialog = screen.getByRole('dialog', { name: 'Copy Expected Data to Labels' });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Dismiss blank field warning' }));
+    fireEvent.click(within(dialog).getByRole('checkbox', { name: /target-label\.png/i }));
+
+    expect(within(dialog).getByRole('alert')).toHaveTextContent(OVERWRITE_WARNING_TEXT);
+
+    act(() => {
+      vi.advanceTimersByTime(10000);
+    });
+
+    expect(within(dialog).queryByRole('alert')).not.toBeInTheDocument();
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Clear Selection' }));
+    fireEvent.click(within(dialog).getByRole('checkbox', { name: /target-label\.png/i }));
+
+    expect(within(dialog).queryByText(OVERWRITE_WARNING_TEXT)).not.toBeInTheDocument();
+  });
+
+  it('does not show the overwrite warning again in the same dialog session after dismissal', async () => {
+    const showError = vi.fn();
+    const { container } = render(<VerificationForm showError={showError} />);
+    const [fileInput] = fileInputs(container);
+
+    fireEvent.change(fileInput, {
+      target: { files: [makeFile('source-label.png'), makeFile('target-label.png')] },
+    });
+    addBrandName('Source Brand');
+    selectQueueLabel('target-label.png');
+    addBrandName('Existing Target Brand');
+    selectQueueLabel('source-label.png');
+    fireEvent.click(screen.getByRole('button', { name: 'Copy Claim Data' }));
+
+    const dialog = screen.getByRole('dialog', { name: 'Copy Expected Data to Labels' });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Dismiss blank field warning' }));
+    fireEvent.click(within(dialog).getByRole('checkbox', { name: /target-label\.png/i }));
+
+    await waitFor(() => {
+      expect(within(dialog).getByRole('alert')).toHaveTextContent(OVERWRITE_WARNING_TEXT);
+    });
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Dismiss overwrite warning' }));
+    expect(within(dialog).queryByRole('alert')).not.toBeInTheDocument();
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Clear Selection' }));
+    fireEvent.click(within(dialog).getByRole('checkbox', { name: /target-label\.png/i }));
+
+    expect(within(dialog).queryByText(OVERWRITE_WARNING_TEXT)).not.toBeInTheDocument();
+  });
+
+  it('shows the overwrite warning again after the copy dialog is reopened', async () => {
+    const showError = vi.fn();
+    const { container } = render(<VerificationForm showError={showError} />);
+    const [fileInput] = fileInputs(container);
+
+    fireEvent.change(fileInput, {
+      target: { files: [makeFile('source-label.png'), makeFile('target-label.png')] },
+    });
+    addBrandName('Source Brand');
+    selectQueueLabel('target-label.png');
+    addBrandName('Existing Target Brand');
+    selectQueueLabel('source-label.png');
+    fireEvent.click(screen.getByRole('button', { name: 'Copy Claim Data' }));
+
+    let dialog = screen.getByRole('dialog', { name: 'Copy Expected Data to Labels' });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Dismiss blank field warning' }));
+    fireEvent.click(within(dialog).getByRole('checkbox', { name: /target-label\.png/i }));
+
+    await waitFor(() => {
+      expect(within(dialog).getByRole('alert')).toHaveTextContent(OVERWRITE_WARNING_TEXT);
+    });
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Dismiss overwrite warning' }));
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Back' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Copy Claim Data' }));
+
+    dialog = screen.getByRole('dialog', { name: 'Copy Expected Data to Labels' });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Dismiss blank field warning' }));
+    fireEvent.click(within(dialog).getByRole('checkbox', { name: /target-label\.png/i }));
+
+    await waitFor(() => {
+      expect(within(dialog).getByRole('alert')).toHaveTextContent(OVERWRITE_WARNING_TEXT);
+    });
   });
 
   it('clears a target verification result when copied expected data overwrites it', async () => {

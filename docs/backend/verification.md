@@ -46,6 +46,12 @@ Net contents:
 - Normalizes milliliters and liters.
 - Compares normalized milliliter values.
 
+Bottler/producer and country of origin:
+
+- Exact, capitalization-and-spacing-normalized, and safe punctuation-normalized matches pass.
+- Partial token containment and high similarity can produce `needs_review`.
+- Missing values are marked `missing`, and conflicts are marked `fail`.
+
 Government warning:
 
 - Requires uppercase heading.
@@ -54,16 +60,15 @@ Government warning:
 
 ## Optional Expected Fields
 
-`verify_expected_fields` always checks brand name and government warning. It skips class or type, alcohol content, and net contents when the expected value is blank.
+`verify_expected_fields` always checks brand name and government warning. It skips class or type, alcohol content, net contents, bottler/producer, and country of origin when the expected value is blank.
 
 ## Overall Status
 
 `calculate_overall_status` returns:
 
 - `error` when any field is `error`.
-- `fail` when any field is `fail`.
-- `needs_review` when any field is `missing`, `needs_review`, or `normalized_match`.
-- `pass` otherwise.
+- `pass` only when every checked field is `pass`.
+- `fail` when any checked field is `fail`, `missing`, `needs_review`, or `normalized_match`.
 
 ## Related Tests
 

@@ -15,7 +15,7 @@ This table maps the take-home deliverables and stakeholder needs to the current 
 | Backend upload validation | `backend/app/image_processing/validation.py` | Validates content type, file size, image readability, and image dimensions. |
 | Image preprocessing | `backend/app/image_processing/preprocessor.py` | Processes uploads in memory before extraction. |
 | Label field extraction | `backend/app/providers/openai/extraction.py` | Uses the backend OpenAI vision-model integration. |
-| Selected field verification | `backend/app/verification/rules.py` | Verifies brand name, class or type, alcohol content, net contents, and government warning text. |
+| Selected field verification | `backend/app/verification/rules.py` | Verifies brand name, class or type, alcohol content, net contents, bottler/producer, country of origin, and government warning text. |
 | Simple user interface for reviewers | `frontend/src/App.jsx`, `frontend/src/components/verification/VerificationForm.jsx`, `frontend/src/components/queue/` | The user interface centers on queue, expected data entry, result review, and export actions. |
 | Clear match/mismatch/manual-review style results | `backend/app/schemas.py`, `frontend/src/components/verification/FieldResultCard.jsx`, `frontend/src/components/verification/SelectedResultDetail.jsx`, `frontend/src/utils/statusStyles.js` | Backend returns structured statuses; frontend formats them for review. |
 | Batch upload or queue support | `frontend/src/hooks/useQueueVerification.js`, `frontend/src/utils/fileValidation.js`, `backend/app/routes/verification.py` | Frontend queues up to 10 labels and verifies ready labels by calling `/verify`; backend also exposes `/verify-batch` for shared expected fields. |

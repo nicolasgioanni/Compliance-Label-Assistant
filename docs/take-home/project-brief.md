@@ -9,7 +9,7 @@ Compliance reviewers manually compare alcohol label artwork to expected applicat
 - Provide fast label verification assistance for selected alcohol label fields.
 - Keep the user interface simple enough for quick review.
 - Show clear field-level and overall verification results.
-- Support key fields currently implemented in code: brand name, class or type, alcohol content, net contents, and government warning.
+- Support key fields currently implemented in code: brand name, class or type, alcohol content, net contents, bottler/producer, country of origin, and government warning.
 - Support prototype-level local development and cloud deployment.
 - Keep frontend, backend, extraction, image processing, and verification concerns separated.
 
@@ -26,13 +26,13 @@ Compliance reviewers manually compare alcohol label artwork to expected applicat
 
 - Frontend queue for up to 10 label images.
 - Client-side validation for JPG, PNG, WebP, and TIFF uploads up to 5 MB.
-- Expected field entry for brand name, class or type, alcohol content, net contents, and government warning.
+- Expected field entry for brand name, class or type, alcohol content, net contents, bottler/producer, country of origin, and government warning.
 - Backend upload validation for file type, size, and image dimensions.
 - In-memory image preprocessing with Pillow.
 - Backend OpenAI vision-model extraction for visible label fields.
 - Deterministic backend comparison rules for selected fields.
 - Field-level response statuses: `pass`, `normalized_match`, `fail`, `missing`, `needs_review`, and `error`.
-- Overall response statuses: `pass`, `fail`, `needs_review`, and `error`.
+- Overall response statuses: `pass`, `fail`, and `error`.
 - Frontend verification for one selected label or all ready labels in the queue.
 - Backend single-label endpoint at `POST /verify`.
 - Backend shared expected-field batch endpoint at `POST /verify-batch`.

@@ -118,7 +118,7 @@ async def _run_partial_failure_test(monkeypatch) -> None:
 
     assert response.total_labels == 2
     assert response.completed == 1
-    assert response.status_counts == {"pass": 1, "fail": 0, "needs_review": 0, "error": 1}
+    assert response.status_counts == {"pass": 1, "fail": 0, "error": 1}
     assert [result.overall_status for result in response.results] == ["pass", "error"]
     assert response.results[1].error == "Unsupported file type."
 
@@ -137,7 +137,7 @@ async def _run_concurrency_test(monkeypatch) -> None:
         max_active_count = max(max_active_count, active_count)
         await asyncio.sleep(0.01)
         active_count -= 1
-        return _single_response(file.filename, status="needs_review")
+        return _single_response(file.filename, status="fail")
 
     monkeypatch.setattr(batch_service, "process_single_label", fake_process_single_label)
 
@@ -148,7 +148,7 @@ async def _run_concurrency_test(monkeypatch) -> None:
     )
 
     assert response.total_labels == 5
-    assert response.status_counts == {"pass": 0, "fail": 0, "needs_review": 5, "error": 0}
+    assert response.status_counts == {"pass": 0, "fail": 5, "error": 0}
     assert max_active_count <= 2
 
 

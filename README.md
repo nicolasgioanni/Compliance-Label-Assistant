@@ -13,7 +13,7 @@ These are public application URLs. Do not include private dashboard links or sec
 
 - No test account is required for the deployed frontend.
 - Local verification requires a backend `OPENAI_API_KEY`; no provider key is included in this repository.
-- Supported verification fields are brand name, class or type, alcohol content, net contents, and government warning.
+- Supported verification fields are brand name, class or type, alcohol content, net contents, bottler/producer, country of origin, and government warning.
 - Sample labels and manual test inputs are documented in [sample-data/README.md](sample-data/README.md).
 - Current known gaps: no direct COLA integration, no COLA PDF ingestion, no authentication, no database, no audit trail, no persistent uploaded-file storage, no final legal compliance decision, and no full government-warning typography or placement verification.
 - The fastest evaluator path is [REVIEWER_GUIDE.md](REVIEWER_GUIDE.md).
@@ -22,10 +22,10 @@ These are public application URLs. Do not include private dashboard links or sec
 
 - Upload JPG, PNG, WebP, or TIFF alcohol label images.
 - Queue up to 10 label images in the frontend.
-- Enter expected values for brand name, class or type, alcohol content, and net contents; the standard government warning is applied automatically.
+- Enter expected values for brand name, class or type, alcohol content, net contents, bottler/producer, and country of origin; the standard government warning is applied automatically.
 - Extract visible label fields through the backend OpenAI vision-model integration.
 - Compare extracted fields with expected fields using deterministic backend verification rules.
-- Display field-level pass, normalized match, fail, missing, needs-review, and error results.
+- Display field-level pass, normalized match, fail, missing, needs-review, and error details; top-level label results are pass, fail, or error.
 - Verify one selected label or run the frontend queue workflow over ready labels.
 - Export current verification results to CSV or XLSX.
 - Validate file type, file size, image dimensions, and backend availability.

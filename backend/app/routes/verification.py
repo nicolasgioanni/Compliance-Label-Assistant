@@ -28,6 +28,8 @@ async def verify_label(
     class_type: str = Form(...),
     alcohol_content: str = Form(...),
     net_contents: str = Form(...),
+    bottler_producer: str = Form(""),
+    country_of_origin: str = Form(""),
     government_warning: str = Form(...),
 ) -> SingleVerificationResponse:
     expected_fields = _build_expected_fields(
@@ -35,6 +37,8 @@ async def verify_label(
         class_type=class_type,
         alcohol_content=alcohol_content,
         net_contents=net_contents,
+        bottler_producer=bottler_producer,
+        country_of_origin=country_of_origin,
         government_warning=government_warning,
     )
     try:
@@ -58,6 +62,8 @@ async def verify_batch(
     class_type: str = Form(...),
     alcohol_content: str = Form(...),
     net_contents: str = Form(...),
+    bottler_producer: str = Form(""),
+    country_of_origin: str = Form(""),
     government_warning: str = Form(...),
 ) -> BatchVerificationResponse:
     expected_fields = _build_expected_fields(
@@ -65,6 +71,8 @@ async def verify_batch(
         class_type=class_type,
         alcohol_content=alcohol_content,
         net_contents=net_contents,
+        bottler_producer=bottler_producer,
+        country_of_origin=country_of_origin,
         government_warning=government_warning,
     )
     try:
@@ -78,6 +86,8 @@ def _build_expected_fields(
     class_type: str,
     alcohol_content: str,
     net_contents: str,
+    bottler_producer: str,
+    country_of_origin: str,
     government_warning: str,
 ) -> ExpectedFields:
     # The form field is kept for API compatibility; the standard warning is server-owned.
@@ -86,5 +96,7 @@ def _build_expected_fields(
         class_type=class_type,
         alcohol_content=alcohol_content,
         net_contents=net_contents,
+        bottler_producer=bottler_producer,
+        country_of_origin=country_of_origin,
         government_warning=STANDARD_GOVERNMENT_WARNING,
     )

@@ -14,8 +14,7 @@ describe('QueueSummaryBar', () => {
           checkedCount: 4,
           errorCount: 1,
           failedCount: 3,
-          failCount: 1,
-          needsReviewCount: 1,
+          failCount: 2,
           passedCount: 1,
           totalLabels: 4,
         }}
@@ -28,7 +27,7 @@ describe('QueueSummaryBar', () => {
     fireEvent.focus(screen.getByRole('button', { name: 'About labels needing attention' }));
 
     expect(screen.getByRole('tooltip')).toHaveTextContent(
-      'Informational status only. This includes 1 Fail result, 1 Needs Review result, and 1 Error result. Overall status comes from automated verification and cannot be changed manually.',
+      'Informational status only. This includes 2 Fail results and 1 Error result. Overall status comes from automated verification and cannot be changed manually.',
     );
   });
 });

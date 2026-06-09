@@ -5,6 +5,8 @@ export const COPY_EXPECTED_FIELD_NAMES = [
   'classType',
   'alcoholContent',
   'netContents',
+  'bottlerProducer',
+  'countryOfOrigin',
   'governmentWarning',
 ];
 

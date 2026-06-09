@@ -84,7 +84,7 @@ Request:
 - Content type: `multipart/form-data`
 - Auth: none
 
-Required form fields:
+Form fields:
 
 | Field | Type | Purpose |
 | --- | --- | --- |
@@ -93,6 +93,8 @@ Required form fields:
 | `class_type` | string | Expected class or type; backend skips this check when blank. |
 | `alcohol_content` | string | Expected ABV/proof text; backend skips this check when blank. |
 | `net_contents` | string | Expected net contents; backend skips this check when blank. |
+| `bottler_producer` | string | Expected bottler/producer text; backend skips this check when blank. |
+| `country_of_origin` | string | Expected country of origin; backend skips this check when blank. |
 | `government_warning` | string | Accepted for API compatibility; backend verifies against server-owned standard text. |
 
 Supported file types:
@@ -110,6 +112,8 @@ brand_name=Example Brand
 class_type=Example Class Type
 alcohol_content=45% Alc./Vol. (90 Proof)
 net_contents=750 mL
+bottler_producer=Example Bottler, Louisville, KY
+country_of_origin=USA
 government_warning=<STANDARD_GOVERNMENT_WARNING>
 ```
 
@@ -126,12 +130,14 @@ Response example:
 ```json
 {
   "filename": "label.png",
-  "overall_status": "needs_review",
+  "overall_status": "fail",
   "expected_fields": {
     "brand_name": "Example Brand",
     "class_type": "Example Class Type",
     "alcohol_content": "45% Alc./Vol. (90 Proof)",
     "net_contents": "750 mL",
+    "bottler_producer": "Example Bottler, Louisville, KY",
+    "country_of_origin": "USA",
     "government_warning": "<STANDARD_GOVERNMENT_WARNING>"
   },
   "extracted_fields": {
@@ -139,6 +145,8 @@ Response example:
     "class_type": "Example Class Type",
     "alcohol_content": "90 Proof",
     "net_contents": "750 mL",
+    "bottler_producer": "Example Bottler, Louisville, KY",
+    "country_of_origin": "USA",
     "government_warning_text": "<EXTRACTED_WARNING_TEXT>",
     "raw_text": null
   },
@@ -200,7 +208,7 @@ Request:
 - Content type: `multipart/form-data`
 - Auth: none
 
-Required form fields:
+Form fields:
 
 | Field | Type | Purpose |
 | --- | --- | --- |
@@ -209,6 +217,8 @@ Required form fields:
 | `class_type` | string | Shared expected class or type. |
 | `alcohol_content` | string | Shared expected ABV/proof text. |
 | `net_contents` | string | Shared expected net contents. |
+| `bottler_producer` | string | Shared expected bottler/producer text; backend skips this check when blank. |
+| `country_of_origin` | string | Shared expected country of origin; backend skips this check when blank. |
 | `government_warning` | string | Accepted for API compatibility; backend verifies against server-owned standard text. |
 
 Batch validation:
@@ -233,7 +243,6 @@ Response example:
   "status_counts": {
     "pass": 1,
     "fail": 0,
-    "needs_review": 0,
     "error": 1
   },
   "total_processing_time_ms": 2400,
@@ -246,6 +255,8 @@ Response example:
         "class_type": "Example Class Type",
         "alcohol_content": "45% Alc./Vol. (90 Proof)",
         "net_contents": "750 mL",
+        "bottler_producer": "Example Bottler, Louisville, KY",
+        "country_of_origin": "USA",
         "government_warning": "<STANDARD_GOVERNMENT_WARNING>"
       },
       "extracted_fields": {
@@ -253,6 +264,8 @@ Response example:
         "class_type": "Example Class Type",
         "alcohol_content": "90 Proof",
         "net_contents": "750 mL",
+        "bottler_producer": "Example Bottler, Louisville, KY",
+        "country_of_origin": "USA",
         "government_warning_text": "<EXTRACTED_WARNING_TEXT>",
         "raw_text": null
       },

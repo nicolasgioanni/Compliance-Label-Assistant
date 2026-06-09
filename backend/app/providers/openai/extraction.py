@@ -22,7 +22,7 @@ from app.schemas import ExtractedFields
 EXTRACTION_PROMPT = """You are extracting visible text from an alcohol beverage label image.
 Return JSON only. Do not include markdown. Do not decide compliance.
 Extract these fields if visible: brand_name, class_type, alcohol_content, net_contents,
-government_warning_text. If a field is not visible, return null.
+bottler_producer, country_of_origin, government_warning_text. If a field is not visible, return null.
 Preserve exact wording for the government warning."""
 
 
@@ -46,6 +46,8 @@ class _ExtractionFields(BaseModel):
     class_type: str | None = None
     alcohol_content: str | None = None
     net_contents: str | None = None
+    bottler_producer: str | None = None
+    country_of_origin: str | None = None
     government_warning_text: str | None = None
 
 
@@ -63,6 +65,8 @@ def _parse_extracted_fields(parsed_output: object) -> ExtractedFields:
             class_type=parsed_fields.class_type,
             alcohol_content=parsed_fields.alcohol_content,
             net_contents=parsed_fields.net_contents,
+            bottler_producer=parsed_fields.bottler_producer,
+            country_of_origin=parsed_fields.country_of_origin,
             government_warning_text=parsed_fields.government_warning_text,
             raw_text=None,
         )

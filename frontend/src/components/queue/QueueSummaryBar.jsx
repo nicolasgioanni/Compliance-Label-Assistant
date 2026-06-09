@@ -131,7 +131,7 @@ function getAttentionTooltipText(summary) {
   return `Informational status only. This includes ${formatBreakdownCount(
     summary.failCount,
     'Fail result',
-  )}, ${formatBreakdownCount(summary.needsReviewCount, 'Needs Review result')}, and ${formatBreakdownCount(
+  )} and ${formatBreakdownCount(
     summary.errorCount,
     'Error result',
   )}. Overall status comes from automated verification and cannot be changed manually.`;

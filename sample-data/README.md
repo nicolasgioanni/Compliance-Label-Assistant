@@ -16,9 +16,9 @@ The current prototype verifies these fields:
 - Class or type
 - Alcohol content
 - Net contents
+- Bottler/producer
+- Country of origin
 - Government warning text
-
-The current prototype does not verify bottler or producer information, and it does not verify country of origin. Those fields appear only as fixture context.
 
 ## Standard Government Warning
 
@@ -30,18 +30,18 @@ GOVERNMENT WARNING: (1) According to the Surgeon General, women should not drink
 
 ## Manual Test Matrix
 
-| Case | Image | Brand name | Class or type | Alcohol content | Net contents | Expected current prototype result | Notes |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| TC01 | `images/tc01_valid_bourbon.png` | `OLD TOM DISTILLERY` | `Kentucky Straight Bourbon Whiskey` | `45% Alc./Vol. (90 Proof)` | `750 mL` | `pass` | Baseline case where all supported fields match. |
-| TC02 | `images/tc02_brand_case_normalization.png` | `Stone's Throw` | `American Single Malt Whiskey` | `46% Alc./Vol. (92 Proof)` | `750 mL` | `pass` | Label brand is uppercase; expected field uses title case. |
-| TC03 | `images/tc03_abv_mismatch.png` | `RIVER BEND VODKA` | `Vodka` | `45% Alc./Vol. (90 Proof)` | `750 mL` | `fail` | Label shows `40% Alc./Vol. (80 Proof)`, so alcohol content should fail. |
-| TC04 | `images/tc04_missing_government_warning.png` | `MOUNTAIN PEAK GIN` | `Distilled Gin` | `43% Alc./Vol. (86 Proof)` | `750 mL` | `fail` | Label does not include the standard warning text. |
-| TC05 | `images/tc05_warning_header_wrong_case.png` | `LAKEHOUSE MERLOT` | `Merlot Red Wine` | `13.5% Alc./Vol.` | `750 mL` | `fail` | Label uses `Government Warning:` instead of uppercase `GOVERNMENT WARNING:`. |
-| TC06 | `images/tc06_net_contents_mismatch.png` | `NORTH STAR RUM` | `Aged Rum` | `42% Alc./Vol. (84 Proof)` | `750 mL` | `fail` | Label shows `700 mL`, so net contents should fail. |
-| TC07 | `images/tc07_class_type_mismatch.png` | `GOLDEN BARREL` | `Vodka` | `35% Alc./Vol. (70 Proof)` | `750 mL` | `fail` | Label shows `Spiced Rum`, so class or type should fail. |
-| TC08 | `images/tc08_country_origin_mismatch.png` | `HIGHLAND VALE` | `Single Malt Scotch Whisky` | `40% Alc./Vol. (80 Proof)` | `750 mL` | `pass` | Country of origin differs in fixture context, but country of origin is not currently verified. |
-| TC09 | `images/tc09_valid_wine_rotated_glare.png` | `SUNSET RIDGE CHARDONNAY` | `Chardonnay White Wine` | `14.2% Alc./Vol.` | `750 mL` | `pass` | Rotated/glare image. Manual result may depend on provider extraction quality. |
-| TC10 | `images/tc10_multiple_errors_low_light.png` | `BLUE HARBOR SILVER` | `Tequila Blanco` | `40% Alc./Vol. (80 Proof)` | `750 mL` | `fail` | Low-light image with multiple supported-field mismatches. |
+| Case | Image | Brand name | Class or type | Alcohol content | Net contents | Bottler/producer | Country of origin | Expected result | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| TC01 | `images/tc01_valid_bourbon.png` | `OLD TOM DISTILLERY` | `Kentucky Straight Bourbon Whiskey` | `45% Alc./Vol. (90 Proof)` | `750 mL` | `Old Tom Distillery, Louisville, KY` | `USA` | `pass` | Baseline case where all currently supported fields match. |
+| TC02 | `images/tc02_brand_case_normalization.png` | `Stone's Throw` | `American Single Malt Whiskey` | `46% Alc./Vol. (92 Proof)` | `750 mL` | `Stone's Throw Spirits, Portland, OR` | `USA` | `pass` | Brand name should pass after capitalization normalization. |
+| TC03 | `images/tc03_abv_mismatch.png` | `RIVER BEND VODKA` | `Vodka` | `45% Alc./Vol. (90 Proof)` | `750 mL` | `River Bend Spirits, Boise, ID` | `USA` | `fail` | Alcohol content should fail because the application expects 45% ABV / 90 proof and the label shows 40% ABV / 80 proof. |
+| TC04 | `images/tc04_missing_government_warning.png` | `MOUNTAIN PEAK GIN` | `Distilled Gin` | `43% Alc./Vol. (86 Proof)` | `750 mL` | `Mountain Peak Distilling, Denver, CO` | `USA` | `fail` | Government warning should fail because the standard warning text is not present. |
+| TC05 | `images/tc05_warning_header_wrong_case.png` | `LAKEHOUSE MERLOT` | `Merlot Red Wine` | `13.5% Alc./Vol.` | `750 mL` | `Lakehouse Winery, Napa, CA` | `USA` | `fail` | Government warning should fail because the heading is title case instead of uppercase. |
+| TC06 | `images/tc06_net_contents_mismatch.png` | `NORTH STAR RUM` | `Aged Rum` | `42% Alc./Vol. (84 Proof)` | `750 mL` | `North Star Rum Co., Miami, FL` | `USA` | `fail` | Net contents should fail because the application expects 750 mL and the label shows 700 mL. |
+| TC07 | `images/tc07_class_type_mismatch.png` | `GOLDEN BARREL` | `Vodka` | `35% Alc./Vol. (70 Proof)` | `750 mL` | `Golden Barrel Imports, Tampa, FL` | `Jamaica` | `fail` | Class or type should fail because the application expects Vodka and the label shows Spiced Rum. |
+| TC08 | `images/tc08_country_origin_mismatch.png` | `HIGHLAND VALE` | `Single Malt Scotch Whisky` | `40% Alc./Vol. (80 Proof)` | `750 mL` | `Atlantic Beverage Importers, New York, NY` | `Ireland` | `fail` | Country of origin should fail because the application expects Ireland and the label shows Scotland. |
+| TC09 | `images/tc09_valid_wine_rotated_glare.png` | `SUNSET RIDGE CHARDONNAY` | `Chardonnay White Wine` | `14.2% Alc./Vol.` | `750 mL` | `Sunset Ridge Winery, Sonoma, CA` | `USA` | `pass` | Image is rotated with glare. Automated tests use mocked extraction, while manual testing exercises the real extraction provider. |
+| TC10 | `images/tc10_multiple_errors_low_light.png` | `BLUE HARBOR SILVER` | `Tequila Blanco` | `40% Alc./Vol. (80 Proof)` | `750 mL` | `Blue Harbor Spirits, Austin, TX` | `Mexico` | `fail` | Low-light image with multiple intentional supported-field failures, including country of origin. |
 
 ## Automated Test Data
 
@@ -61,4 +61,4 @@ This keeps the tests deterministic while still validating that the fixture files
 - These images are synthetic and are not legal advice.
 - These fixtures are for prototype evaluation and regression testing.
 - Provider extraction can vary during manual testing, especially on rotated, glared, or low-light images.
-- TC08 is intentionally included as future-scope context for country-of-origin verification.
+- TC08 is intentionally included as a country-of-origin mismatch regression case.

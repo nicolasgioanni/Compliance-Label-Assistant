@@ -18,7 +18,6 @@ const DEFAULT_QUEUE_SUMMARY = {
   failedCount: 0,
   passCount: 0,
   failCount: 0,
-  needsReviewCount: 0,
   errorCount: 0,
 };
 
@@ -28,7 +27,7 @@ export function hasCurrentResult(queueItem) {
 
 export function getAutomatedStatus(queueItem) {
   if (hasCurrentResult(queueItem)) {
-    return queueItem.result.overall_status || 'needs_review';
+    return normalizeOverallStatus(queueItem.result.overall_status);
   }
 
   return queueItem?.status || 'needs_expected_data';
@@ -78,11 +77,17 @@ function applyStatusCount(summary, status) {
 
   if (status === 'fail') {
     summary.failCount += 1;
-  } else if (status === 'needs_review') {
-    summary.needsReviewCount += 1;
   } else if (status === 'error') {
     summary.errorCount += 1;
   }
+}
+
+function normalizeOverallStatus(status) {
+  if (status === 'needs_review') {
+    return 'fail';
+  }
+
+  return status || 'fail';
 }
 
 function formatStatusClassSuffix(status) {

@@ -10,6 +10,8 @@ Frontend expected field object:
   classType,
   alcoholContent,
   netContents,
+  bottlerProducer,
+  countryOfOrigin,
   governmentWarning
 }
 ```
@@ -21,6 +23,8 @@ brand_name
 class_type
 alcohol_content
 net_contents
+bottler_producer
+country_of_origin
 government_warning
 ```
 
@@ -34,6 +38,8 @@ Mapping is implemented in `appendExpectedFields` in `frontend/src/api/verificati
   "class_type": "Example Class Type",
   "alcohol_content": "45% Alc./Vol. (90 Proof)",
   "net_contents": "750 mL",
+  "bottler_producer": "Example Bottler, Louisville, KY",
+  "country_of_origin": "USA",
   "government_warning": "<STANDARD_GOVERNMENT_WARNING>"
 }
 ```
@@ -46,6 +52,8 @@ Mapping is implemented in `appendExpectedFields` in `frontend/src/api/verificati
   "class_type": "Example Class Type",
   "alcohol_content": "90 Proof",
   "net_contents": "750 mL",
+  "bottler_producer": "Example Bottler, Louisville, KY",
+  "country_of_origin": "USA",
   "government_warning_text": "<EXTRACTED_WARNING_TEXT>",
   "raw_text": null
 }
@@ -79,6 +87,8 @@ All fields may be `null`.
     "class_type": "Example Class Type",
     "alcohol_content": "45% Alc./Vol. (90 Proof)",
     "net_contents": "750 mL",
+    "bottler_producer": "Example Bottler, Louisville, KY",
+    "country_of_origin": "USA",
     "government_warning": "<STANDARD_GOVERNMENT_WARNING>"
   },
   "extracted_fields": {
@@ -86,6 +96,8 @@ All fields may be `null`.
     "class_type": "Example Class Type",
     "alcohol_content": "90 Proof",
     "net_contents": "750 mL",
+    "bottler_producer": "Example Bottler, Louisville, KY",
+    "country_of_origin": "USA",
     "government_warning_text": "<EXTRACTED_WARNING_TEXT>",
     "raw_text": null
   },
@@ -116,12 +128,11 @@ All fields may be `null`.
 ```json
 {
   "mode": "batch",
-  "total_labels": 2,
-  "completed": 2,
+  "total_labels": 1,
+  "completed": 1,
   "status_counts": {
     "pass": 1,
     "fail": 0,
-    "needs_review": 1,
     "error": 0
   },
   "total_processing_time_ms": 1,
@@ -134,6 +145,8 @@ All fields may be `null`.
         "class_type": "Example Class Type",
         "alcohol_content": "45% Alc./Vol. (90 Proof)",
         "net_contents": "750 mL",
+        "bottler_producer": "Example Bottler, Louisville, KY",
+        "country_of_origin": "USA",
         "government_warning": "<STANDARD_GOVERNMENT_WARNING>"
       },
       "extracted_fields": {
@@ -141,6 +154,8 @@ All fields may be `null`.
         "class_type": "Example Class Type",
         "alcohol_content": "90 Proof",
         "net_contents": "750 mL",
+        "bottler_producer": "Example Bottler, Louisville, KY",
+        "country_of_origin": "USA",
         "government_warning_text": "<EXTRACTED_WARNING_TEXT>",
         "raw_text": null
       },
@@ -173,5 +188,6 @@ All fields may be `null`.
 ## Backwards Compatibility Notes
 
 - `government_warning` remains accepted in form data.
+- `bottler_producer` and `country_of_origin` default to blank when omitted by direct API clients.
 - Backend verification uses the server-owned standard warning text regardless of the submitted `government_warning` value.
 - `/verify-batch` remains available even though the current frontend queue does not call it.
