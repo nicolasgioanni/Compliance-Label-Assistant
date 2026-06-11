@@ -8,12 +8,13 @@ The frontend is a React 18 application built with Vite. It owns the browser work
 
 - `frontend/index.html`: Vite HTML shell with `#root`.
 - `frontend/src/main.jsx`: React root creation, `StrictMode`, global style imports.
-- `frontend/src/App.jsx`: application shell, health check, top-level error banner, header, verification workflow, footer.
+- `frontend/src/App.jsx`: lightweight path-based page selection, shared shell wiring, and global health status.
 
-There is no React Router configuration. The app is a single-screen workflow.
+There is no React Router configuration. `App.jsx` reads `window.location.pathname` and renders the static landing page at `/`, about page at `/about`, the verification workflow at `/app`, and the license page at `/license`.
 
 ## Component Organization
 
+- `frontend/src/pages`: static pages, tool page wrapper, and landing-page split panel components.
 - `frontend/src/components/shared`: shell, feedback, tooltip, and loading components.
 - `frontend/src/components/upload`: file and folder upload dropzone.
 - `frontend/src/components/queue`: queue list, item cards, filters, summary, and action controls.
@@ -53,11 +54,11 @@ flowchart TD
 
 The frontend currently calls:
 
-- `GET /health`
+- `GET /health` for the shared header status
 - `POST /warmup`
 - `POST /verify`
 
-The frontend does not call `POST /verify-batch`.
+The frontend does not call `POST /verify-batch`. Warmup and verification calls are scoped to the tool workflow.
 
 ## Upload And Queue Behavior
 

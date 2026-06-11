@@ -4,10 +4,18 @@ Compliance Label Assistant is an AI-powered alcohol label verification prototype
 
 ## Deployed Application
 
-- Frontend URL: https://compliance-label-assistant.vercel.app
-- Backend API URL: https://compliance-label-assistant.onrender.com
+- Landing page: https://compliance-label-assistant.vercel.app
+- About page: https://compliance-label-assistant.vercel.app/about
+- Direct verification tool: https://compliance-label-assistant.vercel.app/app
+- Backend API: https://compliance-label-assistant.onrender.com
+- Source code: https://github.com/nicolasgioanni/label-compliance-verifier
 
 These are public application URLs. Do not include private dashboard links or secrets.
+
+For take-home review, use the direct verification tool URL:
+https://compliance-label-assistant.vercel.app/app
+
+The landing page content is static; the shared header performs a lightweight backend health check. The verification tool calls the Render backend for verification, and the frontend does not expose the OpenAI API key. Human review remains final. This is an independent prototype, not an official TTB system.
 
 ## Evaluator Quick Facts
 
@@ -123,7 +131,9 @@ Start both local services:
 
 Local URLs:
 
-- Frontend: `http://localhost:5173`
+- Frontend landing page: `http://localhost:5173`
+- Frontend about page: `http://localhost:5173/about`
+- Frontend verification tool: `http://localhost:5173/app`
 - Backend API: `http://127.0.0.1:8000`
 - Health check: `http://127.0.0.1:8000/health`
 
@@ -149,7 +159,7 @@ $env:ALLOWED_ORIGINS="http://localhost:5173"
 
 Basic smoke test:
 
-1. Open `http://localhost:5173`.
+1. Open `http://localhost:5173/app`.
 2. Confirm the backend status indicator is online.
 3. Upload a supported label image smaller than 5 MB.
 4. Enter expected values for brand name, class or type, alcohol content, net contents, bottler/producer, and country of origin; the standard government warning is applied automatically.

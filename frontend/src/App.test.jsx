@@ -1,24 +1,19 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { checkHealth } from './api/verificationApi';
+import { checkHealth, verifySingleLabel, warmVerificationBackend } from './api/verificationApi';
 import App from './App';
+import { SERVICE_UNAVAILABLE_MESSAGE } from './constants/notificationMessages';
 
 vi.mock('./api/verificationApi', () => ({
   checkHealth: vi.fn(),
-  warmVerificationBackend: vi.fn(() => Promise.resolve()),
-}));
-
-vi.mock('./components/shared/Header', () => ({
-  default: () => <header>Header</header>,
-}));
-
-vi.mock('./components/shared/AppFooter', () => ({
-  default: () => <footer>Footer</footer>,
+  warmVerificationBackend: vi.fn(),
+  verifySingleLabel: vi.fn(),
 }));
 
 vi.mock('./components/verification/VerificationForm', () => ({
   default: ({ showError }) => (
-    <section>
+    <section aria-label="Verification tool content">
+      <h2>Verification tool content</h2>
       <button
         type="button"
         onClick={() =>
@@ -39,21 +34,163 @@ vi.mock('./components/verification/VerificationForm', () => ({
   ),
 }));
 
-describe('App notifications', () => {
+describe('App routes and shared layout', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     checkHealth.mockResolvedValue({ status: 'ok' });
+    window.history.pushState({}, '', '/');
   });
 
   afterEach(() => {
     cleanup();
   });
 
-  it('replaces the active banner when a newer message is shown', async () => {
-    render(<App />);
+  it('renders the landing page at root with live header status and no tool API calls', async () => {
+    renderAt('/');
+
+    expect(screen.getByRole('heading', { name: 'Compliance Label Assistant' })).toBeInTheDocument();
+    expect(screen.getAllByText('AI-assisted alcohol label verification')).toHaveLength(2);
+    expect(
+      screen.getByText(
+        'Upload label artwork, enter expected application data, and generate a field-by-field verification report.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'What It Does' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Who It Is For' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'What It Can Check' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Workflow' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Performance Snapshot' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Prototype Boundaries' })).toBeInTheDocument();
+    expect(screen.getByText('Current-result export to CSV and XLSX')).toBeInTheDocument();
+    expect(screen.getByText('Alcohol content, including ABV and proof equivalence')).toBeInTheDocument();
+    expect(screen.getByText('Clean baseline fixture: 2,556 ms median backend processing')).toBeInTheDocument();
+    expect(screen.getByText('Human review remains final')).toBeInTheDocument();
+    expect(screen.getByText('Not production-hardened for government or restricted-network use')).toBeInTheDocument();
+    const aboutLinks = screen.getAllByRole('link', { name: 'About' });
+    expect(aboutLinks.some((link) => link.getAttribute('href') === '/about')).toBe(true);
+    expect(screen.queryByText(/Architecture and implementation notes are available/i)).not.toBeInTheDocument();
+
+    const actionPanel = screen.getByRole('complementary', { name: 'Get Started' });
+    expect(within(actionPanel).getByRole('heading', { name: 'Get Started' })).toBeInTheDocument();
+    expect(
+      within(actionPanel).getByText('Choose how you want to learn about the workflow or move directly into the app.'),
+    ).toBeInTheDocument();
+    expect(within(actionPanel).getByRole('link', { name: 'Verify Labels' })).toHaveAttribute('href', '/app');
+    const sourceLink = within(actionPanel).getByRole('link', { name: 'Source Code' });
+    expect(sourceLink).toHaveAttribute('href', 'https://github.com/nicolasgioanni/label-compliance-verifier');
+    expect(sourceLink).toHaveClass('primary-button');
+    expect(actionPanel).toHaveTextContent('Want to understand the software architecture?');
+    expect(within(actionPanel).getByRole('link', { name: 'Read about CLA' })).toHaveAttribute(
+      'href',
+      '/about',
+    );
+    expect(screen.queryByText('Start Review')).not.toBeInTheDocument();
+    expect(screen.queryByText('No account required')).not.toBeInTheDocument();
+
+    const primaryNav = screen.getByRole('navigation', { name: 'Primary' });
+    expect(within(primaryNav).getByRole('link', { name: 'Home' })).toHaveAttribute('aria-current', 'page');
+    expect(within(primaryNav).getByRole('link', { name: 'About' })).not.toHaveAttribute('aria-current');
+    expect(within(primaryNav).getByRole('link', { name: 'Verification Tool' })).not.toHaveAttribute('aria-current');
+    expect(screen.getByText('Checking Status')).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(checkHealth).toHaveBeenCalled();
+      expect(checkHealth).toHaveBeenCalledTimes(1);
+    });
+    expect(await screen.findByText('System Online')).toBeInTheDocument();
+    expect(warmVerificationBackend).not.toHaveBeenCalled();
+    expect(verifySingleLabel).not.toHaveBeenCalled();
+  });
+
+  it('renders the about page with documentation links and live header status', async () => {
+    renderAt('/about');
+
+    expect(screen.getByRole('heading', { name: 'About' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'System Overview' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Frontend Architecture' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Backend Architecture' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Extraction And Verification Flow' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Security And Prototype Boundaries' })).toBeInTheDocument();
+
+    expect(screen.getByRole('link', { name: /docs\/architecture\/frontend-architecture\.md/i })).toHaveAttribute(
+      'href',
+      'https://github.com/nicolasgioanni/label-compliance-verifier/blob/main/docs/architecture/frontend-architecture.md',
+    );
+    expect(screen.getByRole('link', { name: /docs\/architecture\/backend-architecture\.md/i })).toHaveAttribute(
+      'href',
+      'https://github.com/nicolasgioanni/label-compliance-verifier/blob/main/docs/architecture/backend-architecture.md',
+    );
+    expect(
+      screen.getByRole('link', { name: /docs\/architecture\/extraction-verification-flow\.md/i }),
+    ).toHaveAttribute(
+      'href',
+      'https://github.com/nicolasgioanni/label-compliance-verifier/blob/main/docs/architecture/extraction-verification-flow.md',
+    );
+    expect(screen.getByRole('link', { name: /docs\/architecture\/data-flow\.md/i })).toHaveAttribute(
+      'href',
+      'https://github.com/nicolasgioanni/label-compliance-verifier/blob/main/docs/architecture/data-flow.md',
+    );
+    expect(screen.getByRole('link', { name: /docs\/api\/overview\.md/i })).toHaveAttribute(
+      'href',
+      'https://github.com/nicolasgioanni/label-compliance-verifier/blob/main/docs/api/overview.md',
+    );
+    expect(screen.getByRole('link', { name: /docs\/deployment\/overview\.md/i })).toHaveAttribute(
+      'href',
+      'https://github.com/nicolasgioanni/label-compliance-verifier/blob/main/docs/deployment/overview.md',
+    );
+
+    const primaryNav = screen.getByRole('navigation', { name: 'Primary' });
+    expect(within(primaryNav).getByRole('link', { name: 'Home' })).not.toHaveAttribute('aria-current');
+    expect(within(primaryNav).getByRole('link', { name: 'About' })).toHaveAttribute('aria-current', 'page');
+    expect(within(primaryNav).getByRole('link', { name: 'Verification Tool' })).not.toHaveAttribute('aria-current');
+
+    await waitFor(() => {
+      expect(checkHealth).toHaveBeenCalledTimes(1);
+    });
+    expect(await screen.findByText('System Online')).toBeInTheDocument();
+    expect(warmVerificationBackend).not.toHaveBeenCalled();
+    expect(verifySingleLabel).not.toHaveBeenCalled();
+  });
+
+  it('renders the verification tool at /app with the shared shell and health check', async () => {
+    renderAt('/app');
+
+    expect(screen.getByRole('banner')).toBeInTheDocument();
+    expect(screen.getByRole('contentinfo')).toBeInTheDocument();
+    const primaryNav = screen.getByRole('navigation', { name: 'Primary' });
+    expect(primaryNav).toBeInTheDocument();
+    expect(within(primaryNav).getByRole('link', { name: 'Verification Tool' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(within(primaryNav).getByRole('link', { name: 'About' })).not.toHaveAttribute('aria-current');
+    expect(screen.getByRole('heading', { name: 'Verification tool content' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: 'Verify Labels' })).not.toBeInTheDocument();
+    expect(screen.getByText('Checking Status')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(checkHealth).toHaveBeenCalledTimes(1);
+    });
+    expect(await screen.findByText('System Online')).toBeInTheDocument();
+  });
+
+  it('shows the service-unavailable banner on /app when the shared health check fails', async () => {
+    checkHealth.mockRejectedValueOnce(new Error('Failed to fetch'));
+
+    renderAt('/app');
+
+    await waitFor(() => {
+      expect(checkHealth).toHaveBeenCalledTimes(1);
+    });
+
+    expect(await screen.findByText('System Offline')).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent(SERVICE_UNAVAILABLE_MESSAGE);
+  });
+
+  it('keeps the /app notification behavior when newer messages replace older banners', async () => {
+    renderAt('/app');
+
+    await waitFor(() => {
+      expect(checkHealth).toHaveBeenCalledTimes(1);
     });
 
     fireEvent.click(screen.getByRole('button', { name: 'Show edit warning' }));
@@ -73,4 +210,35 @@ describe('App notifications', () => {
       screen.queryByText('Changing selected label data will mark the previous verification result stale.'),
     ).not.toBeInTheDocument();
   });
+
+  it('renders the license page with live header status and no tool API calls', async () => {
+    renderAt('/license');
+
+    expect(screen.getByRole('heading', { name: 'License' })).toBeInTheDocument();
+    expect(screen.getByText('Licensed under Apache License 2.0.')).toBeInTheDocument();
+    expect(screen.getByText('The repository LICENSE file is the source of truth for the full license text.')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'View LICENSE on GitHub' })).toHaveAttribute(
+      'href',
+      'https://github.com/nicolasgioanni/label-compliance-verifier/blob/main/LICENSE',
+    );
+    expect(screen.getByText('Independent prototype, not an official TTB system. Human review remains final.')).toBeInTheDocument();
+    expect(screen.getByText('Checking Status')).toBeInTheDocument();
+
+    const primaryNav = screen.getByRole('navigation', { name: 'Primary' });
+    expect(within(primaryNav).getByRole('link', { name: 'Home' })).not.toHaveAttribute('aria-current');
+    expect(within(primaryNav).getByRole('link', { name: 'About' })).not.toHaveAttribute('aria-current');
+    expect(within(primaryNav).getByRole('link', { name: 'Verification Tool' })).not.toHaveAttribute('aria-current');
+
+    await waitFor(() => {
+      expect(checkHealth).toHaveBeenCalledTimes(1);
+    });
+    expect(await screen.findByText('System Online')).toBeInTheDocument();
+    expect(warmVerificationBackend).not.toHaveBeenCalled();
+    expect(verifySingleLabel).not.toHaveBeenCalled();
+  });
 });
+
+function renderAt(pathname) {
+  window.history.pushState({}, '', pathname);
+  return render(<App />);
+}

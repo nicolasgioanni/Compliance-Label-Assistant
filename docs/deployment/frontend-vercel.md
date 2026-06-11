@@ -9,7 +9,7 @@
 | Output directory | `dist` |
 | Install command | Not currently documented in code; Vercel default npm install is expected. |
 
-`frontend/vercel.json` is checked in for lightweight static security headers.
+`frontend/vercel.json` is checked in for lightweight static security headers and exact SPA rewrites for `/about`, `/app`, and `/license`.
 
 ## Environment Variables
 

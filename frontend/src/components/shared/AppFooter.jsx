@@ -1,22 +1,16 @@
 export default function AppFooter() {
   return (
     <footer className="app-footer">
-      <div className="app-footer__notice">
-        <span className="app-footer__primary">
-          Prototype compliance-assistance tool. Human review remains final.
-        </span>
-        <span className="app-footer__secondary">
-          Independent prototype. Not an official TTB system.
-        </span>
-      </div>
-      <div className="app-footer__meta" aria-label="Prototype limitations and source code">
-        <span>No COLA integration</span>
+      <p className="app-footer__notice">
+        Copyright 2026 Nicolas Gioanni. Compliance Label Assistant is an independent prototype. Licensed under Apache
+        License 2.0.
+      </p>
+      <nav className="app-footer__meta" aria-label="Footer">
+        <a className="app-footer__link" href="/license">
+          License
+        </a>
         <span className="app-footer__separator" aria-hidden="true">
-          &bull;
-        </span>
-        <span>No persistent file storage</span>
-        <span className="app-footer__separator" aria-hidden="true">
-          &bull;
+          |
         </span>
         <a
           className="app-footer__link"
@@ -27,7 +21,13 @@ export default function AppFooter() {
         >
           Source Code
         </a>
-      </div>
+        <span className="app-footer__separator" aria-hidden="true">
+          |
+        </span>
+        <a className="app-footer__link" href="/app">
+          Verification Tool
+        </a>
+      </nav>
     </footer>
   );
 }
