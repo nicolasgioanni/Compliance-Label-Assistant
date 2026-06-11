@@ -4,6 +4,8 @@ import { checkHealth, verifySingleLabel, warmVerificationBackend } from './api/v
 import App from './App';
 import { SERVICE_UNAVAILABLE_MESSAGE } from './constants/notificationMessages';
 
+const GITHUB_DOC_BASE_URL = 'https://github.com/nicolasgioanni/label-compliance-verifier/blob/main/';
+
 vi.mock('./api/verificationApi', () => ({
   checkHealth: vi.fn(),
   warmVerificationBackend: vi.fn(),
@@ -67,7 +69,11 @@ describe('App routes and shared layout', () => {
     expect(screen.getByRole('heading', { name: 'Queue-Based Review Workflow' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Performance And Responsiveness' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Prototype Scope And Limitations' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Architecture And Documentation' })).toBeInTheDocument();
+    const documentationSection = screen
+      .getByRole('heading', { name: 'Architecture And Documentation' })
+      .closest('section');
+
+    expect(documentationSection).toBeInTheDocument();
     expect(screen.getByText('Designed to support, not replace, human review')).toBeInTheDocument();
     expect(screen.getByText('Exports current results to CSV or XLSX')).toBeInTheDocument();
     expect(screen.getByText('Alcohol content, including ABV and proof')).toBeInTheDocument();
@@ -75,7 +81,32 @@ describe('App routes and shared layout', () => {
     expect(screen.getByText('These are observations, not an SLA.', { exact: false })).toBeInTheDocument();
     expect(screen.getByText('Human review remains final')).toBeInTheDocument();
     expect(screen.getByText('Not production-hardened for government or restricted-network use')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'About page' })).toHaveAttribute('href', '/about');
+    expect(documentationSection).toHaveTextContent(
+      'The About page gives a short in-app summary. The system overview explains the full review workflow, and the architecture documentation breaks down the frontend, backend, extraction, and verification boundaries.',
+    );
+    expectLandingDocLink(documentationSection, 'About page', '/about', { external: false });
+    expectLandingDocLink(documentationSection, 'system overview', 'docs/architecture/system-overview.md');
+    expectLandingDocLink(documentationSection, 'architecture documentation', 'docs/architecture.md');
+    expect(documentationSection).toHaveTextContent(
+      'Use the frontend architecture guide for page structure, queue state, API client behavior, and export flow.',
+    );
+    expect(documentationSection).toHaveTextContent(
+      'Use the backend architecture guide for routes, services, upload validation, preprocessing, provider access, and verification rules.',
+    );
+    expect(documentationSection).toHaveTextContent(
+      'Use the data flow guide for request flow, extraction, comparison, result evidence, and export handoff.',
+    );
+    expect(documentationSection).toHaveTextContent(
+      'Use the API overview for endpoint purpose, request formats, response models, status values, and error shape.',
+    );
+    expect(documentationSection).toHaveTextContent(
+      'Use the deployment overview for Vercel, Render, environment variables, and production validation notes.',
+    );
+    expectLandingDocLink(documentationSection, 'frontend architecture guide', 'docs/architecture/frontend-architecture.md');
+    expectLandingDocLink(documentationSection, 'backend architecture guide', 'docs/architecture/backend-architecture.md');
+    expectLandingDocLink(documentationSection, 'data flow guide', 'docs/architecture/data-flow.md');
+    expectLandingDocLink(documentationSection, 'API overview', 'docs/api/overview.md');
+    expectLandingDocLink(documentationSection, 'deployment overview', 'docs/deployment/overview.md');
     expect(screen.queryByRole('link', { name: 'Open About Page' })).not.toBeInTheDocument();
     const aboutLinks = screen.getAllByRole('link', { name: 'About' });
     expect(aboutLinks.some((link) => link.getAttribute('href') === '/about')).toBe(true);
@@ -252,4 +283,19 @@ describe('App routes and shared layout', () => {
 function renderAt(pathname) {
   window.history.pushState({}, '', pathname);
   return render(<App />);
+}
+
+function expectLandingDocLink(section, label, href, { external = true } = {}) {
+  const link = within(section).getByRole('link', { name: label });
+
+  expect(link).toHaveAttribute('href', external ? `${GITHUB_DOC_BASE_URL}${href}` : href);
+
+  if (external) {
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveAttribute('rel', 'noreferrer noopener');
+    return;
+  }
+
+  expect(link).not.toHaveAttribute('target');
+  expect(link).not.toHaveAttribute('rel');
 }

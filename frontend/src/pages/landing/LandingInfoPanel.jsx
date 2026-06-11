@@ -1,5 +1,17 @@
 import { Fragment } from 'react';
 
+const GITHUB_DOC_BASE_URL = 'https://github.com/nicolasgioanni/label-compliance-verifier/blob/main/';
+
+const DOC_URLS = {
+  apiOverview: `${GITHUB_DOC_BASE_URL}docs/api/overview.md`,
+  architecture: `${GITHUB_DOC_BASE_URL}docs/architecture.md`,
+  backendArchitecture: `${GITHUB_DOC_BASE_URL}docs/architecture/backend-architecture.md`,
+  dataFlow: `${GITHUB_DOC_BASE_URL}docs/architecture/data-flow.md`,
+  deploymentOverview: `${GITHUB_DOC_BASE_URL}docs/deployment/overview.md`,
+  frontendArchitecture: `${GITHUB_DOC_BASE_URL}docs/architecture/frontend-architecture.md`,
+  systemOverview: `${GITHUB_DOC_BASE_URL}docs/architecture/system-overview.md`,
+};
+
 const INFO_SECTIONS = [
   {
     title: 'Product Purpose And Role',
@@ -74,12 +86,38 @@ const INFO_SECTIONS = [
     body: [
       'The ',
       { href: '/about', label: 'About page' },
-      ' explains the system design in more detail, including the React frontend, FastAPI backend, image preprocessing, AI extraction boundary, deterministic verification rules, API shape, deployment model, and security limits.',
+      ' gives a short in-app summary. The ',
+      { href: DOC_URLS.systemOverview, label: 'system overview' },
+      ' explains the full review workflow, and the ',
+      { href: DOC_URLS.architecture, label: 'architecture documentation' },
+      ' breaks down the frontend, backend, extraction, and verification boundaries.',
     ],
     items: [
-      'Read the system overview and architecture notes',
-      'Review frontend and backend responsibilities',
-      'Inspect data flow, API, and deployment documentation',
+      [
+        'Use the ',
+        { href: DOC_URLS.frontendArchitecture, label: 'frontend architecture guide' },
+        ' for page structure, queue state, API client behavior, and export flow.',
+      ],
+      [
+        'Use the ',
+        { href: DOC_URLS.backendArchitecture, label: 'backend architecture guide' },
+        ' for routes, services, upload validation, preprocessing, provider access, and verification rules.',
+      ],
+      [
+        'Use the ',
+        { href: DOC_URLS.dataFlow, label: 'data flow guide' },
+        ' for request flow, extraction, comparison, result evidence, and export handoff.',
+      ],
+      [
+        'Use the ',
+        { href: DOC_URLS.apiOverview, label: 'API overview' },
+        ' for endpoint purpose, request formats, response models, status values, and error shape.',
+      ],
+      [
+        'Use the ',
+        { href: DOC_URLS.deploymentOverview, label: 'deployment overview' },
+        ' for Vercel, Render, environment variables, and production validation notes.',
+      ],
     ],
   },
 ];
@@ -105,10 +143,10 @@ export default function LandingInfoPanel() {
               aria-labelledby={getSectionId(section.title)}
             >
               <h2 id={getSectionId(section.title)}>{section.title}</h2>
-              <p>{renderSectionBody(section.body)}</p>
+              <p>{renderRichText(section.body)}</p>
               <ul>
-                {section.items.map((item) => (
-                  <li key={item}>{item}</li>
+                {section.items.map((item, itemIndex) => (
+                  <li key={`${section.title}-${itemIndex}`}>{renderRichText(item)}</li>
                 ))}
               </ul>
             </section>
@@ -119,16 +157,24 @@ export default function LandingInfoPanel() {
   );
 }
 
-function renderSectionBody(body) {
-  const bodyParts = Array.isArray(body) ? body : [body];
+function renderRichText(content) {
+  const parts = Array.isArray(content) ? content : [content];
 
-  return bodyParts.map((part, index) => {
+  return parts.map((part, index) => {
     if (typeof part === 'string') {
       return <Fragment key={`text-${index}`}>{part}</Fragment>;
     }
 
+    const isExternal = part.href.startsWith('http');
+
     return (
-      <a className="landing-info-section__inline-link" href={part.href} key={`${part.href}-${index}`}>
+      <a
+        className="landing-info-section__inline-link"
+        href={part.href}
+        key={`${part.href}-${index}`}
+        rel={isExternal ? 'noreferrer noopener' : undefined}
+        target={isExternal ? '_blank' : undefined}
+      >
         {part.label}
       </a>
     );
