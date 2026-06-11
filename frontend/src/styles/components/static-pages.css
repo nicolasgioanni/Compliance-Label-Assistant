@@ -256,7 +256,7 @@
 .license-page__panel {
   display: flex;
   flex-direction: column;
-  height: var(--workflow-panel-height, 40.2rem);
+  height: calc(var(--workflow-panel-height, 40.2rem) + 2rem);
   max-width: 100%;
   min-height: 0;
   overflow: hidden;
