@@ -42,18 +42,45 @@
 .landing-info-panel__intro {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.52rem;
+  max-width: 42rem;
+}
+
+.static-page .landing-info-panel__intro h1 {
+  color: var(--color-header-bg);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 2.18rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1.05;
+  margin: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.landing-info-panel__intro .static-page__subtitle {
+  color: var(--color-primary-strong);
+  font-size: 0.86rem;
+  font-weight: 900;
+  line-height: 1.05;
+  max-width: 42rem;
+  overflow-wrap: anywhere;
+  text-transform: uppercase;
+}
+
+.landing-info-panel__intro .static-page__description {
+  margin-top: 0.26rem;
 }
 
 .landing-info-panel__divider {
-  align-self: center;
+  align-self: flex-start;
   background: #c49a3a;
   border-radius: 999px;
   flex-shrink: 0;
-  height: 3px;
-  margin-bottom: 0.2rem;
-  min-height: 3px;
-  width: min(44rem, calc(100% - 2rem));
+  height: 0.14rem;
+  margin: 0.15rem 0 0.62rem;
+  min-height: 0.14rem;
+  width: min(36rem, 100%);
 }
 
 .landing-info-grid {
@@ -72,14 +99,17 @@
 }
 
 .landing-info-section h2 {
-  font-size: 0.98rem;
+  color: var(--color-primary-strong);
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1.2;
   margin: 0 0 0.55rem;
 }
 
-.landing-info-section p {
+.static-page .landing-info-section p {
   color: var(--color-muted);
   font-size: 0.9rem;
-  margin: 0 0 0.7rem;
+  margin: 0 0 1.65rem;
 }
 
 .landing-info-section ul {
@@ -93,6 +123,25 @@
   color: var(--color-muted);
   font-size: 0.88rem;
   overflow-wrap: anywhere;
+}
+
+.landing-info-section__inline-link {
+  color: inherit;
+  font-weight: 800;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+.landing-info-section__inline-link:hover {
+  color: inherit;
+  text-decoration-thickness: 2px;
+}
+
+.landing-info-section__inline-link:focus-visible {
+  border-radius: 3px;
+  outline: 2px solid #c49a3a;
+  outline-offset: 3px;
 }
 
 .landing-action-panel {
@@ -237,6 +286,14 @@
 
 .static-page p {
   margin: 0;
+}
+
+.static-page__subtitle {
+  color: var(--color-primary-strong);
+  font-size: 1.18rem;
+  font-weight: 800;
+  line-height: 1.3;
+  max-width: 42rem;
 }
 
 .static-page__description {
@@ -395,6 +452,19 @@
 @media (max-width: 520px) {
   .static-page h1 {
     font-size: 1.55rem;
+  }
+
+  .static-page .landing-info-panel__intro h1 {
+    font-size: 1.48rem;
+  }
+
+  .static-page__subtitle {
+    font-size: 1.03rem;
+  }
+
+  .landing-info-panel__intro .static-page__subtitle {
+    font-size: 0.72rem;
+    line-height: 1.15;
   }
 
   .static-page__button {

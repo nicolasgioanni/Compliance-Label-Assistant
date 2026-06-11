@@ -46,26 +46,37 @@ describe('App routes and shared layout', () => {
   });
 
   it('renders the landing page at root with live header status and no tool API calls', async () => {
-    renderAt('/');
+    const { container } = renderAt('/');
+    const landingIntro = container.querySelector('.landing-info-panel__intro');
+    const landingTitle = within(landingIntro).getByRole('heading', { name: 'Compliance Label Assistant' });
+    const landingSubtitle = landingTitle.nextElementSibling;
 
-    expect(screen.getByRole('heading', { name: 'Compliance Label Assistant' })).toBeInTheDocument();
+    expect(landingTitle).toBeInTheDocument();
+    expect(landingSubtitle).toHaveClass('static-page__subtitle');
+    expect(landingSubtitle).toHaveTextContent('AI-assisted alcohol label verification');
     expect(screen.getAllByText('AI-assisted alcohol label verification')).toHaveLength(2);
     expect(
       screen.getByText(
         'Upload label artwork, enter expected application data, and generate a field-by-field verification report.',
       ),
     ).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'What It Does' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Who It Is For' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'What It Can Check' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Workflow' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Performance Snapshot' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Prototype Boundaries' })).toBeInTheDocument();
-    expect(screen.getByText('Current-result export to CSV and XLSX')).toBeInTheDocument();
-    expect(screen.getByText('Alcohol content, including ABV and proof equivalence')).toBeInTheDocument();
-    expect(screen.getByText('Clean baseline fixture: 2,556 ms median backend processing')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Product Purpose And Role' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Verification Capabilities' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Intended Review Audience' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Supported Label Coverage' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Queue-Based Review Workflow' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Performance And Responsiveness' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Prototype Scope And Limitations' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Architecture And Documentation' })).toBeInTheDocument();
+    expect(screen.getByText('Designed to support, not replace, human review')).toBeInTheDocument();
+    expect(screen.getByText('Exports current results to CSV or XLSX')).toBeInTheDocument();
+    expect(screen.getByText('Alcohol content, including ABV and proof')).toBeInTheDocument();
+    expect(screen.getByText('Clean baseline: 2,556 ms median backend processing')).toBeInTheDocument();
+    expect(screen.getByText('These are observations, not an SLA.', { exact: false })).toBeInTheDocument();
     expect(screen.getByText('Human review remains final')).toBeInTheDocument();
     expect(screen.getByText('Not production-hardened for government or restricted-network use')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'About page' })).toHaveAttribute('href', '/about');
+    expect(screen.queryByRole('link', { name: 'Open About Page' })).not.toBeInTheDocument();
     const aboutLinks = screen.getAllByRole('link', { name: 'About' });
     expect(aboutLinks.some((link) => link.getAttribute('href') === '/about')).toBe(true);
     expect(screen.queryByText(/Architecture and implementation notes are available/i)).not.toBeInTheDocument();

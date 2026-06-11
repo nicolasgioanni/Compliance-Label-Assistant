@@ -1,61 +1,85 @@
+import { Fragment } from 'react';
+
 const INFO_SECTIONS = [
   {
-    title: 'What It Does',
-    body: 'Compliance Label Assistant turns label artwork review into a structured evidence workflow. It extracts visible alcohol-label fields with a backend AI vision pipeline, then compares those fields against expected application data with deterministic rules that are easier to inspect, test, and explain.',
+    title: 'Product Purpose And Role',
+    body: 'Compliance Label Assistant is a prototype that helps compare alcohol label artwork with the application information a reviewer expects to see. It does not make the final decision for the reviewer; it organizes the evidence so the review is faster and easier to understand.',
     items: [
-      'AI-assisted extraction for visible label fields',
-      'Deterministic comparison logic after extraction',
-      'Field-level evidence for pass, fail, missing, and needs-review outcomes',
-      'Current-result export to CSV and XLSX',
+      'AI-assisted alcohol label review',
+      'Built for label artwork and expected field data',
+      'Designed to support, not replace, human review',
     ],
   },
   {
-    title: 'Who It Is For',
-    body: 'The workflow is built for reviewers and evaluators who need to move quickly through routine label-to-application comparisons without losing field-level traceability. It is especially useful when multiple labels need organized review before a final human decision.',
+    title: 'Verification Capabilities',
+    body: 'Upload label images, enter the expected application values, and get a field-by-field verification report. The backend reads visible label text, checks it against expected data, and shows where the label looks right, different, missing, or worth a closer look.',
     items: [
-      'Reviewers comparing artwork against expected application values',
-      'Evaluators inspecting a full-stack AI-assisted verification prototype',
-      'Teams exploring structured review queues for document-heavy workflows',
+      'Extracts visible label fields from artwork',
+      'Compares extracted text with expected values',
+      'Shows clear field-level results',
+      'Exports current results to CSV or XLSX',
     ],
   },
   {
-    title: 'What It Can Check',
-    body: 'The current rules cover the core demonstration fields for alcohol label review and keep each decision visible. Text normalization, numeric parsing, and stricter warning-text checks help separate safe matches from mismatches and manual-review cases.',
+    title: 'Intended Review Audience',
+    body: 'This workflow is useful for anyone who needs to review several labels without losing track of what was checked. It keeps each label, expected data set, result, and export state organized in one place.',
+    items: [
+      'Reviewers comparing labels with application data',
+      'Evaluators testing a deployed full-stack prototype',
+      'Teams exploring AI-assisted document review',
+    ],
+  },
+  {
+    title: 'Supported Label Coverage',
+    body: 'The current prototype focuses on common alcohol-label fields that can be compared against expected application data. It uses field-specific rules after extraction, instead of asking the AI model to make the final pass-or-fail decision.',
     items: [
       'Brand name and class or type',
-      'Alcohol content, including ABV and proof equivalence',
-      'Net contents with milliliter/liter normalization',
-      'Bottler or producer, country of origin, and government warning wording',
+      'Alcohol content, including ABV and proof',
+      'Net contents with unit normalization',
+      'Bottler or producer, country of origin, and warning text',
     ],
   },
   {
-    title: 'Workflow',
-    body: 'The browser workflow is queue-first. Each uploaded label keeps its own expected data, status, result evidence, stale-result state, and export eligibility, so a reviewer can inspect one label or run through ready labels without mixing review context.',
+    title: 'Queue-Based Review Workflow',
+    body: 'The app uses a queue-based review flow. Add labels, select one, enter expected values, run verification, review the result cards, then export the current findings when they are ready.',
     items: [
-      'Queue up to 10 JPG, PNG, WebP, or TIFF label images',
-      'Enter expected values per selected label',
-      'Verify one selected label or all ready labels',
-      'Review field cards, extracted values, timing data, and exportable results',
+      'Queue up to 10 label images',
+      'Track expected data per label',
+      'Verify one label or all ready labels',
+      'Review extracted fields, statuses, timing, and export results',
     ],
   },
   {
-    title: 'Performance Snapshot',
-    body: 'The prototype includes practical speed and cost controls: image preprocessing reduces provider payloads, warmup initializes reusable backend dependencies, and queue verification uses bounded concurrency. A documented warm-backend smoke test on synthetic fixtures reported all selected medians under five seconds.',
+    title: 'Performance And Responsiveness',
+    body: 'The app is built to feel fast for prototype review work. Images are resized before extraction, the backend can warm reusable provider dependencies, and ready-label checks use bounded concurrency. In documented warm-backend smoke tests, selected median runs completed under five seconds. These are observations, not an SLA.',
     items: [
-      'Clean baseline fixture: 2,556 ms median backend processing',
-      'Intentional ABV mismatch fixture: 2,966 ms median backend processing',
-      'Low-light mismatch fixture: 2,645 ms median backend processing',
-      'Timing fields expose validation, preprocessing, extraction, and verification durations',
+      'Clean baseline: 2,556 ms median backend processing',
+      'ABV mismatch case: 2,966 ms median backend processing',
+      'Low-light mismatch case: 2,645 ms median backend processing',
+      'Timing fields show validation, preprocessing, extraction, and verification durations',
     ],
   },
   {
-    title: 'Prototype Boundaries',
-    body: 'This is an independent prototype for compliance assistance, not an official TTB system or final legal decision engine. The architecture intentionally avoids persistent upload storage, browser-exposed provider keys, auth, databases, admin tooling, and COLA integration.',
+    title: 'Prototype Scope And Limitations',
+    body: 'This is an independent prototype, not an official TTB system and not a final legal compliance decision engine. It is built to assist review, while the final judgment stays with a human reviewer.',
     items: [
       'Human review remains final',
-      'Uploaded files are processed temporarily by application code',
-      'Frontend never receives the OpenAI API key',
+      'No COLA integration, accounts, database, or admin dashboard',
+      'No persistent uploaded-file storage by application code',
       'Not production-hardened for government or restricted-network use',
+    ],
+  },
+  {
+    title: 'Architecture And Documentation',
+    body: [
+      'The ',
+      { href: '/about', label: 'About page' },
+      ' explains the system design in more detail, including the React frontend, FastAPI backend, image preprocessing, AI extraction boundary, deterministic verification rules, API shape, deployment model, and security limits.',
+    ],
+    items: [
+      'Read the system overview and architecture notes',
+      'Review frontend and backend responsibilities',
+      'Inspect data flow, API, and deployment documentation',
     ],
   },
 ];
@@ -65,8 +89,8 @@ export default function LandingInfoPanel() {
     <section className="panel landing-info-panel" aria-labelledby="landing-page-title">
       <div className="landing-info-panel__scroll">
         <div className="landing-info-panel__intro">
-          <p className="static-page__eyebrow">AI-assisted alcohol label verification</p>
           <h1 id="landing-page-title">Compliance Label Assistant</h1>
+          <p className="static-page__subtitle">AI-assisted alcohol label verification</p>
           <p className="static-page__description">
             Upload label artwork, enter expected application data, and generate a field-by-field verification report.
           </p>
@@ -81,7 +105,7 @@ export default function LandingInfoPanel() {
               aria-labelledby={getSectionId(section.title)}
             >
               <h2 id={getSectionId(section.title)}>{section.title}</h2>
-              <p>{section.body}</p>
+              <p>{renderSectionBody(section.body)}</p>
               <ul>
                 {section.items.map((item) => (
                   <li key={item}>{item}</li>
@@ -95,6 +119,22 @@ export default function LandingInfoPanel() {
   );
 }
 
+function renderSectionBody(body) {
+  const bodyParts = Array.isArray(body) ? body : [body];
+
+  return bodyParts.map((part, index) => {
+    if (typeof part === 'string') {
+      return <Fragment key={`text-${index}`}>{part}</Fragment>;
+    }
+
+    return (
+      <a className="landing-info-section__inline-link" href={part.href} key={`${part.href}-${index}`}>
+        {part.label}
+      </a>
+    );
+  });
+}
+
 function getSectionId(title) {
-  return `landing-${title.toLowerCase().replaceAll(' ', '-')}`;
+  return `landing-${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
 }
