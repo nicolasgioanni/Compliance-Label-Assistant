@@ -83,6 +83,10 @@
   width: min(36rem, 100%);
 }
 
+.landing-page .landing-info-panel__divider {
+  width: 100%;
+}
+
 .landing-info-grid {
   display: grid;
   gap: 0.8rem;
