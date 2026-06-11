@@ -253,22 +253,99 @@
   outline: none;
 }
 
-.static-hero {
+.license-page__panel {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;
-  max-width: 760px;
-  padding: 1.25rem;
+  height: var(--workflow-panel-height, 40.2rem);
+  max-width: 100%;
+  min-height: 0;
+  overflow: hidden;
+  padding: 1.25rem 0.55rem 1.25rem 1.25rem;
+  width: 100%;
 }
 
-.license-page .static-hero {
-  height: var(--static-page-panel-height);
-  justify-content: center;
+.license-page__scroll {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 0;
   overflow-y: auto;
+  padding-right: 0.5rem;
+  scrollbar-gutter: stable;
 }
 
-.static-hero-compact {
-  max-width: 680px;
+.license-page__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-width: 48rem;
+  min-width: 0;
+}
+
+.license-page__divider {
+  width: 100%;
+}
+
+.license-page__summary-grid {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  min-width: 0;
+}
+
+.license-page__summary-section {
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  min-width: 0;
+  overflow-wrap: anywhere;
+  padding: 0.95rem;
+}
+
+.license-page__summary-section h2 {
+  color: var(--color-primary-strong);
+  font-size: 1rem;
+  font-weight: 900;
+  line-height: 1.2;
+  margin: 0 0 0.55rem;
+}
+
+.license-page__summary-section p {
+  color: var(--color-muted);
+  font-size: 0.9rem;
+  margin: 0 0 0.825rem;
+}
+
+.license-page__summary-section ul {
+  display: grid;
+  gap: 0.42rem;
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.license-page__summary-section li {
+  color: var(--color-muted);
+  font-size: 0.88rem;
+  overflow-wrap: anywhere;
+}
+
+.license-page__disclaimer {
+  border-top: 1px solid var(--color-border);
+  color: var(--color-muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin: 0;
+  padding-top: 0.95rem;
+}
+
+.license-page__disclaimer-label {
+  color: var(--color-primary-strong);
+  font-weight: 900;
+}
+
+.license-page__button {
+  min-width: min(16rem, 100%);
 }
 
 .static-page__eyebrow {
@@ -421,8 +498,7 @@
     height: auto;
   }
 
-  .about-page__panel,
-  .license-page .static-hero {
+  .about-page__panel {
     height: auto;
     overflow: visible;
   }
@@ -469,6 +545,10 @@
 
   .static-page__button {
     width: 100%;
+  }
+
+  .license-page__summary-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .landing-action-panel__actions {

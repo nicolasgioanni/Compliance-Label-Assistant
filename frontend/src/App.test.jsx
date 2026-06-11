@@ -254,16 +254,59 @@ describe('App routes and shared layout', () => {
   });
 
   it('renders the license page with live header status and no tool API calls', async () => {
-    renderAt('/license');
+    const { container } = renderAt('/license');
 
     expect(screen.getByRole('heading', { name: 'License' })).toBeInTheDocument();
-    expect(screen.getByText('Licensed under Apache License 2.0.')).toBeInTheDocument();
-    expect(screen.getByText('The repository LICENSE file is the source of truth for the full license text.')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'View LICENSE on GitHub' })).toHaveAttribute(
+    expect(
+      screen.getByText(
+        'This page summarizes the license information for Compliance Label Assistant and explains the major terms of the Apache License 2.0 in plain language.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Project License' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Allowed Uses' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Redistribution Duties' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Patent Grant' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Trademarks' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Warranty And Liability' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Contributions' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Prototype Context' })).toBeInTheDocument();
+    expect(screen.getByText('Use the software for personal, academic, internal, commercial, or evaluation purposes.')).toBeInTheDocument();
+    expect(screen.getByText('Provide recipients with a copy of the Apache License 2.0.')).toBeInTheDocument();
+    const disclaimer = container.querySelector('.license-page__disclaimer');
+    expect(disclaimer).toHaveTextContent('Disclaimer:');
+    expect(disclaimer).toHaveTextContent(
+      'This summary is not the official license file, not the official Apache license page, and not legal advice. Always review the repository LICENSE file and the official Apache Software Foundation license text before relying on these terms.',
+    );
+    expect(container.querySelector('.license-page__intro + .license-page__divider')).toBeInTheDocument();
+
+    const githubLicenseLink = screen.getByRole('link', { name: 'View LICENSE on GitHub' });
+    expect(githubLicenseLink).toHaveAttribute(
       'href',
       'https://github.com/nicolasgioanni/label-compliance-verifier/blob/main/LICENSE',
     );
-    expect(screen.getByText('Independent prototype, not an official TTB system. Human review remains final.')).toBeInTheDocument();
+    expect(githubLicenseLink).toHaveAttribute('target', '_blank');
+    expect(githubLicenseLink).toHaveAttribute('rel', 'noreferrer noopener');
+    expect(githubLicenseLink).toHaveClass('primary-button');
+
+    const officialLicenseLink = screen.getByRole('link', { name: 'View Official License Page' });
+    expect(officialLicenseLink).toHaveAttribute('href', 'https://www.apache.org/licenses/LICENSE-2.0');
+    expect(officialLicenseLink).toHaveAttribute('target', '_blank');
+    expect(officialLicenseLink).toHaveAttribute('rel', 'noreferrer noopener');
+    expect(officialLicenseLink).toHaveClass('primary-button');
+
+    const licenseActions = screen.getByLabelText('License page actions');
+    expect(licenseActions).toHaveClass('verification-actions');
+    expect(licenseActions.previousElementSibling).toHaveClass('license-page__panel');
+    expect(container.querySelector('.license-page__panel > .license-page__scroll')).toBeInTheDocument();
+    expect(githubLicenseLink.closest('.license-page__panel')).toBeNull();
+    expect(officialLicenseLink.closest('.license-page__panel')).toBeNull();
+
+    expect(
+      screen.queryByText('Independent prototype, not an official TTB system. Human review remains final.'),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText('The repository LICENSE file is the source of truth for the full license text.'),
+    ).not.toBeInTheDocument();
     expect(screen.getByText('Checking Status')).toBeInTheDocument();
 
     const primaryNav = screen.getByRole('navigation', { name: 'Primary' });
