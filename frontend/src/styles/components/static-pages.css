@@ -109,7 +109,7 @@
 .static-page .landing-info-section p {
   color: var(--color-muted);
   font-size: 0.9rem;
-  margin: 0 0 1.65rem;
+  margin: 0 0 0.825rem;
 }
 
 .landing-info-section ul {
