@@ -130,22 +130,36 @@
 }
 
 .landing-info-section__inline-link {
-  color: inherit;
-  font-weight: 800;
+  color: #1f5f8f;
+  font-weight: 700;
   text-decoration: underline;
-  text-decoration-thickness: 1px;
+  text-decoration-thickness: 1.5px;
+  text-decoration-color: rgba(31, 95, 143, 0.45);
   text-underline-offset: 2px;
+  transition: color 120ms ease, text-decoration-color 120ms ease;
 }
 
 .landing-info-section__inline-link:hover {
-  color: inherit;
-  text-decoration-thickness: 2px;
+  color: #0b3f63;
+  text-decoration-color: #0b3f63;
+  text-decoration-thickness: 1.5px;
+}
+
+.landing-info-section__inline-link:visited {
+  color: var(--color-muted);
+  text-decoration-color: var(--color-muted);
+}
+
+.landing-info-section__inline-link:visited:hover {
+  color: var(--color-muted);
+  text-decoration-color: var(--color-muted);
+  text-decoration-thickness: 1.5px;
 }
 
 .landing-info-section__inline-link:focus-visible {
   border-radius: 3px;
-  outline: 2px solid #c49a3a;
-  outline-offset: 3px;
+  outline: 2px solid #d8a928;
+  outline-offset: 2px;
 }
 
 .landing-action-panel {
