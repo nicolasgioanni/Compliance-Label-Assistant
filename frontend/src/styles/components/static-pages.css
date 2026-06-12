@@ -140,8 +140,8 @@
 }
 
 .landing-info-section__inline-link:hover {
-  color: #0b3f63;
-  text-decoration-color: #0b3f63;
+  color: #1f5f8f;
+  text-decoration-color: #1f5f8f;
   text-decoration-thickness: 1.5px;
 }
 
@@ -229,7 +229,10 @@
 
 .landing-action-panel__link:hover {
   color: var(--color-primary);
-  text-decoration: none;
+  text-decoration: underline;
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 2px;
 }
 
 .landing-action-panel__link:focus-visible {
