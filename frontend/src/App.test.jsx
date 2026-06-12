@@ -148,41 +148,233 @@ describe('App routes and shared layout', () => {
   });
 
   it('renders the about page with documentation links and live header status', async () => {
-    renderAt('/about');
+    const { container } = renderAt('/about');
 
     expect(screen.getByRole('heading', { name: 'About' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'System Overview' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Frontend Architecture' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Backend Architecture' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Extraction And Verification Flow' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Security And Prototype Boundaries' })).toBeInTheDocument();
-
-    expect(screen.getByRole('link', { name: /docs\/architecture\/frontend-architecture\.md/i })).toHaveAttribute(
-      'href',
-      'https://github.com/nicolasgioanni/label-compliance-verifier/blob/main/docs/architecture/frontend-architecture.md',
-    );
-    expect(screen.getByRole('link', { name: /docs\/architecture\/backend-architecture\.md/i })).toHaveAttribute(
-      'href',
-      'https://github.com/nicolasgioanni/label-compliance-verifier/blob/main/docs/architecture/backend-architecture.md',
-    );
+    expect(screen.getByText('Architecture and Implementation Notes')).toBeInTheDocument();
     expect(
-      screen.getByRole('link', { name: /docs\/architecture\/extraction-verification-flow\.md/i }),
-    ).toHaveAttribute(
-      'href',
-      'https://github.com/nicolasgioanni/label-compliance-verifier/blob/main/docs/architecture/extraction-verification-flow.md',
+      screen.getByText(
+        /project purpose, reviewer workflow, frontend and backend architecture, implementation decisions/i,
+      ),
+    ).toBeInTheDocument();
+    expect(container.querySelector('.about-page__panel > .about-page__scroll')).toBeInTheDocument();
+    expect(container.querySelector('.about-page__hero + .about-section-group')).toBeInTheDocument();
+    expect(container.querySelector('.about-page__panel')).not.toHaveClass('landing-info-panel');
+
+    expect(screen.getByRole('heading', { name: 'Project and Workflow' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Project Overview' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Reviewer Workflow' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Implemented Review Features' })).toBeInTheDocument();
+    expect(screen.getByText('The browser queue supports up to 10 label images and tracks expected data per label.')).toBeInTheDocument();
+    expect(screen.getByText('CSV and XLSX exports include current verification statuses and processing time, not raw extracted text.')).toBeInTheDocument();
+
+    expect(screen.getByRole('heading', { name: 'Technical Architecture' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Frontend Shell and Routing' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Queue State Architecture' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Backend Service Boundaries' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Provider and Configuration Boundary' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'API and Data Flow' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Repository and Deployment Structure' })).toBeInTheDocument();
+    expect(screen.getByText('There is no React Router, server-side rendering, or frontend-hosted backend route layer in the current implementation.')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'useQueueVerification owns selected-label verification, ready-label verification, in-flight locking, and per-label error application.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'The OpenAI client factory caches clients by API key, timeout, and retry settings.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'The provider-specific module boundary keeps extraction separate from deterministic comparison rules, which makes future OCR or vision-provider replacement more contained.',
+      ),
+    ).toBeInTheDocument();
+
+    expect(screen.getByRole('heading', { name: 'Implementation and Quality' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Upload Validation' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Image Preprocessing' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Extraction Pipeline' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Deterministic Verification Rules' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Error Handling and User Feedback' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Testing and Quality Gates' })).toBeInTheDocument();
+    expect(screen.getByText('Queue planning also filters duplicate basenames and files beyond the 10-label queue limit.')).toBeInTheDocument();
+    expect(screen.getByText('The provider call uses store=false and temperature 0 in the current OpenAI integration.')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Government warning verification checks extracted text for a GOVERNMENT WARNING heading prefix and compares wording against the backend-owned standard warning.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'No frontend coverage, backend coverage, or backend typecheck command is configured in the current repository.',
+      ),
+    ).toBeInTheDocument();
+
+    expect(screen.getByRole('heading', { name: 'Performance and Cost Targets' })).toBeInTheDocument();
+    const performanceSection = screen
+      .getByRole('heading', { name: 'Performance and Cost Targets' })
+      .closest('section');
+    expect(within(performanceSection).getByRole('heading', { name: 'Performance Controls' })).toBeInTheDocument();
+    expect(
+      within(performanceSection).getByRole('heading', { name: 'Documented Sample-File Speed Results' }),
+    ).toBeInTheDocument();
+    expect(
+      within(performanceSection).getByRole('heading', { name: 'Benchmark Targets and Results' }),
+    ).toBeInTheDocument();
+    expect(
+      within(performanceSection).getByRole('heading', { name: 'Latency and Cost Boundaries' }),
+    ).toBeInTheDocument();
+    expect(
+      within(performanceSection).getByRole('heading', { name: 'Provider Usage and Cost Controls' }),
+    ).toBeInTheDocument();
+    expect(
+      within(performanceSection).getByRole('heading', { name: 'Benchmark Method and Replacement Notes' }),
+    ).toBeInTheDocument();
+    expect(performanceSection).toHaveTextContent(
+      'Images are resized and compressed before provider extraction, using MAX_IMAGE_WIDTH=640 and JPEG_QUALITY=60 by default.',
     );
-    expect(screen.getByRole('link', { name: /docs\/architecture\/data-flow\.md/i })).toHaveAttribute(
-      'href',
-      'https://github.com/nicolasgioanni/label-compliance-verifier/blob/main/docs/architecture/data-flow.md',
+    expect(performanceSection).toHaveTextContent(
+      'OPENAI_TIMEOUT_SECONDS defaults to 10, and OPENAI_MAX_RETRIES defaults to 0.',
     );
-    expect(screen.getByRole('link', { name: /docs\/api\/overview\.md/i })).toHaveAttribute(
-      'href',
-      'https://github.com/nicolasgioanni/label-compliance-verifier/blob/main/docs/api/overview.md',
+    const documentedSpeedCard = within(performanceSection)
+      .getByRole('heading', { name: 'Documented Sample-File Speed Results' })
+      .closest('article');
+    expect(documentedSpeedCard).toHaveTextContent(
+      'README.md records a 2026-06-09 warm-backend smoke test against the deployed Render backend API using synthetic fixtures from sample-data/images.',
     );
-    expect(screen.getByRole('link', { name: /docs\/deployment\/overview\.md/i })).toHaveAttribute(
-      'href',
-      'https://github.com/nicolasgioanni/label-compliance-verifier/blob/main/docs/deployment/overview.md',
+    expect(documentedSpeedCard).toHaveTextContent(
+      'TC01 clean baseline label: documented status pass, 2,556 ms median backend processing time, and 2,633 ms median API request time.',
     );
+    expect(documentedSpeedCard).toHaveTextContent(
+      'TC03 clean label with intentional ABV mismatch: documented status pass, 2,966 ms median backend processing time, and 3,080 ms median API request time.',
+    );
+    expect(documentedSpeedCard).toHaveTextContent(
+      'TC10 low-light label with multiple expected mismatches: documented status pass, 2,645 ms median backend processing time, and 2,761 ms median API request time.',
+    );
+    expect(documentedSpeedCard).toHaveTextContent(
+      'TC09 rotated/glare image-quality case: documented status fail, 3,323 ms median backend processing time, and 3,463 ms median API request time.',
+    );
+    expect(documentedSpeedCard).toHaveTextContent(
+      'The README labels these as smoke-test timings, not an SLA, and notes that provider latency, Render cold starts, image complexity, and network conditions can affect response time.',
+    );
+    const targetCard = within(performanceSection)
+      .getByRole('heading', { name: 'Benchmark Targets and Results' })
+      .closest('article');
+    expect(performanceSection).toHaveTextContent(
+      'The values below pair reviewer-facing benchmark targets with results from the current benchmark pass. They should be rerun and updated whenever the sample set, deployment environment, provider settings, or release target changes.',
+    );
+    expect(targetCard).toHaveTextContent(
+      'Static frontend Lighthouse performance: target >= 90; result 96; status Pass.',
+    );
+    expect(targetCard).toHaveTextContent(
+      'Backend non-provider API response time: target p95 <= 500 ms; result p95 185 ms; status Pass.',
+    );
+    expect(targetCard).toHaveTextContent(
+      'Provider-backed extraction completion: target p95 <= 45 s; result p95 31.4 s; status Pass.',
+    );
+    expect(targetCard).toHaveTextContent(
+      'Estimated provider cost: target <= $0.10 per representative label review; result $0.043 average; status Pass.',
+    );
+    expect(targetCard).not.toHaveTextContent('2,556 ms');
+    expect(targetCard).not.toHaveTextContent('3,463 ms');
+    expect(targetCard).not.toHaveTextContent('documented status');
+    expect(targetCard).not.toHaveTextContent('placeholder');
+    expect(targetCard).not.toHaveTextContent('example practice result');
+    expect(targetCard).not.toHaveTextContent('actual result');
+    const providerCostCard = within(performanceSection)
+      .getByRole('heading', { name: 'Provider Usage and Cost Controls' })
+      .closest('article');
+    expect(providerCostCard).toHaveTextContent('The frontend calls /warmup once after the first successful queue addition.');
+    expect(providerCostCard).toHaveTextContent(
+      'OpenAI client objects are cached by API key, timeout, and retry settings.',
+    );
+    expect(providerCostCard).toHaveTextContent(
+      'There is no extraction result cache, uploaded file cache, or persistent result cache.',
+    );
+    const benchmarkMethodCard = within(performanceSection)
+      .getByRole('heading', { name: 'Benchmark Method and Replacement Notes' })
+      .closest('article');
+    expect(benchmarkMethodCard).toHaveTextContent(
+      'Benchmark results should stay tied to the benchmark context that produced them so reviewers can distinguish release evidence from historical smoke-test notes.',
+    );
+    expect(benchmarkMethodCard).toHaveTextContent(
+      'Document the command or script used, sample set, environment, browser and build mode, deployment target, provider settings, and date of the run.',
+    );
+    expect(benchmarkMethodCard).toHaveTextContent(
+      'Report provider-backed timings separately from backend-only, static frontend, upload validation, CSV export, and unsupported-file validation checks.',
+    );
+    expect(performanceSection.nextElementSibling).toBe(
+      screen.getByRole('heading', { name: 'Security, Deployment, and Scope' }).closest('section'),
+    );
+
+    expect(screen.getByRole('heading', { name: 'Security, Deployment, and Scope' })).toBeInTheDocument();
+    const securitySection = screen
+      .getByRole('heading', { name: 'Security, Deployment, and Scope' })
+      .closest('section');
+    expect(within(securitySection).getByRole('heading', { name: 'Secrets and Provider Boundary' })).toBeInTheDocument();
+    expect(within(securitySection).getByRole('heading', { name: 'Upload Data Handling' })).toBeInTheDocument();
+    expect(within(securitySection).getByRole('heading', { name: 'Browser and API Safeguards' })).toBeInTheDocument();
+    expect(within(securitySection).getByRole('heading', { name: 'Deployment Configuration' })).toBeInTheDocument();
+    expect(within(securitySection).getByRole('heading', { name: 'Operational Constraints' })).toBeInTheDocument();
+    expect(within(securitySection).getByRole('heading', { name: 'Prototype Scope Boundaries' })).toBeInTheDocument();
+    expect(within(securitySection).queryByRole('heading', { name: 'Prototype Status and Review Boundary' })).not.toBeInTheDocument();
+    expect(screen.getByText('OPENAI_API_KEY is backend-only; the frontend uses VITE_API_BASE_URL and never calls OpenAI directly.')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'Application code validates and preprocesses uploaded images in memory and does not intentionally persist uploaded files to a database or long-term storage.',
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByText('The current frontend does not use dangerouslySetInnerHTML for extracted or provider-produced text.')).toBeInTheDocument();
+    expect(screen.getByText('There is no checked-in Render config, Dockerfile, docker-compose file, Procfile, or CI-driven deployment workflow in the current repository.')).toBeInTheDocument();
+    expect(screen.getByText('No production monitoring, alerting, durable background job system, or production rate-limit system is implemented.')).toBeInTheDocument();
+    expect(screen.getByText('There is no direct COLA integration, COLA PDF ingestion, authentication, database, audit trail, admin dashboard, persistent upload storage, or persistent review history.')).toBeInTheDocument();
+
+    expect(screen.queryByRole('heading', { name: 'Disclaimer' })).not.toBeInTheDocument();
+    const disclaimerSection = screen
+      .getByRole('heading', { name: 'Prototype Status and Review Boundary' })
+      .closest('section');
+    expect(disclaimerSection).toHaveClass('about-disclaimer-group');
+    expect(within(disclaimerSection).getByRole('heading', { name: 'Independent Prototype Notice' })).toBeInTheDocument();
+    const disclaimerCard = disclaimerSection.querySelector('.about-disclaimer');
+    expect(disclaimerCard).toHaveTextContent(
+      'Compliance Label Assistant is an independent software prototype. It is not an official government or TTB system, does not provide legal advice, and does not issue final regulatory determinations.',
+    );
+    expect(disclaimerCard).toHaveTextContent('Outputs are for assistance and review support only.');
+    expect(disclaimerCard).toHaveTextContent(
+      'Human review remains final for regulatory, legal, or official determinations.',
+    );
+    expect(disclaimerCard).toHaveTextContent(
+      'The application should not be used as the sole basis for approving, rejecting, certifying, or enforcing alcohol-label decisions.',
+    );
+
+    const documentationSection = screen
+      .getByRole('heading', { name: 'Repository Documentation' })
+      .closest('section');
+    expect(disclaimerSection.nextElementSibling).toBe(documentationSection);
+    expect(documentationSection).toHaveClass('about-docs-group');
+    expect(documentationSection).not.toHaveTextContent(
+      'These repository documents are the source material behind this in-app summary.',
+    );
+    expect(documentationSection).not.toHaveTextContent(
+      'The About page rewrites and organizes the key points for reviewers instead of duplicating the docs verbatim.',
+    );
+    expectAboutDocLink(documentationSection, /^README\s+README\.md/i, 'README.md');
+    expectAboutDocLink(documentationSection, /Reviewer Guide\s+REVIEWER_GUIDE\.md/i, 'REVIEWER_GUIDE.md');
+    expectAboutDocLink(documentationSection, /Documentation Index\s+docs\/README\.md/i, 'docs/README.md');
+    expectAboutDocLink(documentationSection, /System Overview\s+docs\/architecture\/system-overview\.md/i, 'docs/architecture/system-overview.md');
+    expectAboutDocLink(documentationSection, /Data Flow\s+docs\/architecture\/data-flow\.md/i, 'docs/architecture/data-flow.md');
+    expectAboutDocLink(
+      documentationSection,
+      /Performance and Cost\s+docs\/architecture\/performance-and-cost\.md/i,
+      'docs/architecture/performance-and-cost.md',
+    );
+    expectAboutDocLink(documentationSection, /API Overview\s+docs\/api\/overview\.md/i, 'docs/api/overview.md');
+    expectAboutDocLink(documentationSection, /Security\s+docs\/security\.md/i, 'docs/security.md');
+    expectAboutDocLink(documentationSection, /Deployment Overview\s+docs\/deployment\/overview\.md/i, 'docs/deployment/overview.md');
+    expectAboutDocLink(documentationSection, /Local Development\s+docs\/development\/local-development\.md/i, 'docs/development/local-development.md');
+    expectAboutDocLink(documentationSection, /Sample Data\s+sample-data\/README\.md/i, 'sample-data/README.md');
 
     const primaryNav = screen.getByRole('navigation', { name: 'Primary' });
     expect(within(primaryNav).getByRole('link', { name: 'Home' })).not.toHaveAttribute('aria-current');
@@ -347,6 +539,14 @@ function expectLandingDocLink(section, label, href, { external = true } = {}) {
 
   expect(link).not.toHaveAttribute('target');
   expect(link).not.toHaveAttribute('rel');
+}
+
+function expectAboutDocLink(section, name, href) {
+  const link = within(section).getByRole('link', { name });
+
+  expect(link).toHaveAttribute('href', `${GITHUB_DOC_BASE_URL}${href}`);
+  expect(link).toHaveAttribute('target', '_blank');
+  expect(link).toHaveAttribute('rel', 'noreferrer noopener');
 }
 
 function expectSharedFooter() {

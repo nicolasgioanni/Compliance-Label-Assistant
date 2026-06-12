@@ -53,6 +53,20 @@ npm run build
 
 `npm test` is CI-safe because it maps to `vitest run`.
 
+## Latest Local Validation Snapshot
+
+The most recent local documentation and About page accuracy pass verified the frontend and repository diff with these results:
+
+| Command | Result |
+| --- | --- |
+| `npm run lint` from `frontend/` | Passed |
+| `npm run typecheck` from `frontend/` | Passed |
+| `npm test` from `frontend/` | Passed: 18 test files and 133 tests |
+| `npm run build` from `frontend/` | Passed |
+| `git diff --check` from the repository root | Passed |
+
+Backend checks were not rerun for that pass because it changed documentation and About page copy only, not backend routes, schemas, provider behavior, upload processing, or API contracts.
+
 ## Full-Stack Local Validation
 
 1. Run `.\scripts\setup-local.ps1`.

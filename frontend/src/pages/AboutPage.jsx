@@ -1,99 +1,154 @@
-const GITHUB_DOC_BASE_URL = 'https://github.com/nicolasgioanni/label-compliance-verifier/blob/main/';
-
-const ABOUT_SECTIONS = [
-  {
-    title: 'System Overview',
-    body: 'Compliance Label Assistant is a React and FastAPI prototype for reviewing alcohol label artwork against expected application data. The frontend owns upload, queue, expected-field entry, result review, and export workflows. The backend owns validation, image preprocessing, AI extraction, deterministic verification, and structured response construction.',
-  },
-  {
-    title: 'Frontend Architecture',
-    body: 'The frontend is a Vite React application with lightweight path-based pages, a shared shell, local queue state, and a centralized API client. Verification UI components remain focused on rendering and interaction, while helpers handle file validation, queue state transitions, status formatting, and export generation.',
-  },
-  {
-    title: 'Backend Architecture',
-    body: 'The backend is a FastAPI service with thin routes and separate modules for workflow orchestration, upload validation, image preprocessing, OpenAI provider access, deterministic field comparison, response building, and configuration. Provider-specific code is isolated from verification rules.',
-  },
-  {
-    title: 'Extraction And Verification Flow',
-    body: 'Uploaded images are validated and preprocessed in memory before provider extraction. Extracted fields are compared against expected values with deterministic rules for text normalization, alcohol content, net contents, government warning text, and reviewable near matches. The response returns field-level evidence and an overall status.',
-  },
-  {
-    title: 'Security And Prototype Boundaries',
-    body: 'The frontend never exposes the OpenAI API key. Uploaded files are processed temporarily and are not persistently stored by application code. This prototype does not include authentication, a database, admin tools, COLA integration, or final legal compliance determinations. Human review remains final.',
-  },
-];
-
-const DOCUMENTATION_LINKS = [
-  {
-    label: 'Frontend architecture',
-    path: 'docs/architecture/frontend-architecture.md',
-  },
-  {
-    label: 'Backend architecture',
-    path: 'docs/architecture/backend-architecture.md',
-  },
-  {
-    label: 'Extraction and verification flow',
-    path: 'docs/architecture/extraction-verification-flow.md',
-  },
-  {
-    label: 'Data flow',
-    path: 'docs/architecture/data-flow.md',
-  },
-  {
-    label: 'API overview',
-    path: 'docs/api/overview.md',
-  },
-  {
-    label: 'Deployment overview',
-    path: 'docs/deployment/overview.md',
-  },
-];
+import { Fragment } from 'react';
+import {
+  ABOUT_DISCLAIMER,
+  ABOUT_HERO,
+  ABOUT_SECTION_GROUPS,
+  DOCUMENTATION_LINKS,
+  buildDocumentationUrl,
+} from './about/aboutContent';
 
 export default function AboutPage() {
   return (
     <section className="static-page about-page" aria-labelledby="about-page-title">
       <div className="panel about-page__panel">
-        <div className="about-page__intro">
-          <p className="static-page__eyebrow">Architecture and implementation notes</p>
-          <h1 id="about-page-title">About</h1>
-          <p className="static-page__description">
-            A concise technical overview of how the frontend, backend, extraction boundary, verification rules, and
-            deployment model fit together.
-          </p>
-        </div>
+        <div className="about-page__scroll">
+          <AboutHero />
 
-        <div className="about-section-grid">
-          {ABOUT_SECTIONS.map((section) => (
-            <section className="about-section" key={section.title} aria-labelledby={getSectionId(section.title)}>
-              <h2 id={getSectionId(section.title)}>{section.title}</h2>
-              <p>{section.body}</p>
-            </section>
+          {ABOUT_SECTION_GROUPS.map((group) => (
+            <AboutSectionGroup group={group} key={group.title} />
           ))}
-        </div>
 
-        <section className="about-docs" aria-labelledby="about-docs-title">
-          <h2 id="about-docs-title">Source Documentation</h2>
-          <div className="about-docs__links">
-            {DOCUMENTATION_LINKS.map((link) => (
-              <a
-                className="about-docs__link"
-                href={`${GITHUB_DOC_BASE_URL}${link.path}`}
-                key={link.path}
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                <span>{link.label}</span>
-                <code>{link.path}</code>
-              </a>
-            ))}
-          </div>
-        </section>
+          <AboutDisclaimer />
+          <DocumentationLinks />
+        </div>
       </div>
     </section>
   );
 }
 
+function AboutHero() {
+  return (
+    <header className="about-page__hero">
+      <h1 id="about-page-title">{ABOUT_HERO.title}</h1>
+      <p className="static-page__subtitle">{ABOUT_HERO.subtitle}</p>
+      <p className="static-page__description">{ABOUT_HERO.description}</p>
+      <div className="landing-info-panel__divider about-page__divider" role="separator" aria-hidden="true" />
+    </header>
+  );
+}
+
+function AboutSectionGroup({ group }) {
+  const groupId = getSectionId(group.title);
+
+  return (
+    <section className="about-section-group" aria-labelledby={groupId}>
+      <h2 id={groupId}>{group.title}</h2>
+      <div className="about-section-grid">
+        {group.sections.map((section) => (
+          <InfoCard section={section} key={section.title} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function InfoCard({ section }) {
+  const sectionId = getSectionId(section.title);
+
+  return (
+    <article className="about-card" aria-labelledby={sectionId}>
+      <h3 id={sectionId}>{section.title}</h3>
+      <p>{renderRichText(section.body)}</p>
+      {section.items?.length ? (
+        <ul>
+          {section.items.map((item, itemIndex) => (
+            <li key={`${section.title}-${itemIndex}`}>{renderRichText(item)}</li>
+          ))}
+        </ul>
+      ) : null}
+    </article>
+  );
+}
+
+function AboutDisclaimer() {
+  const groupId = getSectionId(ABOUT_DISCLAIMER.sectionTitle);
+  const cardId = getSectionId(ABOUT_DISCLAIMER.title);
+
+  return (
+    <section className="about-section-group about-disclaimer-group" aria-labelledby={groupId}>
+      <h2 id={groupId}>{ABOUT_DISCLAIMER.sectionTitle}</h2>
+      <article className="about-disclaimer" aria-labelledby={cardId}>
+        <h3 id={cardId}>{ABOUT_DISCLAIMER.title}</h3>
+        <p>{ABOUT_DISCLAIMER.body}</p>
+        <ul>
+          {ABOUT_DISCLAIMER.items.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      </article>
+    </section>
+  );
+}
+
+function DocumentationLinks() {
+  return (
+    <section className="about-section-group about-docs-group" aria-labelledby="about-docs-title">
+      <h2 id="about-docs-title">Repository Documentation</h2>
+      <div className="about-docs__links">
+        {DOCUMENTATION_LINKS.map((link) => (
+          <a
+            className="about-docs__link"
+            href={buildDocumentationUrl(link.path)}
+            key={link.path}
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            <span>{link.label}</span>
+            <code>{link.path}</code>
+            <small>{link.summary}</small>
+          </a>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function renderRichText(content) {
+  const parts = Array.isArray(content) ? content : [content];
+
+  return parts.map((part, index) => {
+    if (typeof part === 'string') {
+      return <Fragment key={`text-${index}`}>{part}</Fragment>;
+    }
+
+    if (part.code) {
+      return (
+        <code className="about-inline-code" key={`code-${part.code}-${index}`}>
+          {part.code}
+        </code>
+      );
+    }
+
+    if (part.href) {
+      const isExternal = part.href.startsWith('http');
+
+      return (
+        <a
+          className="about-inline-link"
+          href={part.href}
+          key={`${part.href}-${index}`}
+          rel={isExternal ? 'noreferrer noopener' : undefined}
+          target={isExternal ? '_blank' : undefined}
+        >
+          {part.label}
+        </a>
+      );
+    }
+
+    return null;
+  });
+}
+
 function getSectionId(title) {
-  return `about-${title.toLowerCase().replaceAll(' ', '-')}`;
+  return `about-${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
 }

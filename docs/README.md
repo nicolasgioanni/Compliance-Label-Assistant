@@ -37,7 +37,7 @@ These evaluator-facing docs summarize the project deliverables without duplicati
 - [Data Flow](architecture/data-flow.md)
 - [Extraction And Verification Flow](architecture/extraction-verification-flow.md)
 - [Error Handling](architecture/error-handling.md)
-- [Performance And Cost](architecture/performance-and-cost.md)
+- [Performance and Cost](architecture/performance-and-cost.md)
 
 ## Frontend
 

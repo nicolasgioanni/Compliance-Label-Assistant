@@ -1,4 +1,4 @@
-# Performance And Cost
+# Performance and Cost
 
 ## Implemented Controls
 
@@ -20,6 +20,27 @@ Speed and cost-sensitive settings are centralized in `backend/app/config.py`:
 | `MAX_IMAGE_WIDTH` | `640` | Preprocessed JPEG maximum width, bounded from 600 to 2000. |
 | `JPEG_QUALITY` | `60` | Preprocessed JPEG quality, bounded from 50 to 95. |
 | `BATCH_CONCURRENCY` | `3` | Backend `/verify-batch` per-file concurrency. |
+
+## Representative Benchmark Targets
+
+The values below are target placeholders for reviewer-facing benchmark reporting. They are not measured results and should be replaced with measurements from a final benchmark run before release. These targets are separate from the historical README smoke-test timing notes.
+
+Provider-backed timings should be reviewed separately from backend-only, static frontend, upload validation, CSV export, and unsupported-file validation checks because provider latency can dominate end-to-end review time.
+
+| Benchmark Area | Target Placeholder |
+| --- | ---: |
+| Static frontend Lighthouse performance | >= 90 |
+| Static frontend Lighthouse accessibility | >= 95 |
+| Frontend lint, typecheck, and production build | 0 blocking errors |
+| Backend non-provider API response time | p95 <= 500 ms |
+| Upload validation response | p95 <= 2.0 s for representative supported files |
+| Provider-backed extraction completion | p95 <= 45 s for representative label images |
+| Structured result parse success | >= 98% on supported reviewer test labels |
+| Field-level extraction agreement | >= 90% on curated benchmark labels |
+| CSV export generation | p95 <= 500 ms for representative exports |
+| Formula-neutralized CSV export | 100% neutralization for formula-risk prefixes |
+| Unsupported-file handling | 100% controlled validation errors for known unsupported cases |
+| Estimated provider cost | Placeholder target <= $0.10 per representative label review |
 
 ## Image Preprocessing
 
