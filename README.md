@@ -15,7 +15,7 @@ These are public application URLs. Do not include private dashboard links or sec
 For take-home review, use the direct verification tool URL:
 https://compliance-label-assistant.vercel.app/app
 
-The landing page content is static; the shared header performs a lightweight backend health check. The verification tool calls the Render backend for verification, and the frontend does not expose the OpenAI API key. Human review remains final. This is an independent prototype, not an official TTB system.
+The landing page content is static; the shared header performs a lightweight backend health check. The verification tool calls the Render backend for verification, and the frontend does not expose the OpenAI API key. Human review remains final. This is an independent prototype, not an official TTB system. The shared footer displays a persistent disclaimer that the app is an independent prototype and not an official TTB, Treasury, or government system.
 
 ## Evaluator Quick Facts
 

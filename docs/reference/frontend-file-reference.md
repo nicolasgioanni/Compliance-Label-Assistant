@@ -52,7 +52,7 @@
 
 | Path | Purpose | Main exports | Main dependencies | Used by | Notes |
 | --- | --- | --- | --- | --- | --- |
-| `frontend/src/components/shared/AppFooter.jsx` | Footer component. | `AppFooter` default | none | `App` | Static user interface content. |
+| `frontend/src/components/shared/AppFooter.jsx` | Footer component. | `AppFooter` default | none | `App` | Shared identity, prototype disclaimer, copyright/license text, and resource links. |
 | `frontend/src/components/shared/ErrorBanner.jsx` | Dismissible alert banner. | `ErrorBanner` default | React hooks | `App` | Supports error, info, and warning tone classes. |
 | `frontend/src/components/shared/ErrorBanner.test.jsx` | Tests banner tones and dismissal. | none | Testing Library, `ErrorBanner` | Test runner | Covers default, info, warning, and auto-dismiss behavior. |
 | `frontend/src/components/shared/Header.jsx` | Header with service status indicator. | `Header` default | none | `App` | `isOnline` controls status display. |

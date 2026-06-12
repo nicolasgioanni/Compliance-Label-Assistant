@@ -12,7 +12,7 @@ Components focus on rendering and user interaction. API calls and reusable state
 | `ErrorBanner` | `frontend/src/components/shared/ErrorBanner.jsx` | Shows dismissible error, info, or warning banners with optional auto-dismiss. |
 | `InfoTooltip` | `frontend/src/components/shared/InfoTooltip.jsx` | Renders viewport-positioned tooltip content through a portal. |
 | `LoadingState` | `frontend/src/components/shared/LoadingState.jsx` | Shows the verifying loading state. |
-| `AppFooter` | `frontend/src/components/shared/AppFooter.jsx` | Displays footer copy. |
+| `AppFooter` | `frontend/src/components/shared/AppFooter.jsx` | Displays shared footer identity, prototype disclaimer, copyright/license text, and resource links. |
 
 ## Upload Components
 

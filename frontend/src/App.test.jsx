@@ -5,6 +5,9 @@ import App from './App';
 import { SERVICE_UNAVAILABLE_MESSAGE } from './constants/notificationMessages';
 
 const GITHUB_DOC_BASE_URL = 'https://github.com/nicolasgioanni/label-compliance-verifier/blob/main/';
+const FOOTER_DISCLAIMER =
+  'Independent software prototype. Not an official TTB, Treasury, or government system. AI-assisted verification results require human review and are not legal or regulatory advice.';
+const FOOTER_COPYRIGHT = '© 2026 Nicolas Gioanni. Licensed under Apache License 2.0.';
 
 vi.mock('./api/verificationApi', () => ({
   checkHealth: vi.fn(),
@@ -134,6 +137,7 @@ describe('App routes and shared layout', () => {
     expect(within(primaryNav).getByRole('link', { name: 'About' })).not.toHaveAttribute('aria-current');
     expect(within(primaryNav).getByRole('link', { name: 'Verification Tool' })).not.toHaveAttribute('aria-current');
     expect(screen.getByText('Checking Status')).toBeInTheDocument();
+    expectSharedFooter();
 
     await waitFor(() => {
       expect(checkHealth).toHaveBeenCalledTimes(1);
@@ -184,6 +188,7 @@ describe('App routes and shared layout', () => {
     expect(within(primaryNav).getByRole('link', { name: 'Home' })).not.toHaveAttribute('aria-current');
     expect(within(primaryNav).getByRole('link', { name: 'About' })).toHaveAttribute('aria-current', 'page');
     expect(within(primaryNav).getByRole('link', { name: 'Verification Tool' })).not.toHaveAttribute('aria-current');
+    expectSharedFooter();
 
     await waitFor(() => {
       expect(checkHealth).toHaveBeenCalledTimes(1);
@@ -197,7 +202,7 @@ describe('App routes and shared layout', () => {
     renderAt('/app');
 
     expect(screen.getByRole('banner')).toBeInTheDocument();
-    expect(screen.getByRole('contentinfo')).toBeInTheDocument();
+    expectSharedFooter();
     const primaryNav = screen.getByRole('navigation', { name: 'Primary' });
     expect(primaryNav).toBeInTheDocument();
     expect(within(primaryNav).getByRole('link', { name: 'Verification Tool' })).toHaveAttribute(
@@ -313,6 +318,7 @@ describe('App routes and shared layout', () => {
     expect(within(primaryNav).getByRole('link', { name: 'Home' })).not.toHaveAttribute('aria-current');
     expect(within(primaryNav).getByRole('link', { name: 'About' })).not.toHaveAttribute('aria-current');
     expect(within(primaryNav).getByRole('link', { name: 'Verification Tool' })).not.toHaveAttribute('aria-current');
+    expectSharedFooter();
 
     await waitFor(() => {
       expect(checkHealth).toHaveBeenCalledTimes(1);
@@ -341,4 +347,27 @@ function expectLandingDocLink(section, label, href, { external = true } = {}) {
 
   expect(link).not.toHaveAttribute('target');
   expect(link).not.toHaveAttribute('rel');
+}
+
+function expectSharedFooter() {
+  const footer = screen.getByRole('contentinfo');
+
+  expect(within(footer).getByRole('img', { name: 'Compliance Label Assistant logo' })).toHaveAttribute(
+    'src',
+    '/cla-logo.png',
+  );
+  expect(within(footer).getByText('Compliance Label Assistant')).toBeInTheDocument();
+  expect(within(footer).getByText('Independent prototype • v1.0.0')).toBeInTheDocument();
+  expect(within(footer).getByText(FOOTER_DISCLAIMER)).toBeInTheDocument();
+  expect(within(footer).getByText(FOOTER_COPYRIGHT)).toBeInTheDocument();
+
+  const footerNavigation = within(footer).getByRole('navigation', { name: 'Footer navigation' });
+  const sourceCodeLink = within(footerNavigation).getByRole('link', { name: 'Source Code' });
+
+  expect(sourceCodeLink).toHaveAttribute('href', 'https://github.com/nicolasgioanni/label-compliance-verifier');
+  expect(sourceCodeLink).toHaveAttribute('target', '_blank');
+  expect(sourceCodeLink).toHaveAttribute('rel', 'noreferrer noopener');
+  expect(within(footerNavigation).getByRole('link', { name: 'License' })).toHaveAttribute('href', '/license');
+  expect(within(footerNavigation).getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');
+  expect(within(footerNavigation).getByRole('link', { name: 'Verification Tool' })).toHaveAttribute('href', '/app');
 }
