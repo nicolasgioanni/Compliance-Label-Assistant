@@ -193,6 +193,7 @@ cd frontend
 npm run lint
 npm run typecheck
 npm test
+npm run test:coverage -- --run
 npm run build
 ```
 
@@ -201,9 +202,18 @@ Backend validation:
 ```powershell
 cd backend
 .\.venv\Scripts\python.exe -m pytest
+.\.venv\Scripts\python.exe -m pytest --cov=app --cov-report=term-missing --cov-report=xml
 .\.venv\Scripts\python.exe -m ruff check app
 .\.venv\Scripts\python.exe -c "from app.main import app; print(app.title)"
 ```
+
+GitHub Actions is split into three required checks for protected `main`:
+
+- `backend-ci`: installs backend dependencies, runs pytest with coverage, Ruff, and an app import smoke check.
+- `frontend-ci`: installs frontend dependencies, runs lint, typecheck, Vitest with coverage, and the production build.
+- `repo-hygiene`: checks whitespace, tracked generated artifacts, secret-looking values, skipped tests, and internal reference guards.
+
+These CI jobs are designed to run without provider, Vercel, or Render secrets. Configure GitHub branch protection to require all three checks before merging to `main`, then configure Vercel and Render dashboards to deploy only from protected `main`.
 
 ## Documentation Map
 

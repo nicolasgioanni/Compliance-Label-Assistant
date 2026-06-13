@@ -6,7 +6,9 @@
 | --- | --- |
 | `.gitignore` | Excludes dependencies, env files, build outputs, caches, logs, and editor files. |
 | `.gitattributes` | Normalizes line endings and marks image/PDF/Office files as binary. |
-| `.github/workflows/ci.yml` | Runs backend and frontend validation on pull requests and pushes to `main`. |
+| `.github/workflows/backend-ci.yml` | Runs backend dependency install, pytest with coverage, Ruff, and app import validation on pull requests and pushes to `main`. |
+| `.github/workflows/frontend-ci.yml` | Runs frontend install, lint, typecheck, Vitest with coverage, and production build validation on pull requests and pushes to `main`. |
+| `.github/workflows/repo-hygiene.yml` | Runs repository hygiene checks for whitespace, generated artifacts, secret-looking values, skipped tests, and internal references. |
 | `LICENSE` | Apache License 2.0. |
 
 ## Frontend Config
@@ -15,7 +17,7 @@
 | --- | --- |
 | `frontend/package.json` | Frontend package metadata, scripts, dependencies, browser targets. |
 | `frontend/package-lock.json` | NPM lockfile; internals are not documented. |
-| `frontend/vite.config.js` | Vite React plugin, build target, Vitest jsdom setup. |
+| `frontend/vite.config.js` | Vite React plugin, build target, Vitest jsdom setup, and coverage reporter settings. |
 | `frontend/eslint.config.js` | ESLint flat config for JS/JSX, React, hooks, tests, and config files. |
 | `frontend/jsconfig.json` | JavaScript typecheck configuration used by `npm run typecheck`. |
 | `frontend/postcss.config.cjs` | Autoprefixer PostCSS config. |
@@ -52,6 +54,7 @@
 | `build` | `vite build` | Build production frontend. |
 | `lint` | `eslint .` | Run ESLint. |
 | `test` | `vitest run` | Run frontend tests once. |
+| `test:coverage` | `vitest run --coverage` | Run frontend tests once with coverage output. |
 | `test:watch` | `vitest` | Run frontend tests in watch mode. |
 | `typecheck` | `tsc --project jsconfig.json --noEmit` | Run JS typecheck using TypeScript. |
 | `preview` | `vite preview` | Preview built frontend. |
@@ -62,6 +65,7 @@ No backend script runner is configured. Use module commands from `backend/`:
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest
+.\.venv\Scripts\python.exe -m pytest --cov=app --cov-report=term-missing --cov-report=xml
 .\.venv\Scripts\python.exe -m ruff check app
 .\.venv\Scripts\python.exe -c "from app.main import app; print(app.title)"
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000

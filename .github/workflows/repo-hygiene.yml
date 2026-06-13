@@ -1,0 +1,88 @@
+name: Repo Hygiene
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  repo-hygiene:
+    name: repo-hygiene
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check whitespace
+        shell: bash
+        run: |
+          set -euo pipefail
+          zero_sha="0000000000000000000000000000000000000000"
+          empty_tree="$(git hash-object -t tree /dev/null)"
+
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            git fetch --no-tags origin "${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}"
+            git diff --check "origin/${{ github.base_ref }}...HEAD"
+          else
+            before="${{ github.event.before }}"
+            if [[ -n "${before}" && "${before}" != "${zero_sha}" ]] && git cat-file -e "${before}^{commit}" 2>/dev/null; then
+              git diff --check "${before}" HEAD
+            else
+              git diff --check "${empty_tree}" HEAD
+            fi
+          fi
+
+      - name: Check tracked generated files
+        shell: bash
+        run: |
+          set -euo pipefail
+          generated_path_pattern='(^|/)(node_modules|[.]venv|dist|build|coverage|__pycache__|[.]pytest_cache|[.]ruff_cache)(/|$)'
+          if git ls-files | grep -E "${generated_path_pattern}"; then
+            echo "Generated dependency, build, or cache artifacts must not be tracked."
+            exit 1
+          fi
+
+      - name: Check secret-looking strings
+        shell: bash
+        run: |
+          set -euo pipefail
+          provider_key_pattern='sk-[A-Za-z0-9_-]{20,}'
+          provider_env_assignment_pattern='OPENAI''_API_KEY=.+'
+          if git grep -n -E "${provider_key_pattern}|${provider_env_assignment_pattern}" -- . ':!backend/.env.example' ':!docs/**' ':!README.md'; then
+            echo "Secret-looking values must not be committed."
+            exit 1
+          fi
+
+      - name: Check skipped tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          skipped_test_pattern='it[.]skip|describe[.]skip|(^|[^[:alnum:]_])xit[[:space:]]*[(]|pytest[.]mark[.]skip'
+          if git grep -n -E "${skipped_test_pattern}" -- frontend backend; then
+            echo "Skipped tests must be removed or explicitly approved before merge."
+            exit 1
+          fi
+
+      - name: Report task markers
+        shell: bash
+        run: |
+          todo_pattern='TO''DO|FIX''ME'
+          git grep -n -E "${todo_pattern}" -- frontend backend .github docs || true
+
+      - name: Check public text guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          blocked_term_one="$(printf '\103\157\144\145\170')"
+          blocked_term_two="$(printf '\101\107\105\116\124\123')"
+          if git grep -n -E "${blocked_term_one}|${blocked_term_two}" -- . ':!.github/workflows/repo-hygiene.yml'; then
+            echo "Internal assistant references must not be committed."
+            exit 1
+          fi

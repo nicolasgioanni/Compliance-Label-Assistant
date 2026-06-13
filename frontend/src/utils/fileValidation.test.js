@@ -60,6 +60,12 @@ describe('file validation utilities', () => {
     expect(validateSingleFile(oversizedFile)).toMatch('smaller than 5 MB');
   });
 
+  it('accepts a file exactly at the size limit', () => {
+    const maxSizedFile = makeFile('max-size.png', 'image/png', 5 * 1024 * 1024);
+
+    expect(validateSingleFile(maxSizedFile)).toBe('');
+  });
+
   it('exports an accept list covering supported extensions and MIME types', () => {
     expect(FILE_INPUT_ACCEPT).toContain('.webp');
     expect(FILE_INPUT_ACCEPT).toContain('.tiff');

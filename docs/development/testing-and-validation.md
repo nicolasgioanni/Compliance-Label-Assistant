@@ -6,6 +6,7 @@ From `backend/`:
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest
+.\.venv\Scripts\python.exe -m pytest --cov=app --cov-report=term-missing --cov-report=xml
 .\.venv\Scripts\python.exe -m ruff check app
 .\.venv\Scripts\python.exe -c "from app.main import app; print(app.title)"
 ```
@@ -24,6 +25,7 @@ From `frontend/`:
 npm run lint
 npm run typecheck
 npm test
+npm run test:coverage -- --run
 npm run test:watch
 npm run build
 npm run preview
@@ -31,41 +33,44 @@ npm run preview
 
 ## Continuous Integration
 
-`.github/workflows/ci.yml` runs on pull requests and pushes to `main`. It has separate `Backend` and `Frontend` jobs, does not deploy, and does not require `OPENAI_API_KEY`, Vercel credentials, or Render credentials.
+GitHub Actions is split into required validation workflows that run on pull requests to `main` and pushes to `main`. They do not deploy and do not require `OPENAI_API_KEY`, Vercel credentials, Render credentials, or provider secrets.
 
-The `Backend` job runs from `backend/`:
+`.github/workflows/backend-ci.yml` exposes the required `backend-ci` check and runs from `backend/`:
 
 ```text
-python -m pytest
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python -m pytest --cov=app --cov-report=term-missing --cov-report=xml
 python -m ruff check app
 python -c "from app.main import app; print(app.title)"
 ```
 
-The `Frontend` job runs from `frontend/`:
+`.github/workflows/frontend-ci.yml` exposes the required `frontend-ci` check and runs from `frontend/`:
 
 ```text
 npm ci
 npm run lint
 npm run typecheck
-npm test
+npm run test:coverage -- --run
 npm run build
 ```
 
-`npm test` is CI-safe because it maps to `vitest run`.
+`.github/workflows/repo-hygiene.yml` exposes the required `repo-hygiene` check and runs repository-level safeguards:
+
+```text
+git diff --check
+tracked generated artifact check
+secret-looking string check
+skipped-test check
+informational task-marker report
+internal reference guard
+```
+
+Configure GitHub branch protection to require `backend-ci`, `frontend-ci`, and `repo-hygiene` before merging to `main`. Keep Vercel and Render deployment secrets out of test workflows.
 
 ## Latest Local Validation Snapshot
 
-The most recent local documentation and About page accuracy pass verified the frontend and repository diff with these results:
-
-| Command | Result |
-| --- | --- |
-| `npm run lint` from `frontend/` | Passed |
-| `npm run typecheck` from `frontend/` | Passed |
-| `npm test` from `frontend/` | Passed: 18 test files and 133 tests |
-| `npm run build` from `frontend/` | Passed |
-| `git diff --check` from the repository root | Passed |
-
-Backend checks were not rerun for that pass because it changed documentation and About page copy only, not backend routes, schemas, provider behavior, upload processing, or API contracts.
+For implementation work that touches validation, run the backend, frontend, and repo hygiene commands above and record the actual result in the pull request notes. Do not treat older test-count snapshots as current once tests or workflow files change.
 
 ## Full-Stack Local Validation
 
@@ -100,5 +105,6 @@ Backend checks were not rerun for that pass because it changed documentation and
 ## Missing Commands
 
 - No backend typecheck command is configured.
-- No frontend coverage command is configured.
-- No backend coverage command is configured.
+- No Playwright or Cypress browser smoke command is configured.
+- Coverage thresholds are not enforced yet; baseline coverage should be reviewed before adding conservative thresholds.
+- No GitHub Actions-controlled deployment command is configured.

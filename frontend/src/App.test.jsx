@@ -147,6 +147,23 @@ describe('App routes and shared layout', () => {
     expect(verifySingleLabel).not.toHaveBeenCalled();
   });
 
+  it('falls back to the landing page for unknown deep links', async () => {
+    renderAt('/unexpected/path');
+
+    expect(screen.getByRole('heading', { name: 'Compliance Label Assistant' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Product Purpose And Role' })).toBeInTheDocument();
+
+    const primaryNav = screen.getByRole('navigation', { name: 'Primary' });
+    expect(within(primaryNav).getByRole('link', { name: 'Home' })).toHaveAttribute('aria-current', 'page');
+    expect(within(primaryNav).getByRole('link', { name: 'Verification Tool' })).not.toHaveAttribute('aria-current');
+
+    await waitFor(() => {
+      expect(checkHealth).toHaveBeenCalledTimes(1);
+    });
+    expect(warmVerificationBackend).not.toHaveBeenCalled();
+    expect(verifySingleLabel).not.toHaveBeenCalled();
+  });
+
   it('renders the about page with documentation links and live header status', async () => {
     const { container } = renderAt('/about');
 
@@ -208,7 +225,7 @@ describe('App routes and shared layout', () => {
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        'No frontend coverage, backend coverage, or backend typecheck command is configured in the current repository.',
+        'Frontend and backend coverage commands are configured for baseline reporting; coverage thresholds are not enforced yet, and no backend typecheck command is configured.',
       ),
     ).toBeInTheDocument();
 
@@ -327,7 +344,7 @@ describe('App routes and shared layout', () => {
       ),
     ).toBeInTheDocument();
     expect(screen.getByText('The current frontend does not use dangerouslySetInnerHTML for extracted or provider-produced text.')).toBeInTheDocument();
-    expect(screen.getByText('There is no checked-in Render config, Dockerfile, docker-compose file, Procfile, or CI-driven deployment workflow in the current repository.')).toBeInTheDocument();
+    expect(screen.getByText('There is no checked-in Render config, Dockerfile, docker-compose file, Procfile, or CI-driven deployment workflow; deployment remains dashboard-configured after protected main checks.')).toBeInTheDocument();
     expect(screen.getByText('No production monitoring, alerting, durable background job system, or production rate-limit system is implemented.')).toBeInTheDocument();
     expect(screen.getByText('There is no direct COLA integration, COLA PDF ingestion, authentication, database, audit trail, admin dashboard, persistent upload storage, or persistent review history.')).toBeInTheDocument();
 
@@ -423,6 +440,19 @@ describe('App routes and shared layout', () => {
 
     expect(await screen.findByText('System Offline')).toBeInTheDocument();
     expect(screen.getByRole('alert')).toHaveTextContent(SERVICE_UNAVAILABLE_MESSAGE);
+  });
+
+  it('shows backend health error detail on /app when health returns a user-facing error', async () => {
+    checkHealth.mockRejectedValueOnce(new Error('Backend maintenance window.'));
+
+    renderAt('/app');
+
+    await waitFor(() => {
+      expect(checkHealth).toHaveBeenCalledTimes(1);
+    });
+
+    expect(await screen.findByText('System Offline')).toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent('Backend maintenance window.');
   });
 
   it('keeps the /app notification behavior when newer messages replace older banners', async () => {

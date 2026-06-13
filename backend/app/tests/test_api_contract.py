@@ -8,7 +8,9 @@ from app.constants import STANDARD_GOVERNMENT_WARNING as STANDARD_WARNING
 from app.main import app
 from app.routes import verification
 from app.schemas import ExtractedFields
+from app.providers.openai.extraction import InvalidExtractionResponseError
 from app.services import single_verification_service
+from app.services import warmup_service
 
 
 client = TestClient(app)
@@ -26,6 +28,14 @@ def _image_bytes(image_format: str = "PNG") -> bytes:
     return buffer.getvalue()
 
 
+async def _fail_if_extraction_called(image_bytes: bytes, settings):
+    raise AssertionError("Extraction should not run for invalid requests.")
+
+
+def _mock_extraction_fail_if_called(monkeypatch) -> None:
+    monkeypatch.setattr(single_verification_service, "extract_label_fields", _fail_if_extraction_called)
+
+
 def test_health_contract() -> None:
     response = client.get("/health")
 
@@ -38,6 +48,20 @@ def test_health_contract() -> None:
 
 
 def test_warmup_contract() -> None:
+    response = client.post("/warmup")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
+
+
+def test_warmup_contract_does_not_require_openai_key(monkeypatch) -> None:
+    monkeypatch.setattr(warmup_service, "get_settings", lambda: Settings(openai_api_key=""))
+
+    def fail_if_called(settings):
+        raise AssertionError("OpenAI client should not initialize without an API key.")
+
+    monkeypatch.setattr(warmup_service, "get_openai_client", fail_if_called)
+
     response = client.post("/warmup")
 
     assert response.status_code == 200
@@ -259,10 +283,7 @@ def test_verify_returns_fail_for_similar_brand(monkeypatch) -> None:
 
 
 def test_verify_rejects_invalid_file_before_extraction(monkeypatch) -> None:
-    async def fail_if_called(image_bytes: bytes, settings):
-        raise AssertionError("Extraction should not run for invalid uploads.")
-
-    monkeypatch.setattr(single_verification_service, "extract_label_fields", fail_if_called)
+    _mock_extraction_fail_if_called(monkeypatch)
 
     response = client.post(
         "/verify",
@@ -280,11 +301,92 @@ def test_verify_rejects_invalid_file_before_extraction(monkeypatch) -> None:
     assert "Unsupported file extension" in response.json()["detail"]
 
 
-def test_verify_rejects_pixel_overflow_before_extraction(monkeypatch) -> None:
-    async def fail_if_called(image_bytes: bytes, settings):
-        raise AssertionError("Extraction should not run for invalid uploads.")
+def test_verify_missing_file_returns_422_without_extraction(monkeypatch) -> None:
+    _mock_extraction_fail_if_called(monkeypatch)
 
-    monkeypatch.setattr(single_verification_service, "extract_label_fields", fail_if_called)
+    response = client.post("/verify", data=_expected_form_data())
+
+    assert_request_validation_error(response, "file")
+
+
+def test_verify_wrong_file_field_name_returns_422_without_extraction(monkeypatch) -> None:
+    _mock_extraction_fail_if_called(monkeypatch)
+
+    response = client.post(
+        "/verify",
+        data=_expected_form_data(),
+        files={"image": ("old-tom.png", _image_bytes(), "image/png")},
+    )
+
+    assert_request_validation_error(response, "file")
+
+
+def test_verify_wrong_form_field_names_return_422_without_extraction(monkeypatch) -> None:
+    _mock_extraction_fail_if_called(monkeypatch)
+
+    response = client.post(
+        "/verify",
+        data={
+            "brandName": "OLD TOM DISTILLERY",
+            "class_type": "Kentucky Straight Bourbon Whiskey",
+            "alcohol_content": "45% Alc./Vol. (90 Proof)",
+            "net_contents": "750 mL",
+            "government_warning": STANDARD_WARNING,
+        },
+        files={"file": ("old-tom.png", _image_bytes(), "image/png")},
+    )
+
+    assert_request_validation_error(response, "brand_name")
+
+
+def test_verify_malformed_form_request_returns_safe_422_without_extraction(monkeypatch) -> None:
+    _mock_extraction_fail_if_called(monkeypatch)
+
+    response = client.post("/verify", json={"brand_name": "OLD TOM DISTILLERY"})
+
+    assert response.status_code == 422
+    body_text = str(response.json())
+    assert "detail" in response.json()
+    assert "Traceback" not in body_text
+    assert "OPENAI_API_KEY" not in body_text
+
+
+def test_verify_missing_required_form_fields_return_422_without_extraction(monkeypatch) -> None:
+    _mock_extraction_fail_if_called(monkeypatch)
+
+    for missing_field in ("brand_name", "class_type", "alcohol_content", "net_contents", "government_warning"):
+        form_data = _expected_form_data()
+        form_data.pop(missing_field)
+
+        response = client.post(
+            "/verify",
+            data=form_data,
+            files={"file": ("old-tom.png", _image_bytes(), "image/png")},
+        )
+
+        assert_request_validation_error(response, missing_field)
+
+
+def test_verify_rejects_oversized_file_before_extraction(monkeypatch) -> None:
+    _mock_extraction_fail_if_called(monkeypatch)
+    monkeypatch.setattr(
+        single_verification_service,
+        "get_settings",
+        lambda: Settings(openai_api_key="test-key", max_file_size_mb=0),
+    )
+
+    response = client.post(
+        "/verify",
+        data=_expected_form_data(),
+        files={"file": ("old-tom.png", _image_bytes(), "image/png")},
+    )
+
+    assert response.status_code == 400
+    assert "File too large" in response.json()["detail"]
+
+
+def test_verify_rejects_pixel_overflow_before_extraction(monkeypatch) -> None:
+    _mock_extraction_fail_if_called(monkeypatch)
     monkeypatch.setattr(
         single_verification_service,
         "get_settings",
@@ -318,6 +420,26 @@ def test_verify_missing_api_key_returns_setup_error(monkeypatch) -> None:
 
     assert response.status_code == 503
     assert "OPENAI_API_KEY" in response.json()["detail"]
+
+
+def test_verify_invalid_extraction_response_returns_safe_bad_gateway(monkeypatch) -> None:
+    async def fail_with_invalid_response(image_bytes: bytes, settings):
+        raise InvalidExtractionResponseError(
+            "The extraction service returned an invalid structured response. Please try again."
+        )
+
+    monkeypatch.setattr(single_verification_service, "extract_label_fields", fail_with_invalid_response)
+
+    response = client.post(
+        "/verify",
+        data=_expected_form_data(),
+        files={"file": ("old-tom.png", _image_bytes(), "image/png")},
+    )
+
+    assert response.status_code == 502
+    assert response.json() == {
+        "detail": "The extraction service returned an invalid structured response. Please try again."
+    }
 
 
 def test_unexpected_verify_error_returns_safe_json(monkeypatch) -> None:
@@ -500,3 +622,13 @@ def test_verify_batch_returns_partial_per_file_errors(monkeypatch) -> None:
 def assert_security_headers(response) -> None:
     for header_name, expected_value in EXPECTED_SECURITY_HEADERS.items():
         assert response.headers[header_name] == expected_value
+
+
+def assert_request_validation_error(response, missing_field: str) -> None:
+    body = response.json()
+
+    assert response.status_code == 422
+    assert "detail" in body
+    assert missing_field in str(body["detail"])
+    assert "Traceback" not in str(body)
+    assert "OPENAI_API_KEY" not in str(body)

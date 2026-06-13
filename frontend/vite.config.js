@@ -7,6 +7,10 @@ export default defineConfig({
   },
   plugins: [react()],
   test: {
+    coverage: {
+      reporter: ['text', 'json', 'html', 'cobertura'],
+      reportsDirectory: './coverage',
+    },
     environment: 'jsdom',
     setupFiles: './src/setupTests.js',
   },

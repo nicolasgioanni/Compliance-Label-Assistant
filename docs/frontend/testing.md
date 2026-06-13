@@ -15,6 +15,7 @@ cd frontend
 npm run lint
 npm run typecheck
 npm test
+npm run test:coverage -- --run
 npm run test:watch
 npm run build
 ```
@@ -23,6 +24,7 @@ npm run build
 
 Unit utility tests:
 
+- `frontend/src/api/verificationApi.test.js`
 - `frontend/src/utils/browserSupport.test.js`
 - `frontend/src/utils/expectedFields.test.js`
 - `frontend/src/utils/fileValidation.test.js`
@@ -35,6 +37,7 @@ Unit utility tests:
 Component and workflow tests:
 
 - `frontend/src/App.test.jsx`
+- `frontend/src/pages/landing/ResizableLandingPanels.test.jsx`
 - `frontend/src/components/shared/ErrorBanner.test.jsx`
 - `frontend/src/components/upload/ImageUploadDropzone.test.jsx`
 - `frontend/src/components/queue/QueueSummaryBar.test.jsx`
@@ -64,7 +67,8 @@ Existing tests cover:
 - Copy claim data behavior.
 - CSV and Excel export behavior.
 - Status display logic.
+- API client URL construction, request body field names, success/error parsing, and network failure handling.
 
 ## Missing
 
-No explicit coverage script is defined in `frontend/package.json`.
+No Playwright or Cypress browser smoke command is configured yet. No frontend coverage threshold is configured yet.

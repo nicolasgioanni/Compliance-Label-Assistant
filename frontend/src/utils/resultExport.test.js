@@ -176,6 +176,31 @@ describe('result export utilities', () => {
     );
   });
 
+  it('exports error rows with error field statuses and no raw extracted text', () => {
+    const csv = buildQueueResultsCsv([
+      makeQueueItem({
+        result: {
+          overall_status: 'error',
+          processing_time_ms: 0,
+          extracted_fields: {
+            raw_text: 'do not export',
+          },
+          field_results: [
+            { field_name: 'brand_name', status: 'pass' },
+          ],
+        },
+      }),
+    ]);
+
+    expect(csv).toBe(
+      [
+        'filename,overall_status,brand_name_status,class_type_status,alcohol_content_status,net_contents_status,bottler_producer_status,country_of_origin_status,government_warning_status,processing_time_ms',
+        'label-one.png,error,error,error,error,error,error,error,error,0',
+      ].join('\n'),
+    );
+    expect(csv).not.toContain('do not export');
+  });
+
   it('downloads CSV with the shared formal filename', () => {
     downloadQueueResultsCsv([makeQueueItem()]);
 

@@ -4,10 +4,11 @@
 
 - No checked-in Render config.
 - No Dockerfile or docker-compose config.
-- No CI-driven deployment workflow.
+- No GitHub Actions-controlled deployment workflow; deployments remain dashboard-configured after required checks pass.
 - No backend typecheck command.
-- No frontend coverage command.
-- No backend coverage command.
+- No frontend coverage threshold.
+- No backend coverage threshold.
+- No required browser smoke workflow.
 - No database or persistent upload storage.
 - No authentication or authorization.
 - No production rate limiting or monitoring.

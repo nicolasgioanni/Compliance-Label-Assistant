@@ -6,6 +6,7 @@ From `backend/`:
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest
+.\.venv\Scripts\python.exe -m pytest --cov=app --cov-report=term-missing --cov-report=xml
 .\.venv\Scripts\python.exe -m ruff check app
 .\.venv\Scripts\python.exe -c "from app.main import app; print(app.title)"
 ```
@@ -14,9 +15,10 @@ From `backend/`:
 
 | File | Coverage |
 | --- | --- |
-| `backend/app/tests/test_api_contract.py` | Health, warmup, `/verify`, `/verify-batch`, error mapping, response contracts. |
+| `backend/app/tests/test_api_contract.py` | Health, warmup, `/verify`, `/verify-batch`, malformed requests, validation errors, provider error mapping, response contracts. |
 | `backend/app/tests/test_batch_service.py` | Batch validation, duplicate detection, partial failures, concurrency limits. |
 | `backend/app/tests/test_config.py` | Configuration defaults, bounds, and allowed image detail values. |
+| `backend/app/tests/test_cors_contract.py` | CORS preflight behavior for allowed and disallowed browser origins. |
 | `backend/app/tests/test_file_validation.py` | Upload extension, MIME type, decoded format, size, empty file, corrupt image, pixel count validation. |
 | `backend/app/tests/test_image_preprocessor.py` | Resize, RGB JPEG conversion, EXIF-safe processing, JPEG quality, preprocessing defaults. |
 | `backend/app/tests/test_openai_client.py` | OpenAI client cache behavior. |
@@ -29,7 +31,7 @@ From `backend/`:
 
 No backend typecheck command is configured.
 
-No coverage command is configured.
+No backend coverage threshold is configured yet.
 
 ## Test Provider Calls
 

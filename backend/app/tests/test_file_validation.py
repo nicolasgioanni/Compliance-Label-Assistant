@@ -6,7 +6,12 @@ from fastapi import UploadFile
 from PIL import Image
 from starlette.datastructures import Headers
 
-from app.image_processing.validation import UploadValidationError, validate_upload_file
+from app.image_processing.validation import (
+    UploadValidationError,
+    validate_file_size,
+    validate_image_pixel_count,
+    validate_upload_file,
+)
 
 
 def _image_bytes(image_format: str, size: tuple[int, int] = (12, 12)) -> bytes:
@@ -75,6 +80,15 @@ def test_oversized_file_rejected() -> None:
         _validate(_upload("label.png", "image/png", _image_bytes("PNG")), max_file_size_mb=0)
 
 
+def test_exact_max_file_size_is_accepted() -> None:
+    validate_file_size(b"x" * (1024 * 1024), max_file_size_mb=1)
+
+
+def test_one_byte_over_max_file_size_is_rejected() -> None:
+    with pytest.raises(UploadValidationError, match="File too large"):
+        validate_file_size(b"x" * (1024 * 1024 + 1), max_file_size_mb=1)
+
+
 def test_empty_file_rejected() -> None:
     with pytest.raises(UploadValidationError, match="empty"):
         _validate(_upload("label.png", "image/png", b""))
@@ -98,3 +112,12 @@ def test_mismatched_content_type_rejected() -> None:
 def test_image_pixel_count_overflow_rejected() -> None:
     with pytest.raises(UploadValidationError, match="Image dimensions too large"):
         _validate(_upload("label.png", "image/png", _image_bytes("PNG", size=(20, 20))), max_image_pixels=399)
+
+
+def test_exact_image_pixel_limit_is_accepted() -> None:
+    validate_image_pixel_count(400, max_image_pixels=400)
+
+
+def test_one_pixel_over_image_pixel_limit_is_rejected() -> None:
+    with pytest.raises(UploadValidationError, match="Image dimensions too large"):
+        validate_image_pixel_count(401, max_image_pixels=400)

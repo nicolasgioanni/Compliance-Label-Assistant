@@ -112,6 +112,7 @@ cd frontend
 npm run lint
 npm run typecheck
 npm test
+npm run test:coverage -- --run
 ```
 
 Backend:
@@ -119,6 +120,7 @@ Backend:
 ```powershell
 cd backend
 .\.venv\Scripts\python.exe -m pytest
+.\.venv\Scripts\python.exe -m pytest --cov=app --cov-report=term-missing --cov-report=xml
 .\.venv\Scripts\python.exe -m ruff check app
 .\.venv\Scripts\python.exe -c "from app.main import app; print(app.title)"
 ```

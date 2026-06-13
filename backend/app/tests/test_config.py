@@ -41,6 +41,12 @@ def test_speed_and_cost_sensitive_defaults(monkeypatch) -> None:
     assert settings.allowed_origins == ["http://localhost:5173"]
 
 
+def test_openai_api_key_defaults_to_empty_for_ci_without_secret(monkeypatch) -> None:
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+
+    assert Settings().openai_api_key == ""
+
+
 def test_openai_image_detail_defaults_to_low(monkeypatch) -> None:
     monkeypatch.delenv("OPENAI_IMAGE_DETAIL", raising=False)
 

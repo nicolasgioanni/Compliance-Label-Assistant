@@ -27,6 +27,8 @@ The values below are target placeholders for reviewer-facing benchmark reporting
 
 Provider-backed timings should be reviewed separately from backend-only, static frontend, upload validation, CSV export, and unsupported-file validation checks because provider latency can dominate end-to-end review time.
 
+Required CI tests mock provider behavior and do not run provider-backed benchmarks. Coverage, lint, typecheck, build, and contract tests protect merge quality, but they are not evidence of live provider latency, extraction accuracy, or production cost. Provider-backed measurements should stay in separate benchmark runs with explicit fixtures and documented environment settings.
+
 | Benchmark Area | Target Placeholder |
 | --- | ---: |
 | Static frontend Lighthouse performance | >= 90 |
