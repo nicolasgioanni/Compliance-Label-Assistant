@@ -251,9 +251,14 @@ h1 {
   font-size: 0.86rem;
   font-weight: 800;
   gap: 0.5rem;
+  justify-content: flex-start;
   max-width: 100%;
+  min-height: 2.2rem;
+  overflow: hidden;
   padding: 0.45rem 0.7rem;
+  position: relative;
   white-space: nowrap;
+  width: 10.25rem;
 }
 
 .system-pill.online {
@@ -271,8 +276,71 @@ h1 {
 .status-dot {
   background: currentColor;
   border-radius: 50%;
+  flex: 0 0 0.6rem;
   height: 0.6rem;
+  opacity: 0;
+  transform: scale(0.65);
+  transform-origin: left center;
   width: 0.6rem;
+}
+
+.system-pill__label {
+  display: inline-block;
+  left: 50%;
+  opacity: 0;
+  position: absolute;
+  top: 50%;
+  transform: translate(calc(-50% - 0.3rem), calc(-50% - 0.04rem));
+}
+
+.system-pill.online .status-dot,
+.system-pill.offline .status-dot {
+  animation: system-status-dot-in 120ms ease-out forwards;
+}
+
+.system-pill.online .system-pill__label,
+.system-pill.offline .system-pill__label {
+  animation: system-status-label-in 180ms ease-out 90ms forwards;
+}
+
+@keyframes system-status-dot-in {
+  from {
+    opacity: 0;
+    transform: scale(0.65);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes system-status-label-in {
+  from {
+    opacity: 0;
+    transform: translate(calc(-50% - 0.3rem), calc(-50% - 0.04rem));
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, calc(-50% - 0.04rem));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .system-pill.online .status-dot,
+  .system-pill.offline .status-dot {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .system-pill.online .system-pill__label,
+  .system-pill.offline .system-pill__label {
+    animation: none;
+    opacity: 1;
+    transform: translate(-50%, calc(-50% - 0.04rem));
+  }
 }
 
 .app-footer {

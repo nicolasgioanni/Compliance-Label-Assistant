@@ -24,7 +24,7 @@ export default function Header({ activePath = '/', serviceStatus = 'checking' })
         <div className="page-header__status-row">
           <div className={statusClassName} aria-live="polite">
             <span className="status-dot" />
-            {statusLabel}
+            <span className="system-pill__label">{statusLabel}</span>
           </div>
         </div>
         <nav className="primary-nav" aria-label="Primary">
