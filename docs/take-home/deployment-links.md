@@ -1,25 +1,25 @@
 # Deployment Links
 
-Last updated: 2026-06-09
+Last updated: 2026-06-16
 
 ## Application URLs
 
 | Target | URL |
 | --- | --- |
-| Frontend deployed URL | https://compliance-label-assistant.vercel.app |
-| Backend API URL | https://compliance-label-assistant.onrender.com |
+| Deployed frontend | https://compliance-label-assistant.vercel.app |
+| Backend API | https://compliance-label-assistant.onrender.com |
+| Source repository | https://github.com/nicolasgioanni/label-compliance-verifier |
 
-These are public application URLs. Do not add private dashboard URLs.
+These are public URLs for evaluator review. Do not add private dashboard URLs, API keys, provider keys, access tokens, credentials, or real environment values.
 
 ## Deployment Platform
 
 - Frontend: Vercel
 - Backend API: Render Starter
 
-## Notes
+## Deployment Notes
 
-- Do not add private dashboard URLs.
-- Do not add API keys, provider keys, access tokens, or credentials.
 - The frontend deployment should set `VITE_API_BASE_URL` to the public backend API base URL.
 - The backend deployment should configure `OPENAI_API_KEY` and `ALLOWED_ORIGINS` in Render environment settings.
+- The frontend must not receive backend provider secrets.
 - Detailed deployment setup lives in [../deployment/frontend-vercel.md](../deployment/frontend-vercel.md) and [../deployment/backend-render.md](../deployment/backend-render.md).

@@ -1,117 +1,82 @@
 # Compliance Label Assistant
 
-Compliance Label Assistant is an AI-powered alcohol label verification prototype. It helps compare uploaded label artwork against expected application fields and is designed as a standalone proof of concept, not a direct COLA integration.
+Compliance Label Assistant is a standalone alcohol label verification prototype. It compares uploaded label artwork with expected application fields, then shows field-level results that help a reviewer identify likely matches, mismatches, missing fields, and items that need manual review.
 
-## Deployed Application
+This is an independent proof of concept. It is not a COLA integration, not an official government system, and not a final legal compliance review tool. Human review remains final.
 
-- Frontend URL: https://compliance-label-assistant.vercel.app
-- Backend API URL: https://compliance-label-assistant.onrender.com
+## Live Demo And Source
 
-These are public application URLs. Do not include private dashboard links or secrets.
+| Resource | Link |
+| --- | --- |
+| Deployed frontend | https://compliance-label-assistant.vercel.app |
+| Backend API | https://compliance-label-assistant.onrender.com |
+| Source repository | https://github.com/nicolasgioanni/label-compliance-verifier |
+| Reviewer guide | [REVIEWER_GUIDE.md](REVIEWER_GUIDE.md) |
+| Take-home deployment links | [docs/take-home/deployment-links.md](docs/take-home/deployment-links.md) |
 
-## Evaluator Quick Facts
+The deployed frontend does not require a test account. No provider keys, dashboard URLs, tokens, or private deployment settings are included in this repository.
 
-- No test account is required for the deployed frontend.
-- Local verification requires a backend `OPENAI_API_KEY`; no provider key is included in this repository.
-- The current prototype verifies brand name, class or type, alcohol content, net contents, bottler/producer, country of origin, and government warning text.
-- Sample labels and manual test inputs are documented in [sample-data/README.md](sample-data/README.md).
-- Current known gaps: no direct COLA integration, no COLA PDF ingestion, no authentication, no database, no audit trail, no persistent uploaded-file storage, no final legal compliance decision, and no full government-warning typography or placement verification.
-- The fastest evaluator path is [REVIEWER_GUIDE.md](REVIEWER_GUIDE.md).
+## What The App Does
 
-## Key Features
+- Accepts JPG/JPEG, PNG, WebP, and TIFF/TIF label images.
+- Lets a reviewer queue up to 10 label images in the browser.
+- Lets a reviewer enter expected values for brand name, class or type, alcohol content, net contents, bottler/producer, and country of origin.
+- Applies the standard government warning text automatically.
+- Uses the backend OpenAI vision-model integration to extract visible label fields.
+- Compares extracted fields against expected fields with deterministic backend rules.
+- Shows field-level statuses, extracted values, reasons, confidence values, and timing details.
+- Exports current non-stale verification results to CSV or XLSX.
+- Displays user-facing errors for upload validation, service connectivity, provider configuration, and verification failures.
 
-- Upload JPG, PNG, WebP, or TIFF alcohol label images.
-- Queue up to 10 label images in the frontend.
-- Enter expected values for brand name, class or type, alcohol content, net contents, bottler/producer, and country of origin; the standard government warning is applied automatically.
-- Extract visible label fields through the backend OpenAI vision-model integration.
-- Compare extracted fields with expected fields using deterministic backend verification rules.
-- Display field-level pass, normalized match, fail, missing, needs-review, and error details; top-level label results are pass, fail, or error.
-- Verify one selected label or run the frontend queue workflow over ready labels.
-- Export current verification results to CSV or XLSX.
-- Validate file type, file size, image dimensions, and backend availability.
-- Run the frontend and backend locally with repository PowerShell scripts or manual commands.
+The frontend calls `GET /health`, `POST /warmup`, and `POST /verify`. The backend also exposes `POST /verify-batch` for a shared expected-field batch request, but the current frontend does not call that endpoint.
 
-## Stakeholder Problem Addressed
+## Fields Verified
 
-Compliance reviewers manually compare label artwork to application data. This prototype targets routine matching work where a simple, fast user interface can help reviewers identify likely matches, mismatches, and items that need manual review. Batch-oriented workflows matter because reviewers may need to process many labels, and slow tools are less likely to be adopted.
+The current prototype verifies:
 
-## Technical Approach
+- Brand name
+- Class or type
+- Alcohol content
+- Net contents
+- Bottler/producer
+- Country of origin
+- Government warning text
 
-The React and Vite frontend handles image selection, queue state, expected field entry, API calls, result display, and exports. The FastAPI backend validates uploads, preprocesses images in memory, extracts label fields with an OpenAI vision model, and applies deterministic verification rules for selected fields. Extraction and verification are separate so provider output stays isolated from the comparison rules.
+Government warning verification is strict for extracted text. The backend checks for the required uppercase `GOVERNMENT WARNING:` heading and the standard warning wording. The prototype does not make final typography, boldness, font-size, placement, or label-layout determinations.
 
-More detail is available in [docs/architecture/data-flow.md](docs/architecture/data-flow.md), [docs/take-home/project-brief.md](docs/take-home/project-brief.md), and [docs/take-home/engineering-decisions.md](docs/take-home/engineering-decisions.md).
+## Architecture Summary
 
-## Security Posture
+- Frontend: React 18 and Vite in `frontend/`.
+- Backend: FastAPI and Python 3.11 in `backend/`.
+- API client: `frontend/src/api/verificationApi.js`.
+- Backend entrypoint: `backend/app/main.py`.
+- Backend configuration: `backend/app/config.py`.
+- OpenAI provider boundary: `backend/app/providers/openai/`.
+- Upload validation and preprocessing: `backend/app/image_processing/`.
+- Deterministic verification rules: `backend/app/verification/`.
+- Deployment target: Vercel frontend and Render backend.
 
-- `OPENAI_API_KEY` is backend-only; the frontend never calls OpenAI directly.
-- Uploaded images are validated and processed in memory by the backend and are not persistently stored by application code.
-- Backend validation checks supported type, size, decoded readability, and decoded pixel count before extraction.
-- Queue, batch, upload-size, pixel-count, timeout, and concurrency limits help control cost and basic abuse.
-- Deployed Render CORS must set `ALLOWED_ORIGINS` to the deployed Vercel origin.
-- CSV export neutralizes spreadsheet formula prefixes and excludes raw extracted text.
+I designed the backend so extraction and verification are separate. The model extracts visible fields from the label image, and deterministic Python logic compares those extracted values against expected application data. This keeps the AI portion focused on OCR-like extraction and keeps verification results explainable.
 
-The prototype is not production-ready for government use. Production deployment would need authentication, access control, audit logging, PII handling, retention policy, network egress review, production monitoring, stronger rate limiting, larger batch-job processing, and an agency-approved OCR or vision provider. Cloud AI providers may not be allowed in restricted government networks.
-
-## Tools and Technologies
-
-- Frontend: React 18, Vite 6, JavaScript, CSS, Vitest, Testing Library, ESLint.
-- Backend: Python 3.11, FastAPI, Uvicorn, Pydantic, pytest, Ruff.
-- Provider integration: OpenAI Python SDK.
-- Image processing: Pillow.
-- Export support: `write-excel-file` for XLSX and browser-generated CSV.
-- Intended deployment: Vercel frontend and Render Starter backend.
-
-## Assumptions
-
-- The prototype is standalone and does not integrate with COLA.
-- Uploaded test images should not contain sensitive real applicant data.
-- Human review remains final, especially for ambiguous, low-quality, or unusual labels.
-- The system verifies selected fields only; it does not validate every possible TTB requirement.
-- Uploaded files are processed temporarily and are not persisted by the application code.
-- The OpenAI extraction boundary can be replaced later by an approved OCR or AI provider.
-- Provider latency and deployment tier can affect verification speed.
-
-## Trade-Offs and Limitations
-
-- The prototype is not production compliance or security hardened.
-- It does not include authentication, audit logging, a database, or persistent file storage.
-- OpenAI extraction may be imperfect on glare, blur, poor lighting, tiny text, or unusual layouts.
-- Government warning verification is strict for extracted text: the backend checks presence, uppercase `GOVERNMENT WARNING:` heading, and exact standard wording. The prototype does not make final typography, boldness, font-size, placement, or label-layout determinations; those remain human-review items.
-- The user interface verifies queued labels by calling the single-label endpoint for each ready item; the backend also exposes a shared expected-field `/verify-batch` endpoint that the current user interface does not call.
-- Performance depends on provider response time, image size, preprocessing settings, and deployment tier.
-
-## Performance Smoke Test
-
-On 2026-06-09, I ran a small warm-backend smoke test against the deployed Render backend API using synthetic fixtures from `sample-data/images`. Each fixture was verified three times after calling `/warmup`; the table reports median timings. All documented medians in this run were under five seconds.
-
-| Case | Scenario | Observed status | Median backend processing time | Median API request time |
-| --- | --- | --- | ---: | ---: |
-| TC01 | Clean baseline label | `pass` | 2,556 ms | 2,633 ms |
-| TC03 | Clean label with intentional ABV mismatch | `pass` | 2,966 ms | 3,080 ms |
-| TC10 | Low-light label with multiple expected mismatches | `pass` | 2,645 ms | 2,761 ms |
-
-These are smoke-test timings, not an SLA. Provider latency, Render cold starts, image complexity, and network conditions can affect response time. The backend also returns `processing_time_ms`, `validation_time_ms`, `preprocessing_time_ms`, `extraction_time_ms`, and `verification_time_ms` for more detailed inspection.
-
-I also tested `TC09` as a rotated/glare image-quality case. It completed quickly, with a 3,323 ms median backend processing time and 3,463 ms median API request time, but returned `fail` in the live provider-backed runs. That result is consistent with the documented limitation that extraction quality can vary on glare, rotation, low light, and other imperfect images.
-
-## Local Setup and Run Instructions
+## Quick Start
 
 Prerequisites:
 
 - Git
-- Node.js compatible with the frontend Vite toolchain
+- Node.js compatible with the Vite frontend toolchain
 - Python 3.11
 - PowerShell on Windows for the repository helper scripts
+- A backend OpenAI API key for local extraction-backed verification
 
 ```powershell
-git clone <repository-url>
+git clone https://github.com/nicolasgioanni/label-compliance-verifier.git
 cd label-compliance-verifier
 .\scripts\setup-local.ps1
 ```
 
-Set the backend provider key in `backend\.env`:
+Add a backend provider key to ignored `backend\.env`:
 
-```powershell
+```text
 OPENAI_API_KEY=<OPENAI_API_KEY>
 ```
 
@@ -127,16 +92,11 @@ Local URLs:
 - Backend API: `http://127.0.0.1:8000`
 - Health check: `http://127.0.0.1:8000/health`
 
-Manual frontend startup:
+The longer evaluator setup path is in [docs/take-home/setup-and-run.md](docs/take-home/setup-and-run.md).
 
-```powershell
-cd frontend
-npm install
-$env:VITE_API_BASE_URL="http://127.0.0.1:8000"
-npm run dev -- --host localhost --port 5173
-```
+## Manual Startup
 
-Manual backend startup:
+Backend:
 
 ```powershell
 cd backend
@@ -147,32 +107,88 @@ $env:ALLOWED_ORIGINS="http://localhost:5173"
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Basic smoke test:
+Frontend, in a separate terminal:
 
-1. Open `http://localhost:5173`.
-2. Confirm the backend status indicator is online.
-3. Upload a supported label image smaller than 5 MB.
-4. Enter expected values for brand name, class or type, alcohol content, net contents, bottler/producer, and country of origin; the standard government warning is applied automatically.
-5. Run verification and review the field-level results.
-6. Try an unsupported file type or oversized file and confirm a user-facing validation error.
-7. Export verified results to CSV or XLSX.
-
-Synthetic labels and expected manual inputs are available in [sample-data/README.md](sample-data/README.md).
-
-For the longer setup guide, see [docs/take-home/setup-and-run.md](docs/take-home/setup-and-run.md).
+```powershell
+cd frontend
+npm install
+$env:VITE_API_BASE_URL="http://127.0.0.1:8000"
+npm run dev -- --host localhost --port 5173
+```
 
 ## Environment Variables
 
 Frontend:
 
-- `VITE_API_BASE_URL`: backend API base URL used by the browser app.
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `VITE_API_BASE_URL` | Required for deployed frontend, optional locally because a code default exists | Backend API base URL used by browser requests. |
 
 Backend:
 
-- `OPENAI_API_KEY`: required backend-only provider key.
-- `ALLOWED_ORIGINS`: comma-separated frontend origins allowed by CORS.
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `OPENAI_API_KEY` | Required for verification requests | Backend-only provider key. |
+| `ALLOWED_ORIGINS` | Required when the frontend origin differs from the default | Comma-separated CORS allowlist. |
 
-Additional backend tuning variables are documented in [docs/backend/environment-variables.md](docs/backend/environment-variables.md) and [docs/deployment/environment-variables.md](docs/deployment/environment-variables.md). Use placeholders only and never commit real `.env` values.
+Additional backend tuning variables are documented in [docs/backend/environment-variables.md](docs/backend/environment-variables.md) and [docs/deployment/environment-variables.md](docs/deployment/environment-variables.md). Use placeholders only and do not commit real `.env` values.
+
+## Approach
+
+I designed the prototype as a standalone proof of concept rather than a COLA integration. Reviewers enter expected application values, upload label artwork, and review the backend's field-level comparison results.
+
+The backend validates and preprocesses uploads before extraction. OpenAI provider code is isolated behind `backend/app/providers/openai/`, while deterministic comparison rules live under `backend/app/verification/`. Route handlers stay thin and delegate workflow orchestration to service modules.
+
+The frontend focuses on the reviewer workflow: upload, queue, expected data entry, selected-label verification, ready-label verification, result review, and export. It keeps API calls centralized in `frontend/src/api/verificationApi.js`.
+
+## Tools Used
+
+- React 18, Vite 6, JavaScript, CSS, Vitest, Testing Library, and ESLint for the frontend.
+- Python 3.11, FastAPI, Uvicorn, Pydantic, pytest, and Ruff for the backend.
+- OpenAI Python SDK for backend-only vision-model extraction.
+- Pillow for image validation and preprocessing.
+- `write-excel-file` and browser-generated CSV for exports.
+- Vercel for the static frontend and Render Starter for the backend API.
+
+## Assumptions
+
+- The prototype is standalone and does not integrate with COLA.
+- Reviewers provide expected application field values before verification.
+- Uploaded test images should not contain sensitive real applicant data.
+- Human review remains final, especially for ambiguous, low-quality, or unusual labels.
+- The selected fields are enough to demonstrate the workflow; the app does not evaluate every federal alcohol labeling requirement.
+- Uploaded images are processed temporarily by application code and are not persistently stored.
+- The OpenAI extraction boundary could be replaced later by an approved OCR or AI provider.
+
+## Tradeoffs
+
+- I used OpenAI vision extraction to make the prototype useful on varied label images, but that creates an external provider dependency and outbound network requirement.
+- I separated extraction from verification so model output does not directly decide pass or fail.
+- I intentionally avoided persistent upload storage, authentication, a database, and audit logging because those controls require product, retention, and deployment decisions outside the prototype scope.
+- The frontend queue calls `POST /verify` for each ready label so each queued label can keep its own expected field values. The backend `/verify-batch` endpoint remains available for shared expected-field batch requests.
+- Image resizing and compression reduce payload size and latency, but tiny text, glare, blur, poor lighting, and unusual layouts can still affect extraction quality.
+
+## Security And Privacy
+
+- `OPENAI_API_KEY` is backend-only and must not be configured in frontend code or Vercel frontend variables.
+- The frontend never calls OpenAI directly.
+- `.env` files are ignored, and checked-in examples use placeholders or safe defaults.
+- The backend validates extension, MIME type, decoded image format, file size, readability, and decoded pixel count before extraction.
+- Uploaded images are processed in memory by application code and are not persistently stored to disk or a database.
+- CORS is configured through `ALLOWED_ORIGINS`.
+- User-entered and extracted text is rendered as text, not raw HTML.
+- CSV export neutralizes formula-like prefixes and does not export raw extracted text.
+
+The prototype does not include authentication, authorization, a database, audit logging, malware scanning, persistent document retention, production monitoring, or long-running batch infrastructure. Production government deployment would require additional review for personally identifiable information, retention, audit logging, access control, network egress, approved AI/OCR infrastructure, monitoring, and rate limiting.
+
+## Limitations
+
+- This is not a final legal compliance decision tool.
+- The app does not integrate with COLA or ingest COLA PDFs.
+- Extraction can be imperfect on glare, blur, poor lighting, curved labels, tiny text, or unusual layouts.
+- Government warning checks do not replace human review of typography, placement, font size, boldness, or full label-layout requirements.
+- The current implementation does not persist review history or final reviewer decisions.
+- Performance depends on provider response time, image complexity, network conditions, and deployment tier.
 
 ## Testing
 
@@ -195,6 +211,16 @@ cd backend
 .\.venv\Scripts\python.exe -c "from app.main import app; print(app.title)"
 ```
 
+Sample labels and manual test inputs are documented in [sample-data/README.md](sample-data/README.md).
+
+## Deployment
+
+- Frontend: Vercel static deployment from `frontend/`.
+- Backend: Render web service from `backend/`.
+- Vercel needs `VITE_API_BASE_URL` set to the public backend API base URL.
+- Render needs `OPENAI_API_KEY` and `ALLOWED_ORIGINS` configured in backend environment settings.
+- Deployment setup details are in [docs/deployment/overview.md](docs/deployment/overview.md), [docs/deployment/frontend-vercel.md](docs/deployment/frontend-vercel.md), and [docs/deployment/backend-render.md](docs/deployment/backend-render.md).
+
 ## Documentation Map
 
 - [Reviewer guide](REVIEWER_GUIDE.md)
@@ -207,7 +233,7 @@ cd backend
 - [API documentation](docs/api/overview.md)
 - [Frontend documentation](docs/frontend/overview.md)
 - [Backend documentation](docs/backend/overview.md)
-- [Deployment documentation](docs/deployment/overview.md)
+- [Security documentation](docs/security.md)
 
 ## Repository Structure
 
@@ -219,11 +245,9 @@ scripts/      Local setup and development PowerShell scripts
 sample-data/  Synthetic label fixtures, manual test data, and backend fixture-test data
 ```
 
-## Submission Notes
+## Disclaimer
 
-- Source code is in this repository.
-- Deployed application URLs are listed above and in [docs/take-home/deployment-links.md](docs/take-home/deployment-links.md).
-- Deep implementation documentation lives in [docs/](docs/README.md).
+Compliance Label Assistant assists with selected field comparison for a prototype review workflow. It does not replace reviewer judgment, provide legal advice, make official compliance determinations, or represent an official government system.
 
 ## License
 

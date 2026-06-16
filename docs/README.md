@@ -1,10 +1,10 @@
 # Documentation
 
-This folder is the source of truth for repository documentation. It describes the current implementation only: React and Vite frontend, FastAPI backend, OpenAI extraction provider, deterministic verification rules, local scripts, deployment settings, tests, and file-level references.
+This folder contains the implementation and evaluator documentation for Compliance Label Assistant. It describes the current React and Vite frontend, FastAPI backend, backend-only OpenAI extraction boundary, deterministic verification rules, local scripts, deployment settings, tests, and reference material.
 
-## Take-Home Submission Docs
+For evaluator review, start with the root [README](../README.md) and [Reviewer Guide](../REVIEWER_GUIDE.md). Use this index for deeper technical details.
 
-These evaluator-facing docs summarize the project deliverables without duplicating the deeper implementation reference:
+## Reviewer-Facing Docs
 
 - [Reviewer Guide](../REVIEWER_GUIDE.md)
 - [Take-Home Project Brief](take-home/project-brief.md)
@@ -13,21 +13,21 @@ These evaluator-facing docs summarize the project deliverables without duplicati
 - [Requirements Mapping](take-home/requirements-mapping.md)
 - [Deployment Links](take-home/deployment-links.md)
 
-## Reading Order
+## Suggested Reading Order
 
 1. [Reviewer Guide](../REVIEWER_GUIDE.md)
-2. [Take-Home Project Brief](take-home/project-brief.md)
-3. [Engineering Decisions](take-home/engineering-decisions.md)
-4. [Setup And Run Guide](take-home/setup-and-run.md)
-5. [Architecture: System Overview](architecture/system-overview.md)
-6. [Architecture: Data Flow](architecture/data-flow.md)
-7. [Frontend Overview](frontend/overview.md)
-8. [Backend Overview](backend/overview.md)
-9. [API Overview](api/overview.md)
-10. [Development: Local Development](development/local-development.md)
-11. [Development: Testing And Validation](development/testing-and-validation.md)
-12. [Deployment Overview](deployment/overview.md)
-13. [Reference: Repository Map](reference/repository-map.md)
+2. [README](../README.md)
+3. [Take-Home Project Brief](take-home/project-brief.md)
+4. [Engineering Decisions](take-home/engineering-decisions.md)
+5. [Setup And Run Guide](take-home/setup-and-run.md)
+6. [System Overview](architecture/system-overview.md)
+7. [Data Flow](architecture/data-flow.md)
+8. [API Overview](api/overview.md)
+9. [Frontend Overview](frontend/overview.md)
+10. [Backend Overview](backend/overview.md)
+11. [Security](security.md)
+12. [Testing And Validation](development/testing-and-validation.md)
+13. [Deployment Overview](deployment/overview.md)
 
 ## Architecture
 
@@ -92,6 +92,13 @@ These evaluator-facing docs summarize the project deliverables without duplicati
 - [Security And Privacy](development/security-and-privacy.md)
 - [Troubleshooting](development/troubleshooting.md)
 - [Contribution Workflow](development/contribution-workflow.md)
+
+## Security And Privacy
+
+- [Security](security.md)
+- [Development Security And Privacy](development/security-and-privacy.md)
+- [Backend Environment Variables](backend/environment-variables.md)
+- [Deployment Environment Variables](deployment/environment-variables.md)
 
 ## Reference
 
