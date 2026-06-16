@@ -10,6 +10,8 @@ Compliance Label Assistant is a lightweight prototype, not a production security
 - The frontend uses only `VITE_API_BASE_URL` and never calls OpenAI directly.
 - Provider-specific extraction code is isolated under `backend/app/providers/openai`, so the extraction layer can later be replaced by an approved AI or OCR provider.
 - `.env` files are ignored; committed examples must contain placeholders or safe defaults only.
+- Vercel frontend configuration must not receive provider secrets.
+- Render backend configuration owns provider secrets such as `OPENAI_API_KEY`.
 
 ## Upload And Data Handling
 
@@ -25,6 +27,12 @@ Compliance Label Assistant is a lightweight prototype, not a production security
 - The Vercel frontend config adds static security headers without a CSP, because the backend API origin is deployment-specific.
 - React renders extracted text and user-entered values as text, not HTML.
 - CSV export neutralizes formula-like cell prefixes and does not export raw extracted text.
+
+## Logging And Repository Hygiene
+
+Do not log provider keys, tokens, raw image bytes, base64 image payloads, full uploaded payloads, full environment dumps, or real local `.env` contents. Current unexpected-error logging records exception class names rather than stack traces or payloads.
+
+Before committing, check that ignored env files, generated outputs, logs, private dashboard URLs, credentials, and raw uploaded payloads are not staged.
 
 ## Abuse And Cost Controls
 

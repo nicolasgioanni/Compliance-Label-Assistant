@@ -21,7 +21,7 @@
 - The route accepts `government_warning`, but backend verification uses `STANDARD_GOVERNMENT_WARNING`.
 - The provider parser currently sets `raw_text` to `null`.
 - OpenAI clients are cached, but extraction results are not cached.
-- `frontend/vercel.json` defines static security headers only; CSP is not configured.
+- `frontend/vercel.json` defines static security headers and SPA rewrites for `/app`, `/about`, and `/license`; CSP is not configured.
 - `sample-data/` contains synthetic label fixtures; TC08 verifies a country-of-origin mismatch using mocked extraction data.
 
 ## Needs Confirmation

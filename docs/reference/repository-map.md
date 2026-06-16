@@ -4,6 +4,7 @@
 
 ```text
 label-compliance-verifier/
+|-- .github/
 |-- backend/
 |-- docs/
 |-- frontend/
@@ -19,6 +20,7 @@ label-compliance-verifier/
 
 | Path | Purpose |
 | --- | --- |
+| `.github/` | GitHub Actions workflow definitions for backend, frontend, and repository hygiene checks. |
 | `backend/` | FastAPI backend, provider integration, image processing, verification rules, tests, runtime files. |
 | `frontend/` | Vite React frontend, queue user interface, API client, hooks, components, styles, frontend tests. |
 | `docs/` | Documentation system and compatibility navigation pages. |
@@ -30,6 +32,7 @@ label-compliance-verifier/
 | Path | Purpose |
 | --- | --- |
 | `README.md` | Short project entrypoint and links to detailed docs. |
+| `REVIEWER_GUIDE.md` | Concise reviewer-facing walkthrough. |
 | `LICENSE` | Apache License 2.0. |
 | `.gitignore` | Excludes env files, dependency folders, caches, build outputs, logs, and editor folders. |
 | `.gitattributes` | Normalizes line endings and marks common binary files. |
@@ -38,6 +41,8 @@ label-compliance-verifier/
 
 - `frontend/src/main.jsx`
 - `frontend/src/App.jsx`
+- `frontend/src/components/shared/AppShell.jsx`
+- `frontend/src/pages/ToolPage.jsx`
 - `frontend/src/components/verification/VerificationForm.jsx`
 - `frontend/src/api/verificationApi.js`
 - `frontend/src/hooks/useQueueItems.js`
@@ -55,7 +60,7 @@ label-compliance-verifier/
 
 - Frontend Vercel settings are documented in `docs/deployment/frontend-vercel.md`.
 - Backend Render settings are documented in `docs/deployment/backend-render.md`.
-- `frontend/vercel.json` defines lightweight static response headers for the frontend deployment.
+- `frontend/vercel.json` defines lightweight static response headers and SPA rewrites for `/app`, `/about`, and `/license`.
 - `backend/runtime.txt` declares Python `3.11.9`.
 - `backend/start.sh` starts Uvicorn using `$PORT`.
 
@@ -79,6 +84,7 @@ No checked-in Render, Docker, docker-compose, or Procfile configuration is prese
 
 | Change area | Start here |
 | --- | --- |
+| Frontend routes/pages | `frontend/src/App.jsx` and `frontend/src/pages/` |
 | Frontend API calls | `frontend/src/api/verificationApi.js` |
 | Frontend queue behavior | `frontend/src/hooks/useQueueItems.js` and `frontend/src/utils/queueItemState.js` |
 | Frontend upload validation | `frontend/src/utils/fileValidation.js` and `frontend/src/utils/queueFileValidation.js` |

@@ -4,7 +4,7 @@ This folder contains synthetic alcohol label images for manual smoke testing and
 
 ## How To Use These Manually
 
-1. Start the backend and frontend as described in [../docs/take-home/setup-and-run.md](../docs/take-home/setup-and-run.md).
+1. Start the backend and frontend as described in [../docs/development/local-development.md](../docs/development/local-development.md).
 2. Open the frontend at `http://localhost:5173`.
 3. Upload one or more images from [images/](images/).
 4. Select a queued image and enter the fields from the table below.

@@ -56,6 +56,7 @@
 | `backend/app/utils/__init__.py` | Marks utils package. | none | none | package imports | No runtime behavior. |
 | `backend/app/utils/text_normalization.py` | Text cleanup, punctuation/quote normalization, similarity, ABV/proof/net-content parsing. | normalization and parsing helpers | `difflib`, `re`, `string` | verification rules, tests | Generic helpers only; field decisions live in `verification`. |
 | `backend/app/utils/logging_config.py` | Logging setup. | `configure_logging` | logging | `main.py` | Keeps logging format centralized. |
+| `backend/app/utils/security_headers.py` | Applies security response headers. | `apply_security_headers` | Starlette/FastAPI response objects | `main.py`, tests | Used by normal responses and the unexpected-error handler. |
 
 ## Tests
 
@@ -65,6 +66,7 @@
 | `backend/app/tests/test_api_contract.py` | Tests route contracts, response fields, errors, and batch behavior. | FastAPI TestClient, schemas, settings, provider patching | Main API safety test file. |
 | `backend/app/tests/test_batch_service.py` | Tests batch request validation, duplicate filename handling, partial failures, and concurrency. | asyncio, FastAPI UploadFile, schemas, settings | Patches single-label processing for service tests. |
 | `backend/app/tests/test_config.py` | Tests settings defaults and image detail validation. | pytest monkeypatch, config | Covers speed/cost-sensitive defaults. |
+| `backend/app/tests/test_cors_contract.py` | Tests configured CORS behavior and preflight contract. | FastAPI TestClient, settings | Covers allowed origins and CORS method/header behavior. |
 | `backend/app/tests/test_file_validation.py` | Tests upload validation rules. | Pillow, UploadFile, pytest | Covers supported formats and rejection cases. |
 | `backend/app/tests/test_image_preprocessor.py` | Tests preprocessing behavior. | Pillow, pytest, config, preprocessor | Covers resize, RGB JPEG output, quality, and defaults. |
 | `backend/app/tests/test_openai_client.py` | Tests OpenAI client cache behavior. | provider client module, settings | Patches constructor behavior. |

@@ -86,16 +86,16 @@ Request:
 
 Form fields:
 
-| Field | Type | Purpose |
-| --- | --- | --- |
-| `file` | file | Label image. |
-| `brand_name` | string | Expected brand name. |
-| `class_type` | string | Expected class or type; backend skips this check when blank. |
-| `alcohol_content` | string | Expected ABV/proof text; backend skips this check when blank. |
-| `net_contents` | string | Expected net contents; backend skips this check when blank. |
-| `bottler_producer` | string | Expected bottler/producer text; backend skips this check when blank. |
-| `country_of_origin` | string | Expected country of origin; backend skips this check when blank. |
-| `government_warning` | string | Accepted for API compatibility; backend verifies against server-owned standard text. |
+| Field | Type | Required by route | Purpose |
+| --- | --- | --- | --- |
+| `file` | file | Yes | Label image. |
+| `brand_name` | string | Yes | Expected brand name. |
+| `class_type` | string | Yes | Expected class or type; backend skips this comparison when the submitted value is blank. |
+| `alcohol_content` | string | Yes | Expected ABV/proof text; backend skips this comparison when the submitted value is blank. |
+| `net_contents` | string | Yes | Expected net contents; backend skips this comparison when the submitted value is blank. |
+| `bottler_producer` | string | No | Expected bottler/producer text; defaults to blank and is skipped when blank. |
+| `country_of_origin` | string | No | Expected country of origin; defaults to blank and is skipped when blank. |
+| `government_warning` | string | Yes | Accepted for API compatibility; backend verifies against server-owned standard text. |
 
 Supported file types:
 
@@ -210,16 +210,16 @@ Request:
 
 Form fields:
 
-| Field | Type | Purpose |
-| --- | --- | --- |
-| `files` | file list | Label images. |
-| `brand_name` | string | Shared expected brand name. |
-| `class_type` | string | Shared expected class or type. |
-| `alcohol_content` | string | Shared expected ABV/proof text. |
-| `net_contents` | string | Shared expected net contents. |
-| `bottler_producer` | string | Shared expected bottler/producer text; backend skips this check when blank. |
-| `country_of_origin` | string | Shared expected country of origin; backend skips this check when blank. |
-| `government_warning` | string | Accepted for API compatibility; backend verifies against server-owned standard text. |
+| Field | Type | Required by route | Purpose |
+| --- | --- | --- | --- |
+| `files` | file list | Yes | Label images. |
+| `brand_name` | string | Yes | Shared expected brand name. |
+| `class_type` | string | Yes | Shared expected class or type; backend skips this comparison when the submitted value is blank. |
+| `alcohol_content` | string | Yes | Shared expected ABV/proof text; backend skips this comparison when the submitted value is blank. |
+| `net_contents` | string | Yes | Shared expected net contents; backend skips this comparison when the submitted value is blank. |
+| `bottler_producer` | string | No | Shared expected bottler/producer text; defaults to blank and is skipped when blank. |
+| `country_of_origin` | string | No | Shared expected country of origin; defaults to blank and is skipped when blank. |
+| `government_warning` | string | Yes | Accepted for API compatibility; backend verifies against server-owned standard text. |
 
 Batch validation:
 

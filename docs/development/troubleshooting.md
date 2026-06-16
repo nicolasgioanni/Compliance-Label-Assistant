@@ -49,6 +49,8 @@ Safe fix:
 .\scripts\start-backend.ps1 -BackendPort 8010
 ```
 
+Do not edit application imports or startup code to work around a local dependency or port issue.
+
 ## Missing Environment Variables
 
 Symptom: verification returns a setup/configuration error.
@@ -91,6 +93,8 @@ Safe fix:
 VITE_API_BASE_URL=<BACKEND_URL>
 ```
 
+Do not hard-code deployed backend URLs in frontend source.
+
 ## CORS Errors
 
 Symptom: browser console shows CORS failure.
@@ -112,6 +116,8 @@ ALLOWED_ORIGINS=<FRONTEND_URL>
 ```
 
 Use a comma-separated list for multiple origins.
+
+Do not use a wildcard origin in deployed backend settings.
 
 ## Upload Fails
 
@@ -137,6 +143,8 @@ Safe fix:
 - Use a smaller readable image.
 - Keep frontend and backend file limits aligned.
 
+Do not bypass frontend or backend upload validation to accept a failing file.
+
 ## Image Preprocessing Fails
 
 Symptom: backend returns an image processing error.
@@ -155,6 +163,8 @@ Safe fix:
 
 - Try a readable JPG, PNG, WebP, or TIFF.
 - Do not bypass backend validation.
+
+Do not log raw image bytes or base64 payloads while debugging preprocessing.
 
 ## Provider Request Fails
 
@@ -180,6 +190,8 @@ Safe fix:
 - Retry later for temporary provider failures.
 - Adjust timeout or retry settings only after testing.
 
+Do not paste provider keys, provider payloads, or full environment dumps into docs, logs, or issue comments.
+
 ## Invalid Provider Response
 
 Symptom: backend returns `502` invalid structured response.
@@ -197,6 +209,8 @@ Safe fix:
 
 - Retry the request.
 - Add a focused provider parsing test before changing parser behavior.
+
+Do not loosen structured parsing without updating API contract tests.
 
 ## Verification Result Looks Wrong
 
@@ -219,6 +233,8 @@ Safe fix:
 
 - Verify expected field values.
 - Add or update backend verification tests before changing rule behavior.
+
+Do not change deterministic rules based only on one live provider result.
 
 ## Vercel Deployment Fails
 
@@ -245,6 +261,8 @@ cd frontend
 npm run build
 ```
 
+Do not change Vercel project settings until the local build failure is understood.
+
 ## Render Deployment Fails
 
 Symptom: backend build or start fails.
@@ -268,6 +286,8 @@ Safe fix:
 - Match the documented Render settings.
 - Configure backend environment variables in Render.
 
+Do not print or paste real Render environment values into documentation or logs.
+
 ## Tests Fail
 
 Symptom: pytest or Vitest fails.
@@ -281,6 +301,8 @@ Check:
 Safe fix:
 
 - Fix the behavior or update tests only when behavior intentionally changed.
+
+Do not delete or skip failing tests to make validation pass.
 
 ## Build Fails
 
@@ -301,3 +323,5 @@ npm run lint
 npm run typecheck
 npm run build
 ```
+
+Do not commit generated `dist/` or coverage output while debugging build failures.

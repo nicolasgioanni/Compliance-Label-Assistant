@@ -93,14 +93,19 @@ For implementation work that touches validation, run the backend, frontend, and 
 - Backend starts without import errors.
 - Frontend starts and loads.
 - `/health` returns `{"status":"ok"}`.
+- `/warmup` returns `{"status":"ok"}` when called by the frontend workflow or directly against the backend.
 - Upload accepts JPG, PNG, WebP, or TIFF.
 - Upload rejects unsupported type or oversized file.
 - Selected-label verification calls `/verify`.
 - Ready-label verification calls `/verify` once per ready item.
+- `/verify-batch` is backend API-only in the current implementation; the frontend does not call it.
 - Result summary counts update.
 - Field cards show expected, observed, reason, and confidence.
 - Export skips unverified and stale queue items.
+- CSV and Excel export both complete for current results.
+- Provider, validation, and CORS errors show controlled user-facing messages.
 - CORS settings match the active frontend origin.
+- Deployment assumptions match the active environment: Vercel has `VITE_API_BASE_URL`, Render has `OPENAI_API_KEY` and `ALLOWED_ORIGINS`, and no frontend environment includes provider secrets.
 
 ## Missing Commands
 

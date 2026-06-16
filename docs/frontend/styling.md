@@ -17,6 +17,7 @@ Imported by `frontend/src/main.jsx`:
 - `frontend/src/styles/components/selected-workspace.css`
 - `frontend/src/styles/components/status-results.css`
 - `frontend/src/styles/components/dialogs-feedback.css`
+- `frontend/src/styles/components/static-pages.css`
 - `frontend/src/styles/components/responsive.css`
 
 ## Build Processing
@@ -29,7 +30,7 @@ Imported by `frontend/src/main.jsx`:
 
 - `frontend/src/styles/index.css`: global page variables, base typography, page background, and root layout.
 - `frontend/src/styles/components.css`: central import point for component style partials.
-- Component partials: layout, controls, queue, selected workspace, status/result cards, dialogs, feedback, and responsive behavior.
+- Component partials: layout, controls, queue, selected workspace, status/result cards, dialogs, feedback, static pages, and responsive behavior.
 
 ## Notes
 

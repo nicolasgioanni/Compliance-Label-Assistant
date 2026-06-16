@@ -5,9 +5,24 @@
 | Path | Purpose | Main exports | Main dependencies | Used by | Notes |
 | --- | --- | --- | --- | --- | --- |
 | `frontend/src/main.jsx` | Creates the React root and imports global styles. | none | `react`, `react-dom/client`, `App`, CSS files | Vite HTML entry | Mounts into `#root`. |
-| `frontend/src/App.jsx` | App shell with backend health check, active error banner, header, verification workflow, and footer. | `App` default | `checkHealth`, shared components, `VerificationForm`, notification constants | `frontend/src/main.jsx` | Converts fetch failure into service unavailable copy. |
+| `frontend/src/App.jsx` | Path-based route selection and service-health wiring. | `App` default | `AppShell`, `useServiceHealth`, route page components | `frontend/src/main.jsx` | Supports `/`, `/app`, `/about`, and `/license`; unknown paths fall back to `/`. |
 | `frontend/src/setupTests.js` | Test setup for jest-dom matchers. | none | `@testing-library/jest-dom/vitest` | Vitest config | Loaded by `vite.config.js`. |
 | `frontend/src/App.test.jsx` | Tests app-level notification behavior. | none | Testing Library, Vitest, mocked API, `App` | Test runner | Covers banner replacement and tone behavior. |
+
+## Pages
+
+| Path | Purpose | Main exports | Main dependencies | Used by | Notes |
+| --- | --- | --- | --- | --- | --- |
+| `frontend/src/pages/LandingPage.jsx` | Landing page route. | `LandingPage` default | landing panel components | `App` | Static entry page for `/`. |
+| `frontend/src/pages/ToolPage.jsx` | Verification tool route. | `ToolPage` default | `VerificationForm`, `ErrorBanner` | `App` | Receives backend service error copy from `App`. |
+| `frontend/src/pages/AboutPage.jsx` | About page route. | `AboutPage` default | `ABOUT_SECTIONS` | `App` | Renders static implementation and limitation content. |
+| `frontend/src/pages/LicensePage.jsx` | License page route. | `LicensePage` default | `LICENSE_SECTIONS` | `App` | Renders static license content. |
+| `frontend/src/pages/about/aboutContent.js` | Structured about-page content. | `ABOUT_SECTIONS` | none | `AboutPage`, tests | Content mirrors current architecture, env, security, and performance facts. |
+| `frontend/src/pages/license/licenseContent.js` | Structured license-page content. | `LICENSE_SECTIONS` | none | `LicensePage` | Static Apache license summary content. |
+| `frontend/src/pages/landing/LandingActionPanel.jsx` | Landing page action panel. | `LandingActionPanel` default | none | `LandingPage` | Links visitors to the tool and supporting pages. |
+| `frontend/src/pages/landing/LandingInfoPanel.jsx` | Landing page information panel. | `LandingInfoPanel` default | none | `LandingPage` | Presents concise prototype context. |
+| `frontend/src/pages/landing/ResizableLandingPanels.jsx` | Landing page split-panel composition. | `ResizableLandingPanels` default | React hooks, landing panels | `LandingPage` | Handles responsive panel sizing. |
+| `frontend/src/pages/landing/ResizableLandingPanels.test.jsx` | Tests landing panel behavior. | none | Testing Library, landing component | Test runner | Covers resize and layout behavior. |
 
 ## API And Constants
 
@@ -52,10 +67,11 @@
 
 | Path | Purpose | Main exports | Main dependencies | Used by | Notes |
 | --- | --- | --- | --- | --- | --- |
-| `frontend/src/components/shared/AppFooter.jsx` | Footer component. | `AppFooter` default | none | `App` | Shared identity, prototype disclaimer, copyright/license text, and resource links. |
+| `frontend/src/components/shared/AppShell.jsx` | Shared app frame. | `AppShell` default | `Header`, `AppFooter` | `App` | Wraps routed page content and passes active navigation state. |
+| `frontend/src/components/shared/AppFooter.jsx` | Footer component. | `AppFooter` default | none | `AppShell` | Shared identity, prototype disclaimer, copyright/license text, and resource links. |
 | `frontend/src/components/shared/ErrorBanner.jsx` | Dismissible alert banner. | `ErrorBanner` default | React hooks | `App` | Supports error, info, and warning tone classes. |
 | `frontend/src/components/shared/ErrorBanner.test.jsx` | Tests banner tones and dismissal. | none | Testing Library, `ErrorBanner` | Test runner | Covers default, info, warning, and auto-dismiss behavior. |
-| `frontend/src/components/shared/Header.jsx` | Header with service status indicator. | `Header` default | none | `App` | `isOnline` controls status display. |
+| `frontend/src/components/shared/Header.jsx` | Header with service status indicator. | `Header` default | none | `AppShell` | Receives active navigation path and service status. |
 | `frontend/src/components/shared/InfoTooltip.jsx` | Portal-based tooltip. | `InfoTooltip` default | React hooks, `createPortal` | many components | Measures trigger and tooltip position with viewport padding. |
 | `frontend/src/components/shared/LoadingState.jsx` | Verifying loading state. | `LoadingState` default | none | `SelectedLabelWorkspace` | Static loading user interface content. |
 
@@ -117,6 +133,7 @@
 | `frontend/src/styles/components/selected-workspace.css` | Selected label workspace styles. | CSS | none | `components.css` | Workspace panel, states, and expected data area. |
 | `frontend/src/styles/components/status-results.css` | Status and result styles. | CSS | none | `components.css` | Status labels, field cards, summaries, extracted text. |
 | `frontend/src/styles/components/dialogs-feedback.css` | Dialog and feedback styles. | CSS | none | `components.css` | Modals, banners, tooltips, feedback states. |
+| `frontend/src/styles/components/static-pages.css` | Static page styles. | CSS | none | `components.css` | Landing, about, and license page styling. |
 | `frontend/src/styles/components/responsive.css` | Responsive adjustments. | CSS | none | `components.css` | Mobile and viewport-specific layout changes. |
 
 ## Public Assets

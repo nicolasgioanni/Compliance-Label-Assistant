@@ -8,6 +8,7 @@ Components focus on rendering and user interaction. API calls and reusable state
 
 | Component | Path | Purpose |
 | --- | --- | --- |
+| `AppShell` | `frontend/src/components/shared/AppShell.jsx` | Wraps routed page content with shared header, main landmark, and footer. |
 | `Header` | `frontend/src/components/shared/Header.jsx` | Displays application header and backend online status. |
 | `ErrorBanner` | `frontend/src/components/shared/ErrorBanner.jsx` | Shows dismissible error, info, or warning banners with optional auto-dismiss. |
 | `InfoTooltip` | `frontend/src/components/shared/InfoTooltip.jsx` | Renders viewport-positioned tooltip content through a portal. |

@@ -60,8 +60,9 @@ Synthetic labels and manual expected inputs are available in [sample-data/README
 
 ## Useful Links
 
-- [Take-home project brief](docs/take-home/project-brief.md)
-- [Engineering decisions](docs/take-home/engineering-decisions.md)
-- [Setup and run guide](docs/take-home/setup-and-run.md)
-- [Requirements mapping](docs/take-home/requirements-mapping.md)
+- [Documentation index](docs/README.md)
+- [Architecture overview](docs/architecture/system-overview.md)
+- [Local development](docs/development/local-development.md)
+- [Testing and validation](docs/development/testing-and-validation.md)
 - [API documentation](docs/api/overview.md)
+- [Known gaps](docs/maintenance/known-gaps.md)
