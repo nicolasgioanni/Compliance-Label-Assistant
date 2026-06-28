@@ -13,6 +13,7 @@ Components focus on rendering and user interaction. API calls and reusable state
 | `ErrorBanner` | `frontend/src/components/shared/ErrorBanner.jsx` | Shows dismissible error, info, or warning banners with optional auto-dismiss. |
 | `InfoTooltip` | `frontend/src/components/shared/InfoTooltip.jsx` | Renders viewport-positioned tooltip content through a portal. |
 | `LoadingState` | `frontend/src/components/shared/LoadingState.jsx` | Shows the verifying loading state. |
+| `Skeleton` | `frontend/src/components/shared/Skeleton.jsx` | Provides decorative, accessible skeleton primitives for layout-matched loading states. |
 | `AppFooter` | `frontend/src/components/shared/AppFooter.jsx` | Displays shared footer identity, prototype disclaimer, copyright/license text, and grouped Project/Legal resource links. |
 
 ## Static Page Components
@@ -46,6 +47,7 @@ Components focus on rendering and user interaction. API calls and reusable state
 | `VerificationForm` | `frontend/src/components/verification/VerificationForm.jsx` | Top-level workflow composition. |
 | `SelectedLabelWorkspace` | `frontend/src/components/verification/SelectedLabelWorkspace.jsx` | Switches selected-label area between empty, form, loading, error, and result states. |
 | `ExpectedFieldsForm` | `frontend/src/components/verification/ExpectedFieldsForm.jsx` | Renders expected field inputs, example loading, clearing, and copy-data action. |
+| `SelectedResultSkeleton` | `frontend/src/components/verification/SelectedResultSkeleton.jsx` | Shows a result-shaped placeholder while the selected label is verifying. |
 | `SelectedResultDetail` | `frontend/src/components/verification/SelectedResultDetail.jsx` | Renders selected result metadata, field results, government warning comparison, and extracted fields. |
 | `FieldResultCard` | `frontend/src/components/verification/FieldResultCard.jsx` | Renders one backend `FieldResult`. |
 | `ExtractedTextPanel` | `frontend/src/components/verification/ExtractedTextPanel.jsx` | Renders extracted structured fields and raw text when present. |
@@ -65,3 +67,9 @@ Components focus on rendering and user interaction. API calls and reusable state
 3. Keep backend calls in `frontend/src/api/verificationApi.js`.
 4. Add focused tests when behavior affects queue state, uploads, export, result rendering, or error display.
 5. Add or update styling in the relevant CSS partial under `frontend/src/styles/components/`.
+
+## Skeleton Loading
+
+Skeletons are frontend-only perceived-performance placeholders. They do not add API calls, caching, polling, backend endpoints, progress percentages, or artificial delays.
+
+Use the shared skeleton primitives for decorative placeholder shapes, and keep visible loading text in the owning region. The selected-label verification skeleton mirrors the final result layout while the existing `/verify` request is pending, then disappears immediately for success or error states.

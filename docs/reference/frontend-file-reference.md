@@ -78,7 +78,9 @@
 | `frontend/src/components/shared/ErrorBanner.test.jsx` | Tests banner tones and dismissal. | none | Testing Library, `ErrorBanner` | Test runner | Covers default, info, warning, and auto-dismiss behavior. |
 | `frontend/src/components/shared/Header.jsx` | Header with service status indicator. | `Header` default | none | `AppShell` | Receives active navigation path and service status. |
 | `frontend/src/components/shared/InfoTooltip.jsx` | Portal-based tooltip. | `InfoTooltip` default | React hooks, `createPortal` | many components | Measures trigger and tooltip position with viewport padding. |
-| `frontend/src/components/shared/LoadingState.jsx` | Verifying loading state. | `LoadingState` default | none | `SelectedLabelWorkspace` | Static loading user interface content. |
+| `frontend/src/components/shared/LoadingState.jsx` | Compact verifying loading state. | `LoadingState` default | none | none currently | Retained shared spinner-style loading component for simple future loading states. |
+| `frontend/src/components/shared/Skeleton.jsx` | Shared skeleton primitives. | `Skeleton`, `SkeletonText`, `SkeletonBlock` | none | selected verification skeleton | Renders decorative placeholders with stable size styles and `aria-hidden`. |
+| `frontend/src/components/shared/Skeleton.test.jsx` | Tests skeleton primitives. | none | Testing Library, skeleton primitives | Test runner | Covers decorative accessibility and variant classes. |
 
 ## Upload Components
 
@@ -95,7 +97,8 @@
 | `frontend/src/components/verification/ExpectedFieldsForm.jsx` | Expected field input form. | `ExpectedFieldsForm` default | default warning, expected-field definitions, `InfoTooltip` | `SelectedLabelWorkspace` | Includes load example, clear fields, back-to-results, and copy-data controls. |
 | `frontend/src/components/verification/ExtractedTextPanel.jsx` | Displays extracted structured fields and raw text when present. | `ExtractedTextPanel` default | none | `SelectedResultDetail` | Current backend provider returns `raw_text: null`. |
 | `frontend/src/components/verification/FieldResultCard.jsx` | Displays one `FieldResult`. | `FieldResultCard` default | status style utilities | `SelectedResultDetail` | Shows expected, observed, reason, and confidence. |
-| `frontend/src/components/verification/SelectedLabelWorkspace.jsx` | Switches selected workspace state. | `SelectedLabelWorkspace` default | status utilities, expected form, tooltip, loading, result detail | `VerificationForm` | Handles empty, form, loading, error, and result views. |
+| `frontend/src/components/verification/SelectedLabelWorkspace.jsx` | Switches selected workspace state. | `SelectedLabelWorkspace` default | status utilities, expected form, tooltip, result skeleton, result detail | `VerificationForm` | Handles empty, form, verifying skeleton, error, and result views. |
+| `frontend/src/components/verification/SelectedResultSkeleton.jsx` | Result-shaped verifying placeholder. | `SelectedResultSkeleton` default | shared skeleton primitives | `SelectedLabelWorkspace` | Mirrors the result layout while `/verify` is pending without fake data or progress. |
 | `frontend/src/components/verification/SelectedResultDetail.jsx` | Selected result detail view. | `SelectedResultDetail` default | status utilities, `InfoTooltip`, extracted panel, field card | `SelectedLabelWorkspace` | Separates government warning comparison from other field results. |
 | `frontend/src/components/verification/VerificationForm.testUtils.jsx` | Shared test helpers for verification workflow tests. | test helpers | Testing Library, Vitest, mocked API/export modules, `VerificationForm` | verification tests | Provides file factories, render helpers, result fixtures, and object URL mocks. |
 | `frontend/src/components/verification/VerificationForm.queue.test.jsx` | Tests queue behavior. | none | test utilities, mocked API | Test runner | Covers upload warnings, warmup, duplicate handling, preview, filters, copy button enablement, and export enablement. |
@@ -139,6 +142,7 @@
 | `frontend/src/styles/components/status-results.css` | Status and result styles. | CSS | none | `components.css` | Status labels, field cards, summaries, extracted text. |
 | `frontend/src/styles/components/dialogs-feedback.css` | Dialog and feedback styles. | CSS | none | `components.css` | Modals, banners, tooltips, feedback states. |
 | `frontend/src/styles/components/static-pages.css` | Static page styles. | CSS | none | `components.css` | Shared static page, legal page, license page, about page, and landing informational panel styling. |
+| `frontend/src/styles/components/skeleton.css` | Skeleton placeholder styles. | CSS | none | `components.css` | CSS-only shimmer/static reduced-motion placeholders using existing design tokens. |
 | `frontend/src/styles/components/responsive.css` | Responsive adjustments. | CSS | none | `components.css` | Mobile and viewport-specific layout changes. |
 
 ## Public Assets

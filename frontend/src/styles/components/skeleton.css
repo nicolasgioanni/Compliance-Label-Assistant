@@ -1,0 +1,69 @@
+.skeleton {
+  animation: skeleton-shimmer 1.25s ease-in-out infinite;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(216, 226, 237, 0.8) 0%,
+      rgba(238, 244, 250, 0.95) 45%,
+      rgba(216, 226, 237, 0.8) 90%
+    );
+  background-size: 220% 100%;
+  border-radius: var(--skeleton-radius, var(--radius-control));
+  display: block;
+  flex-shrink: 0;
+  height: var(--skeleton-height, 1rem);
+  max-width: 100%;
+  min-width: 0;
+  width: var(--skeleton-width, 100%);
+}
+
+.skeleton-block {
+  background-color: var(--color-surface-muted);
+}
+
+.skeleton-text {
+  min-height: 0.7rem;
+}
+
+.skeleton-stack {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.selected-result-skeleton {
+  min-width: 0;
+}
+
+.selected-result-skeleton__meta-value {
+  margin-top: 0.25rem;
+}
+
+.selected-result-skeleton__field-card dl {
+  gap: 0.8rem;
+}
+
+.selected-result-skeleton__field-card dd {
+  margin-top: 0.28rem;
+}
+
+.selected-result-skeleton__extracted-list {
+  margin-top: 0.9rem;
+}
+
+@keyframes skeleton-shimmer {
+  from {
+    background-position: 120% 0;
+  }
+
+  to {
+    background-position: -120% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background-position: 0 0;
+  }
+}

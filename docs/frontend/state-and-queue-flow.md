@@ -90,12 +90,16 @@ Selected label:
 4. Call `verifySingleLabel`.
 5. Apply success or error transition.
 
+While the selected item is verifying, the selected-label workspace shows a result-shaped skeleton with a screen-reader status while the queue item keeps the visible `Verifying` pill. The skeleton is driven only by the existing `verifying` queue status; it does not add polling, artificial delay, progress percentages, caching, or extra API calls.
+
 Ready labels:
 
 1. Collect active queue items with `status === 'ready'`.
 2. Mark them verifying.
 3. Process with concurrency `2`.
 4. Apply each item result independently.
+
+During ready-label verification, completed items keep their real results and failed items keep their real errors. The selected-label skeleton only appears when the currently selected item is still verifying.
 
 ## Export Flow
 

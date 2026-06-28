@@ -66,6 +66,8 @@ describe('VerificationForm.resultNavigation', () => {
       expect(screen.getByText(hasExactText('Selected Label: batch-first.png'))).toBeInTheDocument();
     });
 
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    expect(screen.queryByText(hasExactText('Selected Label: batch-second.png'))).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Edit Selected Label' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Export Results' })).toBeDisabled();
 
@@ -117,10 +119,15 @@ describe('VerificationForm.resultNavigation', () => {
     addBrandName('Verified Brand');
     fireEvent.click(screen.getByRole('button', { name: 'Verify Selected Label' }));
 
+    expect(screen.getByRole('status')).toHaveTextContent('Verifying Label');
+    expect(screen.getByRole('status')).toHaveClass('sr-only');
+    expect(screen.getByText(hasExactText('Selected Label: verified-selected-only.png'))).toBeInTheDocument();
+
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /label verified-selected-only\.png, status Pass/i })).toBeInTheDocument();
     });
 
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: /label unverified-selected-only\.png, status Ready/i })).toBeInTheDocument();
     expect(verifySingleLabel).toHaveBeenCalledTimes(1);
     expect(verifySingleLabel.mock.calls[0][0].name).toBe('verified-selected-only.png');

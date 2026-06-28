@@ -323,10 +323,14 @@ describe('VerificationForm.queue', () => {
     addBrandName('Review Brand');
     fireEvent.click(screen.getByRole('button', { name: 'Verify Selected Label' }));
 
+    expect(screen.getByRole('status')).toHaveTextContent('Verifying Label');
+    expect(screen.getByRole('status')).toHaveClass('sr-only');
+
     await waitFor(() => {
       expect(screen.getByText(hasExactText('File claim: error-label.png'))).toBeInTheDocument();
     });
 
+    expect(screen.queryByRole('status')).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Selected Label Review' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Edit Selected Label' })).toBeInTheDocument();
     expect(screen.getByText('Verification failed.')).toBeInTheDocument();
@@ -365,6 +369,15 @@ describe('VerificationForm.queue', () => {
     addBrandName('Pending Brand');
     fireEvent.click(screen.getByRole('button', { name: 'Verify Selected Label' }));
 
+    const workspaceSkeleton = container.querySelector('.selected-result-skeleton');
+    expect(workspaceSkeleton).toHaveAttribute('aria-busy', 'true');
+    expect(screen.getByRole('status')).toHaveTextContent('Verifying Label');
+    expect(screen.getByRole('status')).toHaveClass('sr-only');
+    expect(container.querySelector('.selected-result-skeleton__status-row')).toBeNull();
+    expect(screen.getByText(hasExactText('Selected Label: pending-label.png'))).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'About selected label results' })).toBeInTheDocument();
+    expect(screen.getByText('Overall Status')).toBeInTheDocument();
+    expect(screen.getByText('Processing Time')).toBeInTheDocument();
     expect(screen.getByText('Verifying')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Needs Review' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Pass' })).toBeDisabled();
