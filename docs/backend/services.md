@@ -59,6 +59,24 @@ Responsibilities:
 - Optionally make one non-generation model metadata request to warm the provider network path.
 - Never send image files, provider request content, expected fields, or extraction payloads.
 - Swallow warmup failures because warmup is best effort.
+- Runs provider network warmup at most once per model per backend process.
+
+## `rate_limit_service.py`
+
+Exports:
+
+- `DAILY_VERIFICATION_LIMIT_MESSAGE`
+- `VerificationRateLimitError`
+- `reserve_verification_units(unit_cost, settings=None)`
+- `build_rate_limit_headers(result)`
+- `reset_verification_rate_limiter()`
+
+Responsibilities:
+
+- Reserve process-local daily verification units before OpenAI extraction can run.
+- Raise a safe rate-limit error when the daily cap is exhausted.
+- Build standard rate-limit response headers for routes.
+- Provide a reset helper for tests.
 
 ## `timing_service.py`
 

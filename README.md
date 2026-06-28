@@ -106,7 +106,7 @@ Compliance Label Assistant API
 
 ## Testing Overview
 
-The repository uses focused automated checks rather than live provider calls in CI. Backend tests cover API contracts, upload validation, image preprocessing, provider error mapping, deterministic verification rules, batch behavior, CORS, and warmup behavior. Frontend tests cover the app shell, queue workflow, upload handling, expected-field utilities, result navigation, export behavior, browser support, and status resolution.
+The repository uses focused automated checks rather than live provider calls in CI. Backend tests cover API contracts, upload validation, image preprocessing, provider error mapping, deterministic verification rules, rate limiting, batch behavior, CORS, and warmup behavior. Frontend tests cover the app shell, queue workflow, upload handling, expected-field utilities, result navigation, export behavior, browser support, and status resolution.
 
 GitHub Actions runs separate backend, frontend, and repository hygiene workflows on pull requests and pushes to `main`. See [testing and validation](docs/development/testing-and-validation.md) for the full command matrix and manual smoke checklist.
 
@@ -124,6 +124,7 @@ Backend:
 | --- | --- |
 | `OPENAI_API_KEY` | Backend-only provider key required for extraction-backed verification. |
 | `ALLOWED_ORIGINS` | Comma-separated browser origins allowed by CORS. |
+| `VERIFICATION_DAILY_UNIT_LIMIT` | Daily global verification unit cap; default is 50. |
 
 Additional backend tuning variables are documented in [backend environment variables](docs/backend/environment-variables.md) and [deployment environment variables](docs/deployment/environment-variables.md). Never commit real `.env` values.
 

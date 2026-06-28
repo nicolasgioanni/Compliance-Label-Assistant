@@ -14,10 +14,21 @@
 | ---: | --- | --- |
 | `400` | `UploadValidationError` | Unsupported extension, MIME mismatch, empty file, oversized file, decoded pixel overflow, corrupt image. |
 | `400` | `ImagePreprocessingError` | Image cannot be prepared for extraction. |
+| `429` | `VerificationRateLimitError` | Daily verification unit cap exhausted before extraction. |
 | `502` | `InvalidExtractionResponseError` | Provider response cannot be parsed into expected structured fields. |
 | `502` | `ExtractionServiceError` | Provider unavailable, timed out, rate-limited, or returned an error. |
 | `503` | `ExtractionConfigurationError` | `OPENAI_API_KEY` missing on backend. |
 | `500` | unexpected exception | Safe generic server error. |
+
+Rate-limit exhaustion returns request-level HTTP `429` before extraction:
+
+```json
+{
+  "detail": "Daily verification limit reached. Please try again when the limit resets."
+}
+```
+
+Rate-limit responses include `Retry-After`, `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and `X-RateLimit-Reset` headers.
 
 ## `/verify-batch` Errors
 
@@ -26,6 +37,8 @@ Batch-level validation returns HTTP `400` for:
 - fewer than 2 files
 - more than `MAX_BATCH_SIZE` files
 - duplicate basenames
+
+The batch endpoint also returns request-level HTTP `429` when the daily verification unit cap cannot reserve one unit per submitted file.
 
 Per-file processing failures return inside `results`:
 
@@ -63,4 +76,4 @@ Per-file processing failures return inside `results`:
 
 ## Frontend Handling
 
-`parseApiResponse` throws an `Error` using `detail` when available. `frontend/src/App.jsx` and `frontend/src/hooks/useQueueVerification.js` translate browser `Failed to fetch` into the shared service-unavailable message.
+`parseApiResponse` throws an `Error` using `detail` when available. Verification request errors, including daily-limit `429` responses, are displayed in the existing selected-label error state. `frontend/src/App.jsx` and `frontend/src/hooks/useQueueVerification.js` translate browser `Failed to fetch` into the shared service-unavailable message.

@@ -84,7 +84,7 @@ The current prototype does not include:
 - audit logs
 - encrypted file storage
 - malware scanning
-- production rate limiting
+- distributed production rate limiting
 - production monitoring
 
 These are not current features and should not be claimed in docs or user interface copy.

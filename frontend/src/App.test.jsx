@@ -587,7 +587,7 @@ function expectSharedFooter() {
     '/cla-logo.png',
   );
   expect(within(footer).getByText('Compliance Label Assistant')).toBeInTheDocument();
-  expect(within(footer).getByText('Independent prototype • v1.0.0')).toBeInTheDocument();
+  expect(within(footer).getByText('Independent prototype • v2.0.0')).toBeInTheDocument();
   expect(within(footer).getByText(FOOTER_DISCLAIMER)).toBeInTheDocument();
   expect(within(footer).getByText(FOOTER_COPYRIGHT)).toBeInTheDocument();
 

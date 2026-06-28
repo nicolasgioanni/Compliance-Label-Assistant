@@ -121,6 +121,7 @@ Response statuses:
 
 - `200`: verification completed.
 - `400`: upload validation or preprocessing error.
+- `429`: daily verification unit cap exhausted.
 - `502`: provider service or provider response error.
 - `503`: missing backend provider configuration.
 - `500`: unexpected server error.
@@ -196,6 +197,7 @@ Validation rules:
 Performance notes:
 
 - One provider extraction call occurs per successful `/verify` request.
+- One verification unit is reserved before processing. When the daily cap is exhausted, the request returns `429` before extraction.
 - Image bytes are preprocessed before provider extraction.
 
 ## `POST /verify-batch`
@@ -231,6 +233,7 @@ Response statuses:
 
 - `200`: batch request completed, including possible per-file errors.
 - `400`: invalid batch-level request.
+- `429`: daily verification unit cap exhausted before per-file processing.
 - `500`: unexpected server error.
 
 Response example:
@@ -309,3 +312,4 @@ Performance notes:
 
 - Uses `BATCH_CONCURRENCY` for per-file processing.
 - Each successfully processed file can make one provider extraction call.
+- After batch-level validation, the backend reserves one verification unit per submitted file before per-file processing starts.

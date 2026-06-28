@@ -9,6 +9,7 @@ from app.main import app
 from app.routes import verification
 from app.schemas import ExtractedFields
 from app.providers.openai.extraction import InvalidExtractionResponseError
+from app.services import batch_service
 from app.services import single_verification_service
 from app.services import warmup_service
 
@@ -440,6 +441,103 @@ def test_verify_invalid_extraction_response_returns_safe_bad_gateway(monkeypatch
     assert response.json() == {
         "detail": "The extraction service returned an invalid structured response. Please try again."
     }
+
+
+def test_verify_returns_rate_limit_error_before_extraction_after_daily_cap(monkeypatch) -> None:
+    extraction_call_count = 0
+
+    async def fake_extract_label_fields(image_bytes: bytes, settings):
+        nonlocal extraction_call_count
+        extraction_call_count += 1
+        return ExtractedFields(brand_name="OLD TOM DISTILLERY", government_warning_text=STANDARD_WARNING)
+
+    monkeypatch.setattr(single_verification_service, "extract_label_fields", fake_extract_label_fields)
+    monkeypatch.setattr(
+        single_verification_service,
+        "get_settings",
+        lambda: Settings(openai_api_key="test-key", verification_daily_unit_limit=1),
+    )
+
+    first_response = client.post(
+        "/verify",
+        data=_expected_form_data(),
+        files={"file": ("old-tom.png", _image_bytes(), "image/png")},
+    )
+    blocked_response = client.post(
+        "/verify",
+        data=_expected_form_data(),
+        files={"file": ("old-tom.png", _image_bytes(), "image/png")},
+    )
+
+    assert first_response.status_code == 200
+    assert blocked_response.status_code == 429
+    assert blocked_response.json() == {
+        "detail": "Daily verification limit reached. Please try again when the limit resets."
+    }
+    assert blocked_response.headers["x-ratelimit-limit"] == "1"
+    assert blocked_response.headers["x-ratelimit-remaining"] == "0"
+    assert int(blocked_response.headers["x-ratelimit-reset"]) > 0
+    assert int(blocked_response.headers["retry-after"]) > 0
+    assert extraction_call_count == 1
+    assert_security_headers(blocked_response)
+
+
+def test_verify_rate_limit_can_be_disabled(monkeypatch) -> None:
+    extraction_call_count = 0
+
+    async def fake_extract_label_fields(image_bytes: bytes, settings):
+        nonlocal extraction_call_count
+        extraction_call_count += 1
+        return ExtractedFields(brand_name="OLD TOM DISTILLERY", government_warning_text=STANDARD_WARNING)
+
+    monkeypatch.setattr(single_verification_service, "extract_label_fields", fake_extract_label_fields)
+    monkeypatch.setattr(
+        single_verification_service,
+        "get_settings",
+        lambda: Settings(
+            openai_api_key="test-key",
+            verification_daily_unit_limit=1,
+            verification_rate_limit_enabled=False,
+        ),
+    )
+
+    responses = [
+        client.post(
+            "/verify",
+            data=_expected_form_data(),
+            files={"file": ("old-tom.png", _image_bytes(), "image/png")},
+        )
+        for _ in range(2)
+    ]
+
+    assert [response.status_code for response in responses] == [200, 200]
+    assert extraction_call_count == 2
+
+
+def test_verify_batch_counts_files_as_rate_limit_units(monkeypatch) -> None:
+    _mock_extraction_fail_if_called(monkeypatch)
+    monkeypatch.setattr(
+        batch_service,
+        "get_settings",
+        lambda: Settings(openai_api_key="test-key", verification_daily_unit_limit=1),
+    )
+
+    response = client.post(
+        "/verify-batch",
+        data=_expected_form_data(),
+        files=[
+            ("files", ("old-tom-a.png", _image_bytes(), "image/png")),
+            ("files", ("old-tom-b.png", _image_bytes(), "image/png")),
+        ],
+    )
+
+    assert response.status_code == 429
+    assert response.json() == {
+        "detail": "Daily verification limit reached. Please try again when the limit resets."
+    }
+    assert response.headers["x-ratelimit-limit"] == "1"
+    assert response.headers["x-ratelimit-remaining"] == "1"
+    assert_security_headers(response)
 
 
 def test_unexpected_verify_error_returns_safe_json(monkeypatch) -> None:

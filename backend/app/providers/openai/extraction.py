@@ -103,6 +103,7 @@ def _extract_label_fields_sync(image_bytes: bytes, settings: Settings) -> Extrac
             ],
             store=False,
             temperature=0,
+            max_output_tokens=settings.openai_max_output_tokens,
             text_format=_ExtractionFields,
         )
         return _parse_extracted_fields(response.output_parsed)

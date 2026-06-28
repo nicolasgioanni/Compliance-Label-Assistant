@@ -64,9 +64,21 @@ class Settings:
     openai_extraction_concurrency: int = field(
         default_factory=lambda: _read_bounded_int("OPENAI_EXTRACTION_CONCURRENCY", 2, 1, 4)
     )
+    openai_max_output_tokens: int = field(
+        default_factory=lambda: _read_bounded_int("OPENAI_MAX_OUTPUT_TOKENS", 500, 1, 2_000)
+    )
     openai_network_warmup: bool = field(default_factory=lambda: _read_bool("OPENAI_NETWORK_WARMUP", True))
     openai_warmup_timeout_seconds: int = field(
         default_factory=lambda: _read_bounded_int("OPENAI_WARMUP_TIMEOUT_SECONDS", 2, 1, 5)
+    )
+    verification_rate_limit_enabled: bool = field(
+        default_factory=lambda: _read_bool("VERIFICATION_RATE_LIMIT_ENABLED", True)
+    )
+    verification_daily_unit_limit: int = field(
+        default_factory=lambda: _read_bounded_int("VERIFICATION_DAILY_UNIT_LIMIT", 50, 1, 10_000)
+    )
+    verification_rate_limit_window_seconds: int = field(
+        default_factory=lambda: _read_bounded_int("VERIFICATION_RATE_LIMIT_WINDOW_SECONDS", 86_400, 60, 604_800)
     )
     max_file_size_mb: int = field(default_factory=lambda: _read_int("MAX_FILE_SIZE_MB", 5))
     max_image_pixels: int = field(default_factory=lambda: _read_int("MAX_IMAGE_PIXELS", 25_000_000))

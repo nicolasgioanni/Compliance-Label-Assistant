@@ -11,7 +11,7 @@
 - No required browser smoke workflow.
 - No database or persistent upload storage.
 - No authentication or authorization.
-- No production rate limiting or monitoring.
+- No distributed production rate limiting or monitoring.
 
 ## Current Behavior To Keep Clear
 
@@ -21,6 +21,7 @@
 - The route accepts `government_warning`, but backend verification uses `STANDARD_GOVERNMENT_WARNING`.
 - The provider parser currently sets `raw_text` to `null`.
 - OpenAI clients are cached, but extraction results are not cached.
+- The daily verification cap is process-local memory and resets on restart or deploy.
 - `frontend/vercel.json` defines static security headers and SPA rewrites for `/app`, `/about`, and `/license`; CSP is not configured.
 - `sample-data/` contains synthetic label fixtures; TC08 verifies a country-of-origin mismatch using mocked extraction data.
 
@@ -30,6 +31,6 @@
 - Formal commit message convention.
 - Production monitoring requirements.
 - Production retention requirements for logs.
-- Production rate-limit requirements.
+- Distributed production rate-limit requirements.
 - Whether cloud AI is allowed in the target deployment network.
 - Whether future sample data should add more beverage types, label formats, and supported field categories.

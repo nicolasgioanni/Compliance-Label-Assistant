@@ -182,11 +182,14 @@ Check:
 - `OPENAI_API_KEY`
 - `OPENAI_TIMEOUT_SECONDS`
 - `OPENAI_MAX_RETRIES`
+- `VERIFICATION_DAILY_UNIT_LIMIT`
+- `VERIFICATION_RATE_LIMIT_ENABLED`
 - `backend/app/providers/openai/extraction.py`
 
 Safe fix:
 
 - Confirm backend provider key is configured.
+- If the message is `Daily verification limit reached. Please try again when the limit resets.`, wait for the rate-limit window to reset or intentionally adjust the backend cap.
 - Retry later for temporary provider failures.
 - Adjust timeout or retry settings only after testing.
 

@@ -70,3 +70,10 @@ Backend responses include lightweight defensive headers:
 - `X-Content-Type-Options: nosniff`
 - `Referrer-Policy: no-referrer`
 - `Cache-Control: no-store`
+
+Rate-limit responses also include:
+
+- `Retry-After`
+- `X-RateLimit-Limit`
+- `X-RateLimit-Remaining`
+- `X-RateLimit-Reset`

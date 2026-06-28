@@ -127,7 +127,7 @@ The prototype includes security choices appropriate to the take-home scope:
 - Export utilities avoid raw extracted text and neutralize spreadsheet formula prefixes.
 - User-provided and extracted text is rendered as text, not as raw HTML.
 
-The prototype does not include production controls such as authentication, role-based access, audit logging, retention policy, rate limiting, production monitoring, or federal compliance hardening.
+The prototype does not include production controls such as authentication, role-based access, audit logging, retention policy, distributed rate limiting, production monitoring, or federal compliance hardening.
 
 ## Production Considerations
 

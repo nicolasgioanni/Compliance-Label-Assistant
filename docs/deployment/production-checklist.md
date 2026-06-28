@@ -30,6 +30,8 @@
 - `OPENAI_API_KEY` is configured as a secret.
 - `ALLOWED_ORIGINS` includes `<FRONTEND_URL>`.
 - Upload and provider settings are intentionally selected.
+- `VERIFICATION_DAILY_UNIT_LIMIT`, `VERIFICATION_RATE_LIMIT_ENABLED`, and `OPENAI_MAX_OUTPUT_TOKENS` are intentionally selected.
+- OpenAI project budgets are configured as secondary billing alerts.
 - Health check path is `/health` if Render exposes health check configuration.
 - Auto-deploy from `main` is enabled only after GitHub branch protection is active.
 
@@ -46,6 +48,7 @@ After deployment:
 7. Review field results and extracted fields.
 8. Export verified results.
 9. Confirm no secret values appear in browser output or logs.
+10. Confirm deployed backend settings include the intended daily verification cap.
 
 ## Known Deployment Gaps
 

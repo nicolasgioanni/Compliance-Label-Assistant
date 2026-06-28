@@ -29,8 +29,12 @@ Recommended explicit variables:
 - `OPENAI_IMAGE_DETAIL`
 - `OPENAI_MAX_RETRIES`
 - `OPENAI_EXTRACTION_CONCURRENCY`
+- `OPENAI_MAX_OUTPUT_TOKENS`
 - `OPENAI_NETWORK_WARMUP`
 - `OPENAI_WARMUP_TIMEOUT_SECONDS`
+- `VERIFICATION_RATE_LIMIT_ENABLED`
+- `VERIFICATION_DAILY_UNIT_LIMIT`
+- `VERIFICATION_RATE_LIMIT_WINDOW_SECONDS`
 - `MAX_FILE_SIZE_MB`
 - `MAX_IMAGE_PIXELS`
 - `MAX_BATCH_SIZE`
@@ -73,6 +77,8 @@ The backend enforces:
 
 - Provider timeout defaults to 10 seconds and is bounded from 2 to 30.
 - Provider image detail defaults to `low`.
+- Provider output is capped by `OPENAI_MAX_OUTPUT_TOKENS`.
+- Verification requests are capped by the in-memory daily verification unit limit.
 - Image preprocessing reduces request payload size before extraction.
 - Increasing quality, width, detail, retries, or concurrency can increase latency or provider usage.
 
@@ -106,7 +112,8 @@ Upload errors:
 - Health check path is `/health` if Render exposes health check configuration.
 - `OPENAI_API_KEY` is configured as a backend secret.
 - `ALLOWED_ORIGINS` includes the deployed Vercel origin.
-- File, image, batch, and provider settings are intentionally chosen.
+- File, image, batch, provider, and daily verification cap settings are intentionally chosen.
+- OpenAI project budgets are configured as secondary billing alerts.
 - API responses include lightweight defensive headers.
 - Backend pytest with coverage, Ruff, and import check pass locally.
 - GitHub required checks `backend-ci`, `frontend-ci`, and `repo-hygiene` pass on the commit being deployed.

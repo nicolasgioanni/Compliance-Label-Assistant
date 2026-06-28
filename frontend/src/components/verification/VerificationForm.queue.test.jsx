@@ -332,6 +332,29 @@ describe('VerificationForm.queue', () => {
     expect(screen.getByText('Verification failed.')).toBeInTheDocument();
   });
 
+  it('shows daily limit errors in the existing verification error state', async () => {
+    verifySingleLabel.mockRejectedValueOnce(
+      new Error('Daily verification limit reached. Please try again when the limit resets.'),
+    );
+    const showError = vi.fn();
+    const { container } = render(<VerificationForm showError={showError} />);
+    const [fileInput] = fileInputs(container);
+
+    fireEvent.change(fileInput, { target: { files: [makeFile('daily-limit-label.png')] } });
+    addBrandName('Review Brand');
+    fireEvent.click(screen.getByRole('button', { name: 'Verify Selected Label' }));
+
+    await waitFor(() => {
+      expect(screen.getByText(hasExactText('File claim: daily-limit-label.png'))).toBeInTheDocument();
+    });
+
+    expect(screen.getByRole('heading', { name: 'Selected Label Review' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Re-run Verification' })).toBeInTheDocument();
+    expect(
+      screen.getByText('Daily verification limit reached. Please try again when the limit resets.'),
+    ).toBeInTheDocument();
+  });
+
   it('disables queue status filters while verification is in progress', () => {
     verifySingleLabel.mockImplementation(() => new Promise(() => {}));
     const showError = vi.fn();

@@ -38,13 +38,16 @@ Before committing, check that ignored env files, generated outputs, logs, privat
 
 - Frontend queue size is limited to 10 files for user experience and call-count control.
 - Backend upload size, decoded pixel count, batch size, provider timeout, provider concurrency, and batch concurrency are configurable.
-- A complex authentication or rate-limit system is not implemented in this prototype.
+- Backend verification requests are capped by a process-local in-memory daily verification-unit limit. The default is 50 units per 24-hour window across all users, where one label image costs one unit.
+- Provider responses are capped with `OPENAI_MAX_OUTPUT_TOKENS`.
+- Configure OpenAI project budgets as secondary billing alerts; app-level limiting remains the primary hard guard in this prototype.
+- A complex authentication or distributed rate-limit system is not implemented in this prototype.
 
 ## Production Limitations
 
-The prototype does not include authentication, authorization, a database, audit logging, persistent upload storage, malware scanning, production monitoring, or long-running batch infrastructure.
+The prototype does not include authentication, authorization, a database, audit logging, persistent upload storage, malware scanning, production monitoring, distributed rate limiting, or long-running batch infrastructure.
 
-Production government deployment would need review for PII handling, retention, audit logging, network egress, approved OCR or vision provider usage, access control, monitoring, and rate limiting. A cloud AI provider may not be allowed in restricted government networks.
+Production government deployment would need review for PII handling, retention, audit logging, network egress, approved OCR or vision provider usage, access control, monitoring, and distributed rate limiting. A cloud AI provider may not be allowed in restricted government networks.
 
 Related documentation:
 

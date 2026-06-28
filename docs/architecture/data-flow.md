@@ -9,13 +9,14 @@ flowchart TD
   C --> D[Expected field entry]
   D --> E[Verify selected or ready labels]
   E --> F[Multipart request to /verify]
-  F --> G[Backend validation]
-  G --> H[Backend preprocessing]
-  H --> I[OpenAI extraction provider]
-  I --> J[Deterministic verification]
-  J --> K[Structured JSON response]
-  K --> L[Queue item result evidence]
-  L --> M[Summary, selected result, export]
+  F --> G[Daily verification unit reservation]
+  G --> H[Backend validation]
+  H --> I[Backend preprocessing]
+  I --> J[OpenAI extraction provider]
+  J --> K[Deterministic verification]
+  K --> L[Structured JSON response]
+  L --> M[Queue item result evidence]
+  M --> N[Summary, selected result, export]
 ```
 
 ## Upload Flow
@@ -29,6 +30,7 @@ Frontend:
 
 Backend:
 
+- `reserve_verification_units` reserves one daily verification unit for each label image before OpenAI extraction can run.
 - `validate_upload_metadata` checks filename, extension, and MIME type.
 - `validate_file_size` checks empty and oversized files.
 - `validate_image_can_open` verifies decoded image content, extension/content-type consistency, and pixel count.
@@ -81,6 +83,7 @@ Backend batch endpoint:
 - `/verify-batch` accepts a list field named `files`.
 - It requires at least 2 files and at most `MAX_BATCH_SIZE`.
 - It rejects duplicate basenames case-insensitively before processing.
+- It reserves one daily verification unit per submitted file after batch-level validation.
 - It uses `BATCH_CONCURRENCY` to limit concurrent per-file work.
 - It returns per-file errors inside the batch response.
 

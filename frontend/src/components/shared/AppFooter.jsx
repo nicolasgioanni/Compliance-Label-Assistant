@@ -1,4 +1,4 @@
-const FOOTER_SUBTITLE = 'Independent prototype • v1.0.0';
+const FOOTER_SUBTITLE = 'Independent prototype • v2.0.0';
 const FOOTER_DISCLAIMER =
   'Independent software prototype. Not an official TTB, Treasury, or government system. AI-assisted verification results require human review and are not legal or regulatory advice.';
 const FOOTER_COPYRIGHT = '© 2026 Nicolas Gioanni. Licensed under Apache License 2.0.';

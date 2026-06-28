@@ -12,6 +12,7 @@ from app.image_processing.preprocessor import preprocess_image_for_extraction
 from app.image_processing.validation import validate_upload_file
 from app.providers.openai.extraction import extract_label_fields
 from app.schemas import ExpectedFields, SingleVerificationResponse
+from app.services.rate_limit_service import reserve_verification_units
 from app.services.timing_service import get_elapsed_ms, start_timer
 from app.verification.rules import calculate_overall_status, verify_expected_fields
 
@@ -21,6 +22,7 @@ async def verify_single_label(
     expected_fields: ExpectedFields,
 ) -> SingleVerificationResponse:
     settings = get_settings()
+    reserve_verification_units(1, settings)
     return await process_single_label(file=file, expected_fields=expected_fields, settings=settings)
 
 

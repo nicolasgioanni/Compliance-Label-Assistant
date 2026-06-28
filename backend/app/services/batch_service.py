@@ -26,6 +26,7 @@ from app.schemas import (
     ExtractedFields,
     OverallStatus,
 )
+from app.services.rate_limit_service import reserve_verification_units
 from app.services.single_verification_service import process_single_label
 from app.services.timing_service import get_elapsed_ms, start_timer
 
@@ -72,6 +73,7 @@ async def verify_batch_labels(
     active_settings = settings or get_settings()
     validate_batch_request(len(files), active_settings.max_batch_size)
     validate_batch_filenames(files)
+    reserve_verification_units(len(files), active_settings)
 
     total_start = start_timer()
     semaphore = asyncio.Semaphore(max(active_settings.batch_concurrency, 1))

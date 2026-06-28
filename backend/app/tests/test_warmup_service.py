@@ -2,6 +2,10 @@ from app.config import Settings
 from app.services import warmup_service
 
 
+def setup_function() -> None:
+    warmup_service.clear_warmup_network_cache()
+
+
 class FakeResponses:
     def parse(self, **kwargs):
         raise AssertionError("warmup must not make model requests")
@@ -40,6 +44,30 @@ def test_warmup_reuses_openai_client_and_warms_network_when_key_exists(monkeypat
 
     assert calls == [settings]
     assert fake_client.models.retrieve_calls == [{"model": "gpt-4.1-mini", "timeout": 3}]
+
+
+def test_warmup_network_request_runs_once_per_model(monkeypatch) -> None:
+    fake_client = FakeClient()
+    monkeypatch.setattr(warmup_service, "get_openai_client", lambda settings: fake_client)
+    settings = Settings(openai_api_key="test-key", openai_model="gpt-4.1-mini")
+
+    warmup_service.warm_verification_dependencies(settings)
+    warmup_service.warm_verification_dependencies(settings)
+
+    assert fake_client.models.retrieve_calls == [{"model": "gpt-4.1-mini", "timeout": 2}]
+
+
+def test_warmup_network_request_runs_for_distinct_models(monkeypatch) -> None:
+    fake_client = FakeClient()
+    monkeypatch.setattr(warmup_service, "get_openai_client", lambda settings: fake_client)
+
+    warmup_service.warm_verification_dependencies(Settings(openai_api_key="test-key", openai_model="first-model"))
+    warmup_service.warm_verification_dependencies(Settings(openai_api_key="test-key", openai_model="second-model"))
+
+    assert fake_client.models.retrieve_calls == [
+        {"model": "first-model", "timeout": 2},
+        {"model": "second-model", "timeout": 2},
+    ]
 
 
 def test_warmup_can_skip_network_warmup(monkeypatch) -> None:

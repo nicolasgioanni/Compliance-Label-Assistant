@@ -83,7 +83,7 @@ External provider:
 - Admin dashboard.
 - COLA integration.
 - Persistent uploaded file storage.
-- Production rate limiting.
+- Distributed production rate limiting.
 - Production monitoring.
 - PDF and HEIC/HEIF uploads.
 - Visual layout checks such as font size, bold styling, and exact label placement.

@@ -16,6 +16,7 @@ from app.providers.openai.extraction import (
 )
 from app.schemas import BatchVerificationResponse, ExpectedFields, SingleVerificationResponse
 from app.services.batch_service import BatchRequestValidationError, verify_batch_labels
+from app.services.rate_limit_service import VerificationRateLimitError, build_rate_limit_headers
 from app.services.single_verification_service import verify_single_label
 
 router = APIRouter()
@@ -47,6 +48,12 @@ async def verify_label(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except ImagePreprocessingError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except VerificationRateLimitError as exc:
+        raise HTTPException(
+            status_code=429,
+            detail=str(exc),
+            headers=build_rate_limit_headers(exc.result),
+        ) from exc
     except ExtractionConfigurationError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     except InvalidExtractionResponseError as exc:
@@ -79,6 +86,12 @@ async def verify_batch(
         return await verify_batch_labels(files=files, expected_fields=expected_fields)
     except BatchRequestValidationError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except VerificationRateLimitError as exc:
+        raise HTTPException(
+            status_code=429,
+            detail=str(exc),
+            headers=build_rate_limit_headers(exc.result),
+        ) from exc
 
 
 def _build_expected_fields(

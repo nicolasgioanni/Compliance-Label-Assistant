@@ -24,11 +24,11 @@ Routers:
 ## Module Boundaries
 
 - `backend/app/routes`: HTTP input parsing, response models, and HTTP error mapping.
-- `backend/app/services`: workflow orchestration for single-label, batch, timing, and warmup flows.
+- `backend/app/services`: workflow orchestration for single-label, batch, rate-limit, timing, and warmup flows.
 - `backend/app/image_processing`: upload validation and in-memory image preprocessing.
 - `backend/app/providers/openai`: OpenAI client reuse, extraction request execution, response parsing, provider error mapping, and extraction concurrency.
 - `backend/app/verification`: deterministic field comparisons and field result construction.
-- `backend/app/utils`: generic logging and text normalization helpers.
+- `backend/app/utils`: generic logging, rate-limit, and text normalization helpers.
 - `backend/app/config.py`: all backend environment configuration.
 
 ## Request Lifecycle
@@ -58,7 +58,7 @@ sequenceDiagram
 
 ## Error Boundary
 
-Known user-fixable and provider failures are mapped in `backend/app/routes/verification.py`. Unexpected exceptions are handled by `handle_unexpected_error` in `backend/app/main.py`, logged by class name only, and returned as safe JSON.
+Known user-fixable, rate-limit, and provider failures are mapped in `backend/app/routes/verification.py`. Unexpected exceptions are handled by `handle_unexpected_error` in `backend/app/main.py`, logged by class name only, and returned as safe JSON.
 
 ## Security Notes
 
