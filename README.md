@@ -11,6 +11,8 @@ This is an independent prototype. It is not an official TTB, Treasury, or govern
 | Landing page | https://compliance-label-assistant.vercel.app |
 | Verification tool | https://compliance-label-assistant.vercel.app/app |
 | About page | https://compliance-label-assistant.vercel.app/about |
+| Privacy Policy | https://compliance-label-assistant.vercel.app/privacy |
+| Terms of Use | https://compliance-label-assistant.vercel.app/terms |
 | Backend API | https://compliance-label-assistant.onrender.com |
 | Source repository | https://github.com/nicolasgioanni/label-compliance-verifier |
 
@@ -25,6 +27,7 @@ These are public application URLs. Do not add private dashboard links, credentia
 - Shows field-level statuses, extracted values, reasons, confidence values, and timing details.
 - Supports a frontend queue of up to 10 labels.
 - Exports current non-stale verification results to CSV or XLSX.
+- Provides prototype transparency pages for privacy, terms, AI use, and human-review boundaries.
 
 The current frontend calls `GET /health`, `POST /warmup`, and `POST /verify`. The backend also exposes `POST /verify-batch`, but the current frontend does not call it.
 

@@ -29,6 +29,8 @@ Current paths:
 | `/app` | `ToolPage` |
 | `/about` | `AboutPage` |
 | `/license` | `LicensePage` |
+| `/privacy` | `PrivacyPolicyPage` |
+| `/terms` | `TermsOfUsePage` |
 
 Unknown paths fall back to `/`.
 
@@ -52,6 +54,7 @@ Unknown paths fall back to `/`.
 - The frontend does not persist uploaded files or results to a database.
 - The frontend does not use `dangerouslySetInnerHTML` for extracted or provider-produced text.
 - The frontend does not receive `OPENAI_API_KEY` or other provider secrets.
+- The frontend does not use cookies, localStorage, sessionStorage, analytics, accounts, or payments in current application code.
 
 ## Related Reference
 

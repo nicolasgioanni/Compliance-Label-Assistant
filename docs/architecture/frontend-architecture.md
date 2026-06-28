@@ -10,7 +10,7 @@ The frontend is a React 18 application built with Vite. It owns the browser work
 - `frontend/src/main.jsx`: React root creation, `StrictMode`, global style imports.
 - `frontend/src/App.jsx`: lightweight path-based page selection, shared shell wiring, and global health status.
 
-There is no React Router configuration. `App.jsx` reads `window.location.pathname` and renders the static landing page at `/`, about page at `/about`, the verification workflow at `/app`, and the license page at `/license`.
+There is no React Router configuration. `App.jsx` reads `window.location.pathname` and renders the static landing page at `/`, about page at `/about`, verification workflow at `/app`, license page at `/license`, Privacy Policy at `/privacy`, and Terms of Use at `/terms`.
 
 ## Component Organization
 

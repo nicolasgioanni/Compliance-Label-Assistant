@@ -22,7 +22,7 @@
 | `frontend/jsconfig.json` | JavaScript typecheck configuration used by `npm run typecheck`. |
 | `frontend/postcss.config.cjs` | Autoprefixer PostCSS config. |
 | `frontend/index.html` | Vite HTML shell. |
-| `frontend/vercel.json` | Vercel static response headers and SPA rewrites for `/app`, `/about`, and `/license`. |
+| `frontend/vercel.json` | Vercel static response headers and SPA rewrites for `/app`, `/about`, `/license`, `/privacy`, and `/terms`. |
 | `frontend/.env.example` | Safe frontend environment placeholder. |
 
 ## Backend Config

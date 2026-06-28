@@ -9,6 +9,8 @@ Last updated: 2026-06-11
 | Frontend landing page | https://compliance-label-assistant.vercel.app |
 | Frontend about page | https://compliance-label-assistant.vercel.app/about |
 | Frontend verification tool | https://compliance-label-assistant.vercel.app/app |
+| Frontend Privacy Policy | https://compliance-label-assistant.vercel.app/privacy |
+| Frontend Terms of Use | https://compliance-label-assistant.vercel.app/terms |
 | Backend API URL | https://compliance-label-assistant.onrender.com |
 
 These are public application URLs. Do not add private dashboard URLs.

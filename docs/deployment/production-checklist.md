@@ -42,13 +42,14 @@ After deployment:
 1. Open the deployed frontend.
 2. Confirm no startup error banner appears.
 3. Confirm backend health is reachable through the frontend.
-4. Upload a supported image.
-5. Try an unsupported file and verify user-facing rejection.
-6. Enter expected data and run verification.
-7. Review field results and extracted fields.
-8. Export verified results.
-9. Confirm no secret values appear in browser output or logs.
-10. Confirm deployed backend settings include the intended daily verification cap.
+4. Confirm footer links open About, Verification Tool, Privacy Policy, Terms of Use, License, and Source Code.
+5. Upload a supported image.
+6. Try an unsupported file and verify user-facing rejection.
+7. Enter expected data and run verification.
+8. Review field results and extracted fields.
+9. Export verified results.
+10. Confirm no secret values appear in browser output or logs.
+11. Confirm deployed backend settings include the intended daily verification cap.
 
 ## Known Deployment Gaps
 

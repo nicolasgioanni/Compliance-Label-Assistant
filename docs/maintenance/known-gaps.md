@@ -22,7 +22,7 @@
 - The provider parser currently sets `raw_text` to `null`.
 - OpenAI clients are cached, but extraction results are not cached.
 - The daily verification cap is process-local memory and resets on restart or deploy.
-- `frontend/vercel.json` defines static security headers and SPA rewrites for `/app`, `/about`, and `/license`; CSP is not configured.
+- `frontend/vercel.json` defines static security headers and SPA rewrites for `/app`, `/about`, `/license`, `/privacy`, and `/terms`; CSP is not configured.
 - `sample-data/` contains synthetic label fixtures; TC08 verifies a country-of-origin mismatch using mocked extraction data.
 
 ## Needs Confirmation
@@ -31,6 +31,7 @@
 - Formal commit message convention.
 - Production monitoring requirements.
 - Production retention requirements for logs.
+- Final legal review of Privacy Policy, Terms of Use, AI-use disclosure, and public footer wording before production or commercial use.
 - Distributed production rate-limit requirements.
 - Whether cloud AI is allowed in the target deployment network.
 - Whether future sample data should add more beverage types, label formats, and supported field categories.
