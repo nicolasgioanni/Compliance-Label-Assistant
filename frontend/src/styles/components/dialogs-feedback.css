@@ -510,7 +510,7 @@
   pointer-events: none;
   position: fixed;
   right: var(--shell-padding);
-  top: 5.35rem;
+  top: calc(var(--shell-padding) + 6.5rem);
   z-index: 40;
 }
 

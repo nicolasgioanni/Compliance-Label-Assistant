@@ -87,7 +87,7 @@ describe('VerificationForm.export', () => {
   });
 
   it('closes the export dialog without downloading from back, outside click, or Escape', async () => {
-    const { container } = await renderVerifiedQueue();
+    await renderVerifiedQueue();
     const exportButton = screen.getByRole('button', { name: 'Export Results' });
 
     fireEvent.click(exportButton);
@@ -95,7 +95,7 @@ describe('VerificationForm.export', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
     fireEvent.click(exportButton);
-    fireEvent.mouseDown(container.querySelector('.export-dialog-overlay'));
+    fireEvent.mouseDown(document.body.querySelector('.export-dialog-overlay'));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
     fireEvent.click(exportButton);

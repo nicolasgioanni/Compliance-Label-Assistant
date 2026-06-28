@@ -55,7 +55,7 @@ describe('VerificationForm.copyData', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Copy Claim Data' }));
-    fireEvent.mouseDown(container.querySelector('.copy-data-dialog-overlay'));
+    fireEvent.mouseDown(document.body.querySelector('.copy-data-dialog-overlay'));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Copy Claim Data' }));

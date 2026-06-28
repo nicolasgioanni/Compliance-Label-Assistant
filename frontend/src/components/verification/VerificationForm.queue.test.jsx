@@ -141,7 +141,11 @@ describe('VerificationForm.queue', () => {
   it('previews a queued label without changing the selected label and closes from Back, outside click, or Escape', () => {
     restoreObjectUrl = mockObjectUrl('blob:label-preview');
     const showError = vi.fn();
-    const { container } = render(<VerificationForm showError={showError} />);
+    const { container } = render(
+      <div className="page-body-transition">
+        <VerificationForm showError={showError} />
+      </div>,
+    );
     const [fileInput] = fileInputs(container);
     const firstFile = makeFile('first-label.png');
     const secondFile = makeFile('second-label.png');
@@ -152,6 +156,13 @@ describe('VerificationForm.queue', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Preview second-label.png' }));
 
     let dialog = screen.getByRole('dialog', { name: 'Preview: second-label.png' });
+    const pageBodyTransition = container.querySelector('.page-body-transition');
+    const previewOverlay = document.body.querySelector('.label-preview-dialog-overlay');
+
+    expect(previewOverlay).toBeInTheDocument();
+    expect(previewOverlay.parentElement).toBe(document.body);
+    expect(pageBodyTransition).not.toContainElement(previewOverlay);
+    expect(document.body.style.overflow).toBe('hidden');
     expect(URL.createObjectURL).toHaveBeenCalledWith(secondFile);
     expect(within(dialog).getByRole('img', { name: 'Preview of second-label.png' })).toHaveAttribute(
       'src',
@@ -161,18 +172,21 @@ describe('VerificationForm.queue', () => {
 
     fireEvent.click(within(dialog).getByRole('button', { name: 'Back' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(document.body.style.overflow).toBe('');
     expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:label-preview');
     expect(screen.getByText(hasExactText('Editing selected label: first-label.png'))).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Preview second-label.png' }));
-    fireEvent.mouseDown(container.querySelector('.label-preview-dialog-overlay'));
+    fireEvent.mouseDown(document.body.querySelector('.label-preview-dialog-overlay'));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(document.body.style.overflow).toBe('');
 
     fireEvent.click(screen.getByRole('button', { name: 'Preview second-label.png' }));
     dialog = screen.getByRole('dialog', { name: 'Preview: second-label.png' });
     expect(dialog).toBeInTheDocument();
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(document.body.style.overflow).toBe('');
     expect(screen.getByText(hasExactText('Editing selected label: first-label.png'))).toBeInTheDocument();
   });
 

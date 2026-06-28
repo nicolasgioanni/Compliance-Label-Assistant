@@ -332,7 +332,7 @@ describe('App routes and shared layout', () => {
   });
 
   it('keeps the /app notification behavior when newer messages replace older banners', async () => {
-    renderAt('/app');
+    const { container } = renderAt('/app');
 
     await waitFor(() => {
       expect(checkHealth).toHaveBeenCalledTimes(1);
@@ -340,6 +340,12 @@ describe('App routes and shared layout', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Show edit warning' }));
 
+    const bodyTransition = container.querySelector('.page-body-transition');
+    const bannerLayer = document.body.querySelector('.error-banner-layer');
+
+    expect(bannerLayer).toBeInTheDocument();
+    expect(bannerLayer.parentElement).toBe(document.body);
+    expect(bodyTransition).not.toContainElement(bannerLayer);
     expect(screen.getByRole('alert')).toHaveTextContent(
       'Changing selected label data will mark the previous verification result stale.',
     );

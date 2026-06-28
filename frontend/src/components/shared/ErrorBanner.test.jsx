@@ -13,6 +13,20 @@ describe('ErrorBanner', () => {
     expect(screen.getByRole('alert')).toHaveClass('error-banner', 'error-banner-error');
   });
 
+  it('mounts the banner layer under the document body', () => {
+    const { container } = render(
+      <div className="page-body-transition">
+        <ErrorBanner message="Something failed." />
+      </div>,
+    );
+    const bodyTransition = container.querySelector('.page-body-transition');
+    const bannerLayer = document.body.querySelector('.error-banner-layer');
+
+    expect(bannerLayer).toBeInTheDocument();
+    expect(bannerLayer.parentElement).toBe(document.body);
+    expect(bodyTransition).not.toContainElement(bannerLayer);
+  });
+
   it('supports an info tone with the same dismiss behavior', () => {
     const onDismiss = vi.fn();
     render(<ErrorBanner message="Review result will become stale." tone="info" onDismiss={onDismiss} />);
