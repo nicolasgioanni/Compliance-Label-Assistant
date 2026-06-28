@@ -50,6 +50,31 @@ describe('App routes and shared layout', () => {
     cleanup();
   });
 
+  it('keeps shared chrome outside the route-keyed body transition', async () => {
+    const { container, rerender } = renderAt('/');
+    const bodyTransition = container.querySelector('.page-body-transition');
+
+    expect(bodyTransition).toBeInTheDocument();
+    expect(within(bodyTransition).getByRole('heading', { name: 'Compliance Label Assistant' })).toBeInTheDocument();
+    expect(bodyTransition.contains(screen.getByRole('banner'))).toBe(false);
+    expect(bodyTransition.contains(screen.getByRole('contentinfo'))).toBe(false);
+
+    window.history.pushState({}, '', '/app');
+    rerender(<App />);
+
+    const nextBodyTransition = container.querySelector('.page-body-transition');
+
+    expect(nextBodyTransition).toBeInTheDocument();
+    expect(nextBodyTransition).not.toBe(bodyTransition);
+    expect(within(nextBodyTransition).getByRole('heading', { name: 'Verification tool content' })).toBeInTheDocument();
+    expect(nextBodyTransition.contains(screen.getByRole('banner'))).toBe(false);
+    expect(nextBodyTransition.contains(screen.getByRole('contentinfo'))).toBe(false);
+
+    await waitFor(() => {
+      expect(checkHealth).toHaveBeenCalledTimes(1);
+    });
+  });
+
   it('renders the landing page at root with live header status and no tool API calls', async () => {
     const { container } = renderAt('/');
     const landingIntro = container.querySelector('.landing-info-panel__intro');
