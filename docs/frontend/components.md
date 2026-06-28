@@ -13,13 +13,19 @@ Components focus on rendering and user interaction. API calls and reusable state
 | `ErrorBanner` | `frontend/src/components/shared/ErrorBanner.jsx` | Shows dismissible error, info, or warning banners with optional auto-dismiss. |
 | `InfoTooltip` | `frontend/src/components/shared/InfoTooltip.jsx` | Renders viewport-positioned tooltip content through a portal. |
 | `LoadingState` | `frontend/src/components/shared/LoadingState.jsx` | Shows the verifying loading state. |
-| `AppFooter` | `frontend/src/components/shared/AppFooter.jsx` | Displays shared footer identity, prototype disclaimer, copyright/license text, and resource links. |
+| `AppFooter` | `frontend/src/components/shared/AppFooter.jsx` | Displays shared footer identity, prototype disclaimer, copyright/license text, and grouped Project/Legal resource links. |
+
+## Static Page Components
+
+| Component | Path | Purpose |
+| --- | --- | --- |
+| `StaticPagePrimitives` | `frontend/src/pages/static/StaticPagePrimitives.jsx` | Provides shared static-page shell, header, section, card, callout, table, and action primitives for About, Privacy Policy, Terms of Use, and License pages. |
 
 ## Upload Components
 
 | Component | Path | Purpose |
 | --- | --- | --- |
-| `ImageUploadDropzone` | `frontend/src/components/upload/ImageUploadDropzone.jsx` | Renders Add Files and Add Folder controls using the shared accept list. |
+| `ImageUploadDropzone` | `frontend/src/components/upload/ImageUploadDropzone.jsx` | Renders Add Files and Add Folder controls using the shared accept list and a compact AI review notice. |
 
 `ImageUploadDropzone` depends on `supportsDirectoryUpload`, `FILE_INPUT_ACCEPT`, and `SUPPORTED_IMAGE_DESCRIPTION`.
 

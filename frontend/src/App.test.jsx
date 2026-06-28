@@ -136,6 +136,10 @@ describe('App routes and shared layout', () => {
     expect(within(primaryNav).getByRole('link', { name: 'Home' })).toHaveAttribute('aria-current', 'page');
     expect(within(primaryNav).getByRole('link', { name: 'About' })).not.toHaveAttribute('aria-current');
     expect(within(primaryNav).getByRole('link', { name: 'Verification Tool' })).not.toHaveAttribute('aria-current');
+    expect(within(primaryNav).queryByRole('link', { name: 'Privacy Policy' })).not.toBeInTheDocument();
+    expect(within(primaryNav).queryByRole('link', { name: 'Terms of Use' })).not.toBeInTheDocument();
+    expect(within(primaryNav).queryByRole('link', { name: 'License' })).not.toBeInTheDocument();
+    expect(within(primaryNav).queryByRole('link', { name: 'Source Code' })).not.toBeInTheDocument();
     expect(screen.getByText('Checking Status')).toBeInTheDocument();
     expectSharedFooter();
 
@@ -167,236 +171,84 @@ describe('App routes and shared layout', () => {
   it('renders the about page with documentation links and live header status', async () => {
     const { container } = renderAt('/about');
 
-    expect(screen.getByRole('heading', { name: 'About' })).toBeInTheDocument();
-    expect(screen.getByText('Architecture and Implementation Notes')).toBeInTheDocument();
+    const levelOneHeadings = screen.getAllByRole('heading', { level: 1 });
+    expect(levelOneHeadings).toHaveLength(1);
+    expect(levelOneHeadings[0]).toHaveTextContent('About');
+    expect(screen.getByText('PROJECT OVERVIEW')).toBeInTheDocument();
     expect(
-      screen.getByText(
-        /project purpose, reviewer workflow, frontend and backend architecture, implementation decisions/i,
-      ),
+      screen.getByText(/project purpose, reviewer workflow, architecture, quality controls, scope limits/i),
     ).toBeInTheDocument();
-    expect(container.querySelector('.about-page__panel > .about-page__scroll')).toBeInTheDocument();
-    expect(container.querySelector('.about-page__hero + .about-section-group')).toBeInTheDocument();
-    expect(container.querySelector('.about-page__panel')).not.toHaveClass('landing-info-panel');
+    expect(container.querySelector('.static-page__panel > .static-page__scroll')).toBeInTheDocument();
+    expect(container.querySelector('.static-page__header + .about-section-group')).toBeInTheDocument();
+    expect(container.querySelector('.about-page .static-page__panel')).not.toHaveClass('landing-info-panel');
 
     expect(screen.getByRole('heading', { name: 'Project and Workflow' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Architecture and Quality' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Performance and Cost' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Prototype Scope and Limitations' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Documentation' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Technical Architecture' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Implementation and Quality' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Performance and Cost Targets' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Security, Deployment, and Scope' })).not.toBeInTheDocument();
+
     expect(screen.getByRole('heading', { name: 'Project Overview' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Reviewer Workflow' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Implemented Review Features' })).toBeInTheDocument();
-    expect(screen.getByText('The browser queue supports up to 10 label images and tracks expected data per label.')).toBeInTheDocument();
-    expect(screen.getByText('CSV and XLSX exports include current verification statuses and processing time, not raw extracted text.')).toBeInTheDocument();
-
-    expect(screen.getByRole('heading', { name: 'Technical Architecture' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Frontend Shell and Routing' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Queue State Architecture' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Backend Service Boundaries' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Provider and Configuration Boundary' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'API and Data Flow' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Repository and Deployment Structure' })).toBeInTheDocument();
-    expect(screen.getByText('There is no React Router, server-side rendering, or frontend-hosted backend route layer in the current implementation.')).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        'useQueueVerification owns selected-label verification, ready-label verification, in-flight locking, and per-label error application.',
-      ),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        'The OpenAI client factory caches clients by API key, timeout, and retry settings.',
-      ),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        'The provider-specific module boundary keeps extraction separate from deterministic comparison rules, which makes future OCR or vision-provider replacement more contained.',
-      ),
-    ).toBeInTheDocument();
-
-    expect(screen.getByRole('heading', { name: 'Implementation and Quality' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Upload Validation' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Image Preprocessing' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Extraction Pipeline' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Deterministic Verification Rules' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Error Handling and User Feedback' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Testing and Quality Gates' })).toBeInTheDocument();
-    expect(screen.getByText('Queue planning also filters duplicate basenames and files beyond the 10-label queue limit.')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Performance Controls' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Provider Usage and Cost Controls' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Secrets and Provider Boundary' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'No Persistent Upload Storage' })).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Independent Prototype Notice' })).toBeInTheDocument();
+    expect(screen.getByText('The browser queue supports up to 10 label images and tracks expected data per label.')).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        'CSV and XLSX exports include current verification statuses and processing time, not raw extracted text.',
+      ),
+    ).toBeInTheDocument();
     expect(screen.getByText('The provider call uses store=false and temperature 0 in the current OpenAI integration.')).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        'Government warning verification checks extracted text for a GOVERNMENT WARNING heading prefix and compares wording against the backend-owned standard warning.',
-      ),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        'Frontend and backend coverage commands are configured for baseline reporting; coverage thresholds are not enforced yet, and no backend typecheck command is configured.',
-      ),
-    ).toBeInTheDocument();
-
-    expect(screen.getByRole('heading', { name: 'Performance and Cost Targets' })).toBeInTheDocument();
-    const performanceSection = screen
-      .getByRole('heading', { name: 'Performance and Cost Targets' })
-      .closest('section');
-    expect(within(performanceSection).getByRole('heading', { name: 'Performance Controls' })).toBeInTheDocument();
-    expect(
-      within(performanceSection).getByRole('heading', { name: 'Documented Sample-File Speed Results' }),
-    ).toBeInTheDocument();
-    expect(
-      within(performanceSection).getByRole('heading', { name: 'Benchmark Targets and Results' }),
-    ).toBeInTheDocument();
-    expect(
-      within(performanceSection).getByRole('heading', { name: 'Latency and Cost Boundaries' }),
-    ).toBeInTheDocument();
-    expect(
-      within(performanceSection).getByRole('heading', { name: 'Provider Usage and Cost Controls' }),
-    ).toBeInTheDocument();
-    expect(
-      within(performanceSection).getByRole('heading', { name: 'Benchmark Method and Replacement Notes' }),
-    ).toBeInTheDocument();
-    expect(performanceSection).toHaveTextContent(
-      'Images are resized and compressed before provider extraction, using MAX_IMAGE_WIDTH=640 and JPEG_QUALITY=60 by default.',
-    );
-    expect(performanceSection).toHaveTextContent(
-      'OPENAI_TIMEOUT_SECONDS defaults to 10, and OPENAI_MAX_RETRIES defaults to 0.',
-    );
-    const documentedSpeedCard = within(performanceSection)
-      .getByRole('heading', { name: 'Documented Sample-File Speed Results' })
-      .closest('article');
-    expect(documentedSpeedCard).toHaveTextContent(
-      'README.md records a 2026-06-09 warm-backend smoke test against the deployed Render backend API using synthetic fixtures from sample-data/images.',
-    );
-    expect(documentedSpeedCard).toHaveTextContent(
-      'TC01 clean baseline label: documented status pass, 2,556 ms median backend processing time, and 2,633 ms median API request time.',
-    );
-    expect(documentedSpeedCard).toHaveTextContent(
-      'TC03 clean label with intentional ABV mismatch: documented status pass, 2,966 ms median backend processing time, and 3,080 ms median API request time.',
-    );
-    expect(documentedSpeedCard).toHaveTextContent(
-      'TC10 low-light label with multiple expected mismatches: documented status pass, 2,645 ms median backend processing time, and 2,761 ms median API request time.',
-    );
-    expect(documentedSpeedCard).toHaveTextContent(
-      'TC09 rotated/glare image-quality case: documented status fail, 3,323 ms median backend processing time, and 3,463 ms median API request time.',
-    );
-    expect(documentedSpeedCard).toHaveTextContent(
-      'The README labels these as smoke-test timings, not an SLA, and notes that provider latency, Render cold starts, image complexity, and network conditions can affect response time.',
-    );
-    const targetCard = within(performanceSection)
-      .getByRole('heading', { name: 'Benchmark Targets and Results' })
-      .closest('article');
-    expect(performanceSection).toHaveTextContent(
-      'The values below pair reviewer-facing benchmark targets with results from the current benchmark pass. They should be rerun and updated whenever the sample set, deployment environment, provider settings, or release target changes.',
-    );
-    expect(targetCard).toHaveTextContent(
-      'Static frontend Lighthouse performance: target >= 90; result 96; status Pass.',
-    );
-    expect(targetCard).toHaveTextContent(
-      'Backend non-provider API response time: target p95 <= 500 ms; result p95 185 ms; status Pass.',
-    );
-    expect(targetCard).toHaveTextContent(
-      'Provider-backed extraction completion: target p95 <= 45 s; result p95 31.4 s; status Pass.',
-    );
-    expect(targetCard).toHaveTextContent(
-      'Estimated provider cost: target <= $0.10 per representative label review; result $0.043 average; status Pass.',
-    );
-    expect(targetCard).not.toHaveTextContent('2,556 ms');
-    expect(targetCard).not.toHaveTextContent('3,463 ms');
-    expect(targetCard).not.toHaveTextContent('documented status');
-    expect(targetCard).not.toHaveTextContent('placeholder');
-    expect(targetCard).not.toHaveTextContent('example practice result');
-    expect(targetCard).not.toHaveTextContent('actual result');
-    const providerCostCard = within(performanceSection)
-      .getByRole('heading', { name: 'Provider Usage and Cost Controls' })
-      .closest('article');
-    expect(providerCostCard).toHaveTextContent('The frontend calls /warmup once after the first successful queue addition.');
-    expect(providerCostCard).toHaveTextContent(
-      'OpenAI client objects are cached by API key, timeout, and retry settings.',
-    );
-    expect(providerCostCard).toHaveTextContent(
-      'There is no extraction result cache, uploaded file cache, or persistent result cache.',
-    );
-    const benchmarkMethodCard = within(performanceSection)
-      .getByRole('heading', { name: 'Benchmark Method and Replacement Notes' })
-      .closest('article');
-    expect(benchmarkMethodCard).toHaveTextContent(
-      'Benchmark results should stay tied to the benchmark context that produced them so reviewers can distinguish release evidence from historical smoke-test notes.',
-    );
-    expect(benchmarkMethodCard).toHaveTextContent(
-      'Document the command or script used, sample set, environment, browser and build mode, deployment target, provider settings, and date of the run.',
-    );
-    expect(benchmarkMethodCard).toHaveTextContent(
-      'Report provider-backed timings separately from backend-only, static frontend, upload validation, CSV export, and unsupported-file validation checks.',
-    );
-    expect(performanceSection.nextElementSibling).toBe(
-      screen.getByRole('heading', { name: 'Security, Deployment, and Scope' }).closest('section'),
-    );
-
-    expect(screen.getByRole('heading', { name: 'Security, Deployment, and Scope' })).toBeInTheDocument();
-    const securitySection = screen
-      .getByRole('heading', { name: 'Security, Deployment, and Scope' })
-      .closest('section');
-    expect(within(securitySection).getByRole('heading', { name: 'Secrets and Provider Boundary' })).toBeInTheDocument();
-    expect(within(securitySection).getByRole('heading', { name: 'Upload Data Handling' })).toBeInTheDocument();
-    expect(within(securitySection).getByRole('heading', { name: 'Browser and API Safeguards' })).toBeInTheDocument();
-    expect(within(securitySection).getByRole('heading', { name: 'Deployment Configuration' })).toBeInTheDocument();
-    expect(within(securitySection).getByRole('heading', { name: 'Operational Constraints' })).toBeInTheDocument();
-    expect(within(securitySection).getByRole('heading', { name: 'Prototype Scope Boundaries' })).toBeInTheDocument();
-    expect(within(securitySection).queryByRole('heading', { name: 'Prototype Status and Review Boundary' })).not.toBeInTheDocument();
-    expect(screen.getByText('OPENAI_API_KEY is backend-only; the frontend uses VITE_API_BASE_URL and never calls OpenAI directly.')).toBeInTheDocument();
     expect(
       screen.getByText(
         'Application code validates and preprocesses uploaded images in memory and does not intentionally persist uploaded files to a database or long-term storage.',
       ),
     ).toBeInTheDocument();
-    expect(screen.getByText('The current frontend does not use dangerouslySetInnerHTML for extracted or provider-produced text.')).toBeInTheDocument();
-    expect(screen.getByText('There is no checked-in Render config, Dockerfile, docker-compose file, Procfile, or CI-driven deployment workflow; deployment remains dashboard-configured after protected main checks.')).toBeInTheDocument();
     expect(screen.getByText('No production monitoring, alerting, durable background job system, or production rate-limit system is implemented.')).toBeInTheDocument();
     expect(screen.getByText('There is no direct COLA integration, COLA PDF ingestion, authentication, database, audit trail, admin dashboard, persistent upload storage, or persistent review history.')).toBeInTheDocument();
+    expect(screen.getByText('Outputs are for assistance and review support only.')).toBeInTheDocument();
+    expect(screen.getAllByText('Human review remains final for regulatory, legal, or official determinations.').length)
+      .toBeGreaterThan(0);
+    expect(
+      screen.getByText(
+        'Compliance Label Assistant is an independent software prototype. It is not an official government or TTB system, does not provide legal advice, and does not issue final regulatory determinations.',
+      ),
+    ).toBeInTheDocument();
 
-    expect(screen.queryByRole('heading', { name: 'Disclaimer' })).not.toBeInTheDocument();
-    const disclaimerSection = screen
-      .getByRole('heading', { name: 'Prototype Status and Review Boundary' })
-      .closest('section');
-    expect(disclaimerSection).toHaveClass('about-disclaimer-group');
-    expect(within(disclaimerSection).getByRole('heading', { name: 'Independent Prototype Notice' })).toBeInTheDocument();
-    const disclaimerCard = disclaimerSection.querySelector('.about-disclaimer');
-    expect(disclaimerCard).toHaveTextContent(
-      'Compliance Label Assistant is an independent software prototype. It is not an official government or TTB system, does not provide legal advice, and does not issue final regulatory determinations.',
-    );
-    expect(disclaimerCard).toHaveTextContent('Outputs are for assistance and review support only.');
-    expect(disclaimerCard).toHaveTextContent(
-      'Human review remains final for regulatory, legal, or official determinations.',
-    );
-    expect(disclaimerCard).toHaveTextContent(
-      'The application should not be used as the sole basis for approving, rejecting, certifying, or enforcing alcohol-label decisions.',
-    );
-
-    const documentationSection = screen
-      .getByRole('heading', { name: 'Repository Documentation' })
-      .closest('section');
-    expect(disclaimerSection.nextElementSibling).toBe(documentationSection);
+    const documentationSection = screen.getByRole('heading', { name: 'Documentation' }).closest('section');
     expect(documentationSection).toHaveClass('about-docs-group');
-    expect(documentationSection).not.toHaveTextContent(
-      'These repository documents are the source material behind this in-app summary.',
-    );
-    expect(documentationSection).not.toHaveTextContent(
-      'The About page rewrites and organizes the key points for reviewers instead of duplicating the docs verbatim.',
-    );
     expectAboutDocLink(documentationSection, /^README\s+README\.md/i, 'README.md');
     expectAboutDocLink(documentationSection, /Reviewer Guide\s+REVIEWER_GUIDE\.md/i, 'REVIEWER_GUIDE.md');
-    expectAboutDocLink(documentationSection, /Documentation Index\s+docs\/README\.md/i, 'docs/README.md');
-    expectAboutDocLink(documentationSection, /System Overview\s+docs\/architecture\/system-overview\.md/i, 'docs/architecture/system-overview.md');
-    expectAboutDocLink(documentationSection, /Data Flow\s+docs\/architecture\/data-flow\.md/i, 'docs/architecture/data-flow.md');
     expectAboutDocLink(
       documentationSection,
       /Performance and Cost\s+docs\/architecture\/performance-and-cost\.md/i,
       'docs/architecture/performance-and-cost.md',
     );
-    expectAboutDocLink(documentationSection, /API Overview\s+docs\/api\/overview\.md/i, 'docs/api/overview.md');
-    expectAboutDocLink(documentationSection, /Security\s+docs\/security\.md/i, 'docs/security.md');
-    expectAboutDocLink(documentationSection, /Deployment Overview\s+docs\/deployment\/overview\.md/i, 'docs/deployment/overview.md');
-    expectAboutDocLink(documentationSection, /Local Development\s+docs\/development\/local-development\.md/i, 'docs/development/local-development.md');
+    expectAboutDocLink(
+      documentationSection,
+      /Deployment Overview\s+docs\/deployment\/overview\.md/i,
+      'docs/deployment/overview.md',
+    );
     expectAboutDocLink(documentationSection, /Sample Data\s+sample-data\/README\.md/i, 'sample-data/README.md');
 
     const primaryNav = screen.getByRole('navigation', { name: 'Primary' });
     expect(within(primaryNav).getByRole('link', { name: 'Home' })).not.toHaveAttribute('aria-current');
     expect(within(primaryNav).getByRole('link', { name: 'About' })).toHaveAttribute('aria-current', 'page');
     expect(within(primaryNav).getByRole('link', { name: 'Verification Tool' })).not.toHaveAttribute('aria-current');
+    expect(within(primaryNav).queryByRole('link', { name: 'Privacy Policy' })).not.toBeInTheDocument();
+    expect(within(primaryNav).queryByRole('link', { name: 'Terms of Use' })).not.toBeInTheDocument();
     expectSharedFooter();
 
     await waitFor(() => {
@@ -406,7 +258,6 @@ describe('App routes and shared layout', () => {
     expect(warmVerificationBackend).not.toHaveBeenCalled();
     expect(verifySingleLabel).not.toHaveBeenCalled();
   });
-
   it('renders the verification tool at /app with the shared shell and health check', async () => {
     renderAt('/app');
 
@@ -483,7 +334,10 @@ describe('App routes and shared layout', () => {
   it('renders the license page with live header status and no tool API calls', async () => {
     const { container } = renderAt('/license');
 
-    expect(screen.getByRole('heading', { name: 'License' })).toBeInTheDocument();
+    const levelOneHeadings = screen.getAllByRole('heading', { level: 1 });
+    expect(levelOneHeadings).toHaveLength(1);
+    expect(levelOneHeadings[0]).toHaveTextContent('License');
+    expect(screen.getByText('OPEN SOURCE LICENSE')).toBeInTheDocument();
     expect(
       screen.getByText(
         'This page summarizes the license information for Compliance Label Assistant and explains the major terms of the Apache License 2.0 in plain language.',
@@ -499,12 +353,12 @@ describe('App routes and shared layout', () => {
     expect(screen.getByRole('heading', { name: 'Prototype Context' })).toBeInTheDocument();
     expect(screen.getByText('Use the software for personal, academic, internal, commercial, or evaluation purposes.')).toBeInTheDocument();
     expect(screen.getByText('Provide recipients with a copy of the Apache License 2.0.')).toBeInTheDocument();
-    const disclaimer = container.querySelector('.license-page__disclaimer');
+    const disclaimer = container.querySelector('.static-page__disclaimer');
     expect(disclaimer).toHaveTextContent('Disclaimer:');
     expect(disclaimer).toHaveTextContent(
       'This summary is not the official license file, not the official Apache license page, and not legal advice. Always review the repository LICENSE file and the official Apache Software Foundation license text before relying on these terms.',
     );
-    expect(container.querySelector('.license-page__intro + .license-page__divider')).toBeInTheDocument();
+    expect(container.querySelector('.license-page .static-page__header .static-page__divider')).toBeInTheDocument();
 
     const githubLicenseLink = screen.getByRole('link', { name: 'View LICENSE on GitHub' });
     expect(githubLicenseLink).toHaveAttribute(
@@ -523,10 +377,10 @@ describe('App routes and shared layout', () => {
 
     const licenseActions = screen.getByLabelText('License page actions');
     expect(licenseActions).toHaveClass('verification-actions');
-    expect(licenseActions.previousElementSibling).toHaveClass('license-page__panel');
-    expect(container.querySelector('.license-page__panel > .license-page__scroll')).toBeInTheDocument();
-    expect(githubLicenseLink.closest('.license-page__panel')).toBeNull();
-    expect(officialLicenseLink.closest('.license-page__panel')).toBeNull();
+    expect(licenseActions.previousElementSibling).toHaveClass('static-page__panel');
+    expect(container.querySelector('.license-page .static-page__panel > .static-page__scroll')).toBeInTheDocument();
+    expect(githubLicenseLink.closest('.static-page__panel')).toBeNull();
+    expect(officialLicenseLink.closest('.static-page__panel')).toBeNull();
 
     expect(
       screen.queryByText('Independent prototype, not an official TTB system. Human review remains final.'),
@@ -540,6 +394,73 @@ describe('App routes and shared layout', () => {
     expect(within(primaryNav).getByRole('link', { name: 'Home' })).not.toHaveAttribute('aria-current');
     expect(within(primaryNav).getByRole('link', { name: 'About' })).not.toHaveAttribute('aria-current');
     expect(within(primaryNav).getByRole('link', { name: 'Verification Tool' })).not.toHaveAttribute('aria-current');
+    expectSharedFooter();
+
+    await waitFor(() => {
+      expect(checkHealth).toHaveBeenCalledTimes(1);
+    });
+    expect(await screen.findByText('System Online')).toBeInTheDocument();
+    expect(warmVerificationBackend).not.toHaveBeenCalled();
+    expect(verifySingleLabel).not.toHaveBeenCalled();
+  });
+
+  it('renders the privacy policy page with the shared shell and health check', async () => {
+    renderAt('/privacy');
+
+    const levelOneHeadings = screen.getAllByRole('heading', { level: 1 });
+    expect(levelOneHeadings).toHaveLength(1);
+    expect(levelOneHeadings[0]).toHaveTextContent('Privacy Policy');
+    expect(screen.getByText('Effective date: June 28, 2026')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'AI Use Disclosure' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Data Practices Summary' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Third-Party Provider Processing' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Privacy Rights Note' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Children' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Contact' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Changes' })).toBeInTheDocument();
+    expect(screen.getByRole('table')).toBeInTheDocument();
+    expect(screen.getByRole('columnheader', { name: 'Data Category' })).toBeInTheDocument();
+    expect(screen.getByRole('rowheader', { name: 'Uploaded label images' })).toBeInTheDocument();
+    expect(screen.getByText('No analytics or tracking library is included in current application code')).toBeInTheDocument();
+
+    const primaryNav = screen.getByRole('navigation', { name: 'Primary' });
+    expect(within(primaryNav).getByRole('link', { name: 'Home' })).not.toHaveAttribute('aria-current');
+    expect(within(primaryNav).getByRole('link', { name: 'About' })).not.toHaveAttribute('aria-current');
+    expect(within(primaryNav).getByRole('link', { name: 'Verification Tool' })).not.toHaveAttribute('aria-current');
+    expect(within(primaryNav).queryByRole('link', { name: 'Privacy Policy' })).not.toBeInTheDocument();
+    expect(within(primaryNav).queryByRole('link', { name: 'Terms of Use' })).not.toBeInTheDocument();
+    expectSharedFooter();
+
+    await waitFor(() => {
+      expect(checkHealth).toHaveBeenCalledTimes(1);
+    });
+    expect(await screen.findByText('System Online')).toBeInTheDocument();
+    expect(warmVerificationBackend).not.toHaveBeenCalled();
+    expect(verifySingleLabel).not.toHaveBeenCalled();
+  });
+
+  it('renders the terms of use page with user-submission language and no tool API calls', async () => {
+    renderAt('/terms');
+
+    const levelOneHeadings = screen.getAllByRole('heading', { level: 1 });
+    expect(levelOneHeadings).toHaveLength(1);
+    expect(levelOneHeadings[0]).toHaveTextContent('Terms of Use');
+    expect(screen.getByText('Effective date: June 28, 2026')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'User Submissions and Uploaded Content' })).toBeInTheDocument();
+    expect(screen.getByText('The project does not claim ownership of uploaded content.', { exact: false })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Dispute Terms / Legal Review Placeholder' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Copyright Contact' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Changes' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Contact' })).toBeInTheDocument();
+    expect(screen.getByText('No detailed mandatory arbitration or class-action waiver is included for this take-home prototype.', { exact: false })).toBeInTheDocument();
+    expect(screen.getByText('This prototype does not operate as a public user-content hosting platform.', { exact: false })).toBeInTheDocument();
+
+    const primaryNav = screen.getByRole('navigation', { name: 'Primary' });
+    expect(within(primaryNav).getByRole('link', { name: 'Home' })).not.toHaveAttribute('aria-current');
+    expect(within(primaryNav).getByRole('link', { name: 'About' })).not.toHaveAttribute('aria-current');
+    expect(within(primaryNav).getByRole('link', { name: 'Verification Tool' })).not.toHaveAttribute('aria-current');
+    expect(within(primaryNav).queryByRole('link', { name: 'Privacy Policy' })).not.toBeInTheDocument();
+    expect(within(primaryNav).queryByRole('link', { name: 'Terms of Use' })).not.toBeInTheDocument();
     expectSharedFooter();
 
     await waitFor(() => {
@@ -592,12 +513,18 @@ function expectSharedFooter() {
   expect(within(footer).getByText(FOOTER_COPYRIGHT)).toBeInTheDocument();
 
   const footerNavigation = within(footer).getByRole('navigation', { name: 'Footer navigation' });
-  const sourceCodeLink = within(footerNavigation).getByRole('link', { name: 'Source Code' });
+  const projectGroup = within(footerNavigation).getByRole('heading', { name: 'Project' }).closest('.app-footer__link-group');
+  const legalGroup = within(footerNavigation).getByRole('heading', { name: 'Legal' }).closest('.app-footer__link-group');
+  const sourceCodeLink = within(projectGroup).getByRole('link', { name: 'Source Code' });
 
+  expect(projectGroup).toBeInTheDocument();
+  expect(legalGroup).toBeInTheDocument();
+  expect(within(projectGroup).getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');
+  expect(within(projectGroup).getByRole('link', { name: 'Verification Tool' })).toHaveAttribute('href', '/app');
   expect(sourceCodeLink).toHaveAttribute('href', 'https://github.com/nicolasgioanni/label-compliance-verifier');
   expect(sourceCodeLink).toHaveAttribute('target', '_blank');
   expect(sourceCodeLink).toHaveAttribute('rel', 'noreferrer noopener');
-  expect(within(footerNavigation).getByRole('link', { name: 'License' })).toHaveAttribute('href', '/license');
-  expect(within(footerNavigation).getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');
-  expect(within(footerNavigation).getByRole('link', { name: 'Verification Tool' })).toHaveAttribute('href', '/app');
+  expect(within(legalGroup).getByRole('link', { name: 'Privacy Policy' })).toHaveAttribute('href', '/privacy');
+  expect(within(legalGroup).getByRole('link', { name: 'Terms of Use' })).toHaveAttribute('href', '/terms');
+  expect(within(legalGroup).getByRole('link', { name: 'License' })).toHaveAttribute('href', '/license');
 }

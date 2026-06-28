@@ -21,6 +21,11 @@ describe('ImageUploadDropzone', () => {
 
     expect(view.getByRole('button', { name: 'Add Files' })).toBeEnabled();
     expect(view.getByRole('button', { name: 'Add Folder' })).toBeEnabled();
+    expect(
+      view.getByText(
+        'This prototype uses AI to extract information from uploaded label images. Results may be incomplete or inaccurate and should be reviewed by a human before any compliance decision.',
+      ),
+    ).toBeInTheDocument();
 
     const inputs = container.querySelectorAll('input[type="file"]');
     expect(inputs).toHaveLength(2);

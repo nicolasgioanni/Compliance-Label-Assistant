@@ -3,7 +3,11 @@ import { useServiceHealth } from './hooks/useServiceHealth';
 import AboutPage from './pages/AboutPage';
 import LandingPage from './pages/LandingPage';
 import LicensePage from './pages/LicensePage';
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
+import TermsOfUsePage from './pages/TermsOfUsePage';
 import ToolPage from './pages/ToolPage';
+
+const ROUTE_PATHS = new Set(['/', '/about', '/app', '/license', '/privacy', '/terms']);
 
 export default function App() {
   const activePath = getActivePath();
@@ -24,7 +28,7 @@ function getActivePath() {
 
   const pathname = window.location.pathname.replace(/\/+$/, '') || '/';
 
-  if (pathname === '/about' || pathname === '/app' || pathname === '/license') {
+  if (ROUTE_PATHS.has(pathname)) {
     return pathname;
   }
 
@@ -38,6 +42,14 @@ function getStaticPage(activePath) {
 
   if (activePath === '/license') {
     return <LicensePage />;
+  }
+
+  if (activePath === '/privacy') {
+    return <PrivacyPolicyPage />;
+  }
+
+  if (activePath === '/terms') {
+    return <TermsOfUsePage />;
   }
 
   return <LandingPage />;

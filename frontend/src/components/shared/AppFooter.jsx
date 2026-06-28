@@ -3,6 +3,32 @@ const FOOTER_DISCLAIMER =
   'Independent software prototype. Not an official TTB, Treasury, or government system. AI-assisted verification results require human review and are not legal or regulatory advice.';
 const FOOTER_COPYRIGHT = '© 2026 Nicolas Gioanni. Licensed under Apache License 2.0.';
 
+const SOURCE_CODE_URL = 'https://github.com/nicolasgioanni/label-compliance-verifier';
+
+const FOOTER_LINK_GROUPS = [
+  {
+    title: 'Project',
+    links: [
+      { href: '/about', label: 'About' },
+      { href: '/app', label: 'Verification Tool' },
+      {
+        href: SOURCE_CODE_URL,
+        label: 'Source Code',
+        title: 'View source code on GitHub',
+        external: true,
+      },
+    ],
+  },
+  {
+    title: 'Legal',
+    links: [
+      { href: '/privacy', label: 'Privacy Policy' },
+      { href: '/terms', label: 'Terms of Use' },
+      { href: '/license', label: 'License' },
+    ],
+  },
+];
+
 export default function AppFooter() {
   return (
     <footer className="app-footer">
@@ -18,24 +44,28 @@ export default function AppFooter() {
         <p className="app-footer__disclaimer">{FOOTER_DISCLAIMER}</p>
 
         <nav className="app-footer__links" aria-label="Footer navigation">
-          <a
-            className="app-footer__link"
-            href="https://github.com/nicolasgioanni/label-compliance-verifier"
-            target="_blank"
-            rel="noreferrer noopener"
-            title="View source code on GitHub"
-          >
-            Source Code
-          </a>
-          <a className="app-footer__link" href="/license">
-            License
-          </a>
-          <a className="app-footer__link" href="/about">
-            About
-          </a>
-          <a className="app-footer__link" href="/app">
-            Verification Tool
-          </a>
+          <div className="app-footer__link-groups">
+            {FOOTER_LINK_GROUPS.map((group) => (
+              <div className="app-footer__link-group" key={group.title}>
+                <h2 className="app-footer__link-heading">{group.title}</h2>
+                <ul className="app-footer__link-list">
+                  {group.links.map((link) => (
+                    <li key={link.href}>
+                      <a
+                        className="app-footer__link"
+                        href={link.href}
+                        rel={link.external ? 'noreferrer noopener' : undefined}
+                        target={link.external ? '_blank' : undefined}
+                        title={link.title}
+                      >
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
         </nav>
       </div>
 

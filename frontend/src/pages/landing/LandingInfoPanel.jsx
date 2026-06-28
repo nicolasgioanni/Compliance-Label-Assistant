@@ -129,16 +129,16 @@ export default function LandingInfoPanel() {
         <div className="landing-info-panel__intro">
           <h1 id="landing-page-title">Compliance Label Assistant</h1>
           <p className="static-page__subtitle">AI-assisted alcohol label verification</p>
-          <p className="static-page__description">
+          <p className="static-page__lead">
             Upload label artwork, enter expected application data, and generate a field-by-field verification report.
           </p>
         </div>
-        <div className="landing-info-panel__divider" role="separator" aria-hidden="true" />
+        <div className="static-page__divider landing-info-panel__divider" role="separator" aria-hidden="true" />
 
-        <div className="landing-info-grid">
+        <div className="static-card-grid landing-info-grid">
           {INFO_SECTIONS.map((section) => (
             <section
-              className="landing-info-section"
+              className="static-info-card landing-info-section"
               key={section.title}
               aria-labelledby={getSectionId(section.title)}
             >
@@ -169,7 +169,7 @@ function renderRichText(content) {
 
     return (
       <a
-        className="landing-info-section__inline-link"
+        className="static-inline-link"
         href={part.href}
         key={`${part.href}-${index}`}
         rel={isExternal ? 'noreferrer noopener' : undefined}

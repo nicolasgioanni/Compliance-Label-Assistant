@@ -1,103 +1,81 @@
 import { Fragment } from 'react';
 import {
-  ABOUT_DISCLAIMER,
   ABOUT_HERO,
   ABOUT_SECTION_GROUPS,
   DOCUMENTATION_LINKS,
   buildDocumentationUrl,
 } from './about/aboutContent';
+import {
+  StaticCallout,
+  StaticCardGrid,
+  StaticInfoCard,
+  StaticPageHeader,
+  StaticPageShell,
+  StaticSection,
+} from './static/StaticPagePrimitives';
+
+const ABOUT_PAGE_TITLE_ID = 'about-page-title';
 
 export default function AboutPage() {
   return (
-    <section className="static-page about-page" aria-labelledby="about-page-title">
-      <div className="panel about-page__panel">
-        <div className="about-page__scroll">
-          <AboutHero />
+    <StaticPageShell className="about-page" titleId={ABOUT_PAGE_TITLE_ID}>
+      <StaticPageHeader
+        eyebrow={ABOUT_HERO.eyebrow}
+        lead={ABOUT_HERO.lead}
+        title={ABOUT_HERO.title}
+        titleId={ABOUT_PAGE_TITLE_ID}
+      />
 
-          {ABOUT_SECTION_GROUPS.map((group) => (
-            <AboutSectionGroup group={group} key={group.title} />
-          ))}
+      {ABOUT_SECTION_GROUPS.map((group) => (
+        <AboutSectionGroup group={group} key={group.title} />
+      ))}
 
-          <AboutDisclaimer />
-          <DocumentationLinks />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function AboutHero() {
-  return (
-    <header className="about-page__hero">
-      <h1 id="about-page-title">{ABOUT_HERO.title}</h1>
-      <p className="static-page__subtitle">{ABOUT_HERO.subtitle}</p>
-      <p className="static-page__description">{ABOUT_HERO.description}</p>
-      <div className="landing-info-panel__divider about-page__divider" role="separator" aria-hidden="true" />
-    </header>
+      <DocumentationLinks />
+    </StaticPageShell>
   );
 }
 
 function AboutSectionGroup({ group }) {
-  const groupId = getSectionId(group.title);
-
   return (
-    <section className="about-section-group" aria-labelledby={groupId}>
-      <h2 id={groupId}>{group.title}</h2>
-      <div className="about-section-grid">
+    <StaticSection className="about-section-group" idPrefix="about-section" title={group.title}>
+      <StaticCardGrid>
         {group.sections.map((section) => (
           <InfoCard section={section} key={section.title} />
         ))}
-      </div>
-    </section>
+      </StaticCardGrid>
+
+      {group.callouts?.map((callout) => (
+        <StaticCallout
+          body={callout.body}
+          idPrefix="about-callout"
+          items={callout.items}
+          key={callout.title}
+          renderContent={renderRichText}
+          title={callout.title}
+        />
+      ))}
+    </StaticSection>
   );
 }
 
 function InfoCard({ section }) {
-  const sectionId = getSectionId(section.title);
-
   return (
-    <article className="about-card" aria-labelledby={sectionId}>
-      <h3 id={sectionId}>{section.title}</h3>
-      <p>{renderRichText(section.body)}</p>
-      {section.items?.length ? (
-        <ul>
-          {section.items.map((item, itemIndex) => (
-            <li key={`${section.title}-${itemIndex}`}>{renderRichText(item)}</li>
-          ))}
-        </ul>
-      ) : null}
-    </article>
-  );
-}
-
-function AboutDisclaimer() {
-  const groupId = getSectionId(ABOUT_DISCLAIMER.sectionTitle);
-  const cardId = getSectionId(ABOUT_DISCLAIMER.title);
-
-  return (
-    <section className="about-section-group about-disclaimer-group" aria-labelledby={groupId}>
-      <h2 id={groupId}>{ABOUT_DISCLAIMER.sectionTitle}</h2>
-      <article className="about-disclaimer" aria-labelledby={cardId}>
-        <h3 id={cardId}>{ABOUT_DISCLAIMER.title}</h3>
-        <p>{ABOUT_DISCLAIMER.body}</p>
-        <ul>
-          {ABOUT_DISCLAIMER.items.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-      </article>
-    </section>
+    <StaticInfoCard
+      body={section.body}
+      items={section.items}
+      renderContent={renderRichText}
+      title={section.title}
+    />
   );
 }
 
 function DocumentationLinks() {
   return (
-    <section className="about-section-group about-docs-group" aria-labelledby="about-docs-title">
-      <h2 id="about-docs-title">Repository Documentation</h2>
-      <div className="about-docs__links">
+    <StaticSection className="about-docs-group" idPrefix="about-section" title="Documentation">
+      <div className="static-doc-grid">
         {DOCUMENTATION_LINKS.map((link) => (
           <a
-            className="about-docs__link"
+            className="static-doc-link"
             href={buildDocumentationUrl(link.path)}
             key={link.path}
             target="_blank"
@@ -109,7 +87,7 @@ function DocumentationLinks() {
           </a>
         ))}
       </div>
-    </section>
+    </StaticSection>
   );
 }
 
@@ -123,7 +101,7 @@ function renderRichText(content) {
 
     if (part.code) {
       return (
-        <code className="about-inline-code" key={`code-${part.code}-${index}`}>
+        <code className="static-inline-code" key={`code-${part.code}-${index}`}>
           {part.code}
         </code>
       );
@@ -134,7 +112,7 @@ function renderRichText(content) {
 
       return (
         <a
-          className="about-inline-link"
+          className="static-inline-link"
           href={part.href}
           key={`${part.href}-${index}`}
           rel={isExternal ? 'noreferrer noopener' : undefined}
@@ -147,8 +125,4 @@ function renderRichText(content) {
 
     return null;
   });
-}
-
-function getSectionId(title) {
-  return `about-${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
 }

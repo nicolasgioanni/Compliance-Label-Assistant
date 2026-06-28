@@ -1,13 +1,16 @@
 const GITHUB_DOC_BASE_URL = 'https://github.com/nicolasgioanni/label-compliance-verifier/blob/main/';
 
 export const ABOUT_HERO = {
+  eyebrow: 'PROJECT OVERVIEW',
   title: 'About',
   subtitle: 'Architecture and Implementation Notes',
+  lead:
+    'This page explains the project purpose, reviewer workflow, architecture, quality controls, scope limits, and supporting documentation behind Compliance Label Assistant.',
   description:
     'This page summarizes the project purpose, reviewer workflow, frontend and backend architecture, implementation decisions, security and privacy boundaries, deployment model, testing approach, limitations, and disclaimers behind Compliance Label Assistant.',
 };
 
-export const ABOUT_SECTION_GROUPS = [
+const ABOUT_CONTENT_GROUPS = [
   {
     title: 'Project and Workflow',
     sections: [
@@ -134,7 +137,7 @@ export const ABOUT_SECTION_GROUPS = [
         title: 'Extraction Pipeline',
         body: 'The extraction provider is responsible for reading visible label fields only. It does not decide whether a label passes review, and its output is parsed into backend schemas before deterministic verification runs.',
         items: [
-          'The extraction prompt asks for JSON-only visible fields and preserves exact wording for government warning text.',
+          'The extraction request asks for JSON-only visible fields and preserves exact wording for government warning text.',
           'Extracted fields include brand name, class or type, alcohol content, net contents, bottler or producer, country of origin, and government warning text.',
           'The provider call uses store=false and temperature 0 in the current OpenAI integration.',
           'Configuration, rate-limit, timeout, connection, provider-status, and invalid-response failures are mapped before they reach the route response.',
@@ -292,7 +295,7 @@ export const ABOUT_SECTION_GROUPS = [
         title: 'Deployment Configuration',
         body: 'The documented deployment model splits static frontend hosting from the API service. This keeps provider secrets out of the browser bundle while letting the frontend call a separately configured backend.',
         items: [
-          'The frontend is intended for Vercel with frontend/ as the project root, npm run build, dist output, static headers, and SPA rewrites for /about, /app, and /license.',
+          'The frontend is intended for Vercel with frontend/ as the project root, npm run build, dist output, static headers, and SPA rewrites for /about, /app, /license, /privacy, and /terms.',
           'The backend is intended for Render Starter with backend/ as the root, Python 3.11, dependency installation from requirements.txt, and Uvicorn binding to the Render-provided port.',
           'The deployed frontend needs VITE_API_BASE_URL, while the backend needs OPENAI_API_KEY and ALLOWED_ORIGINS.',
           'There is no checked-in Render config, Dockerfile, docker-compose file, Procfile, or CI-driven deployment workflow; deployment remains dashboard-configured after protected main checks.',
@@ -332,6 +335,23 @@ export const ABOUT_DISCLAIMER = {
     'The application should not be used as the sole basis for approving, rejecting, certifying, or enforcing alcohol-label decisions.',
   ],
 };
+
+export const ABOUT_SECTION_GROUPS = [
+  ABOUT_CONTENT_GROUPS[0],
+  {
+    title: 'Architecture and Quality',
+    sections: [...ABOUT_CONTENT_GROUPS[1].sections, ...ABOUT_CONTENT_GROUPS[2].sections],
+  },
+  {
+    title: 'Performance and Cost',
+    sections: ABOUT_CONTENT_GROUPS[3].sections,
+  },
+  {
+    title: 'Prototype Scope and Limitations',
+    sections: ABOUT_CONTENT_GROUPS[4].sections,
+    callouts: [ABOUT_DISCLAIMER],
+  },
+];
 
 export const DOCUMENTATION_LINKS = [
   {
