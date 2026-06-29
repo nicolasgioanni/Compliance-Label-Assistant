@@ -1,3 +1,4 @@
+// Export workflow tests protect CSV/XLSX routing and dialog dismissal behavior.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../../api/verificationApi', () => ({

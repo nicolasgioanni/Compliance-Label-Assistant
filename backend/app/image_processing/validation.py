@@ -42,6 +42,7 @@ def _max_size_bytes(max_file_size_mb: int) -> int:
 
 
 def validate_upload_metadata(file: UploadFile) -> tuple[str, str]:
+    """Validate filename, extension, and declared MIME before reading bytes."""
     filename = (file.filename or "").strip()
     extension = Path(filename).suffix.lower()
     content_type = (file.content_type or "").lower()
@@ -59,6 +60,7 @@ def validate_upload_metadata(file: UploadFile) -> tuple[str, str]:
 
 
 def validate_file_size(file_bytes: bytes, max_file_size_mb: int) -> None:
+    """Reject empty and oversized files before Pillow decodes the image."""
     if not file_bytes:
         raise UploadValidationError(
             f"The uploaded file is empty. Please upload a {SUPPORTED_IMAGE_DESCRIPTION} label image."
@@ -69,6 +71,7 @@ def validate_file_size(file_bytes: bytes, max_file_size_mb: int) -> None:
 
 
 def validate_image_can_open(file_bytes: bytes, extension: str, content_type: str, max_image_pixels: int) -> None:
+    """Verify decoded image content and metadata consistency in memory."""
     try:
         with Image.open(BytesIO(file_bytes)) as image:
             image_format = image.format
@@ -99,6 +102,7 @@ def validate_image_can_open(file_bytes: bytes, extension: str, content_type: str
 
 
 def validate_image_pixel_count(pixel_count: int, max_image_pixels: int) -> None:
+    """Enforce pixel limits separately so tests cover boundary values."""
     if max_image_pixels > 0 and pixel_count > max_image_pixels:
         raise UploadValidationError(
             f"Image dimensions too large. Upload an image with {max_image_pixels:,} pixels or fewer."
@@ -106,6 +110,7 @@ def validate_image_pixel_count(pixel_count: int, max_image_pixels: int) -> None:
 
 
 async def validate_upload_file(file: UploadFile, max_file_size_mb: int, max_image_pixels: int) -> bytes:
+    """Return validated upload bytes without persisting the uploaded file."""
     extension, content_type = validate_upload_metadata(file)
     file_bytes = await file.read()
     validate_file_size(file_bytes, max_file_size_mb)

@@ -1,5 +1,6 @@
 name: Repo Hygiene
 
+# Repository safety checks that complement backend and frontend test workflows.
 on:
   pull_request:
     branches:

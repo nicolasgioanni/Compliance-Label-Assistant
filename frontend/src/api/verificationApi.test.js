@@ -1,3 +1,4 @@
+// API client tests protect endpoint paths, methods, FormData names, and error parsing.
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DEFAULT_GOVERNMENT_WARNING } from '../constants/defaultWarningText';
 

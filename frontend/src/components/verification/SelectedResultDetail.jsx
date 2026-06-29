@@ -1,3 +1,4 @@
+// Detailed selected-result view for response metadata and field-level evidence.
 import { getStatusLabel, getStatusTextClassName } from '../../utils/statusStyles';
 import { getAutomatedStatus } from '../../utils/statusResolution';
 import InfoTooltip from '../shared/InfoTooltip';

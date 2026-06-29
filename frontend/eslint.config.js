@@ -1,3 +1,4 @@
+// ESLint configuration for Vite React source, tests, and local config files.
 import js from '@eslint/js';
 import globals from 'globals';
 import react from 'eslint-plugin-react';
@@ -5,6 +6,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 
 export default [
   {
+    // Generated outputs are ignored so lint only evaluates source-controlled code.
     ignores: ['dist/**', 'node_modules/**', 'coverage/**'],
   },
   js.configs.recommended,

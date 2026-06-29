@@ -13,6 +13,7 @@ import os
 
 
 def _read_int(name: str, default: int) -> int:
+    """Read an integer env var while preserving safe defaults for bad values."""
     raw_value = os.getenv(name)
     if raw_value is None or raw_value == "":
         return default
@@ -23,10 +24,12 @@ def _read_int(name: str, default: int) -> int:
 
 
 def _read_bounded_int(name: str, default: int, minimum: int, maximum: int) -> int:
+    """Clamp deployment-tunable integers so bad env values do not widen limits."""
     return min(max(_read_int(name, default), minimum), maximum)
 
 
 def _read_choice(name: str, default: str, allowed_values: set[str]) -> str:
+    """Read an enum-like env var without accepting unsupported provider modes."""
     raw_value = os.getenv(name, default).strip().lower()
     if raw_value in allowed_values:
         return raw_value
@@ -34,6 +37,7 @@ def _read_choice(name: str, default: str, allowed_values: set[str]) -> str:
 
 
 def _read_bool(name: str, default: bool) -> bool:
+    """Parse common boolean env spellings used by local scripts and hosts."""
     raw_value = os.getenv(name)
     if raw_value is None or raw_value == "":
         return default
@@ -47,12 +51,20 @@ def _read_bool(name: str, default: bool) -> bool:
 
 
 def _read_origins() -> list[str]:
+    """Return the explicit browser origins allowed to call the backend."""
     raw_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173")
     return [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
 
 
 @dataclass(frozen=True)
 class Settings:
+    """Runtime settings grouped at the backend boundary.
+
+    Routes and services receive these values from one place so deployment
+    defaults, provider tuning, upload limits, and CORS assumptions do not drift
+    across modules.
+    """
+
     service_name: str = "alcohol-label-verification-api"
     openai_api_key: str = field(default_factory=lambda: os.getenv("OPENAI_API_KEY", ""))
     openai_model: str = field(default_factory=lambda: os.getenv("OPENAI_MODEL", "gpt-4.1-mini"))
@@ -91,4 +103,5 @@ class Settings:
 
 @lru_cache
 def get_settings() -> Settings:
+    """Return cached process settings for route and service callers."""
     return Settings()

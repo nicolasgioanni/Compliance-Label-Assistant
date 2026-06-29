@@ -1,3 +1,4 @@
+/* Decorative skeleton loading states for selected result placeholders. */
 .skeleton {
   animation: skeleton-shimmer 1.25s ease-in-out infinite;
   background:

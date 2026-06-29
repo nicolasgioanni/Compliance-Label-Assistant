@@ -11,6 +11,7 @@ SECURITY_HEADERS = {
 
 
 def apply_security_headers(response: Response) -> Response:
+    """Set default defensive headers without overwriting route-specific values."""
     for header_name, header_value in SECURITY_HEADERS.items():
         if header_name not in response.headers:
             response.headers[header_name] = header_value

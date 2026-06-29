@@ -1,3 +1,4 @@
+// Shared primitives that keep About, legal, and license page structure consistent.
 export function StaticPageShell({ actions, actionsLabel, children, className = '', titleId }) {
   const pageClassName = ['static-page', className].filter(Boolean).join(' ');
 

@@ -1,9 +1,12 @@
+"""Configuration tests for backend defaults and bounded environment parsing."""
+
 import pytest
 
 from app.config import Settings
 
 
 def test_speed_and_cost_sensitive_defaults(monkeypatch) -> None:
+    """Protect prototype defaults for provider cost, latency, and upload size."""
     env_vars = [
         "OPENAI_MODEL",
         "OPENAI_TIMEOUT_SECONDS",

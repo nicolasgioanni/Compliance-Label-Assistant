@@ -1,5 +1,6 @@
 Set-StrictMode -Version Latest
 
+# Shared local-development helpers for setup and start scripts.
 $LocalDevLibRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 function Find-RepoRoot {

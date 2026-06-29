@@ -1,3 +1,4 @@
+// Reads backend health once for shared header status and tool-page errors.
 import { useEffect, useState } from 'react';
 import { checkHealth } from '../api/verificationApi';
 import { SERVICE_UNAVAILABLE_MESSAGE } from '../constants/notificationMessages';

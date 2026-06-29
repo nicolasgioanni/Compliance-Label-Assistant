@@ -10,6 +10,7 @@ from app.config import Settings
 
 
 def get_openai_client(settings: Settings) -> OpenAI:
+    """Return a cached SDK client keyed by provider connection settings."""
     return _get_cached_openai_client(
         api_key=settings.openai_api_key,
         timeout_seconds=settings.openai_timeout_seconds,
@@ -19,6 +20,7 @@ def get_openai_client(settings: Settings) -> OpenAI:
 
 @lru_cache
 def _get_cached_openai_client(api_key: str, timeout_seconds: int, max_retries: int) -> OpenAI:
+    """Reuse clients without caching extraction results or uploaded content."""
     return OpenAI(api_key=api_key, timeout=timeout_seconds, max_retries=max_retries)
 
 

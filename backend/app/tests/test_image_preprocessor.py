@@ -1,3 +1,5 @@
+"""Image preprocessing tests for in-memory resize and JPEG conversion behavior."""
+
 from io import BytesIO
 
 import pytest

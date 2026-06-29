@@ -1,3 +1,4 @@
+// Defines queue filter IDs separately from status rendering copy.
 import { getAutomatedStatus } from './statusResolution';
 
 export const QUEUE_FILTERS = [

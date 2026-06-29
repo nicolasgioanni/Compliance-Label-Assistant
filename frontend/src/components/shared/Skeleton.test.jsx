@@ -1,3 +1,4 @@
+// Skeleton tests protect decorative loading semantics and stable sizing classes.
 import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { Skeleton, SkeletonBlock, SkeletonText } from './Skeleton';

@@ -1,3 +1,4 @@
+// Browser-side file metadata validation before labels enter the queue.
 const SUPPORTED_IMAGE_DESCRIPTION = 'JPG, PNG, WebP, or TIFF';
 const ACCEPTED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/tiff']);
 const ACCEPTED_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.tif', '.tiff']);
@@ -14,6 +15,8 @@ const MAX_FILE_SIZE_MB = 5;
 const MAX_QUEUE_FILES = 10;
 
 export function validateSingleFile(file) {
+  // Frontend validation is a UX guard only; the backend repeats validation
+  // before preprocessing and extraction.
   if (!file) {
     return 'Please select one label image.';
   }

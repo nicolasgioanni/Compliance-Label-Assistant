@@ -1,3 +1,4 @@
+// Builds browser-side CSV and XLSX exports from current queue result evidence.
 import {
   getAutomatedStatus,
   hasCurrentResult,
@@ -31,6 +32,8 @@ export function buildExportTimestamp(date) {
 }
 
 export function buildQueueExportRows(queueItems) {
+  // Stale, unverified, and failed-request queue items are intentionally omitted
+  // so downloaded files represent current backend evidence only.
   return queueItems
     .filter(hasCurrentResult)
     .map((item) => ({
@@ -79,6 +82,8 @@ function downloadBlob(content, filename, type) {
   document.body.appendChild(link);
   link.click();
   link.remove();
+  // CSV export uses a temporary object URL and releases it immediately after
+  // the browser download has been triggered.
   URL.revokeObjectURL(objectUrl);
 }
 
@@ -108,6 +113,8 @@ function getFieldStatus(result, fieldName) {
 
 function escapeCsvValue(value) {
   const stringValue = value === null || value === undefined ? '' : String(value);
+  // Prefix spreadsheet formulas so exported reviewer data cannot execute when
+  // opened in spreadsheet software.
   const safeValue = CSV_FORMULA_PREFIX_PATTERN.test(stringValue) ? `'${stringValue}` : stringValue;
 
   if (/[",\n\r]/.test(safeValue)) {

@@ -1,3 +1,4 @@
+// Coordinates queue-item removal state with the CSS removal animation.
 import { useEffect, useRef, useState } from 'react';
 
 const QUEUE_REMOVAL_ANIMATION_MS = 160;

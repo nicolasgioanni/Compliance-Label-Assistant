@@ -1,3 +1,4 @@
+// Structured license summary content; the repository LICENSE remains authoritative.
 export const LICENSE_FILE_URL = 'https://github.com/nicolasgioanni/label-compliance-verifier/blob/main/LICENSE';
 export const OFFICIAL_LICENSE_URL = 'https://www.apache.org/licenses/LICENSE-2.0';
 

@@ -1,3 +1,4 @@
+// Shared legal/static page renderer for privacy and terms content objects.
 import {
   StaticPageHeader,
   StaticPageShell,

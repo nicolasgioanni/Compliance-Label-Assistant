@@ -6,6 +6,7 @@ param(
     [switch]$NoEnvFile
 )
 
+# Starts both local services after optional setup and keeps all env values local.
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 

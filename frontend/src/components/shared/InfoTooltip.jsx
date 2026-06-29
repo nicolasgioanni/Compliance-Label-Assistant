@@ -1,3 +1,4 @@
+// Accessible floating tooltip used for compact explanatory UI copy.
 import { useId, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 

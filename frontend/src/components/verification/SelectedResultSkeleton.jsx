@@ -1,3 +1,4 @@
+// Result-shaped skeleton shown while the selected queue item is verifying.
 import { SkeletonBlock, SkeletonText } from '../shared/Skeleton';
 import InfoTooltip from '../shared/InfoTooltip';
 

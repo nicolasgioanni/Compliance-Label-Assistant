@@ -1,3 +1,4 @@
+// Dismissible status banner used for upload, health, and verification messages.
 import { useEffect, useState } from 'react';
 import BodyPortal from './BodyPortal';
 

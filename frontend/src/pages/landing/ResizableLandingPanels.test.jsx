@@ -1,3 +1,4 @@
+// Landing panel tests protect drag and keyboard resizing behavior.
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import ResizableLandingPanels from './ResizableLandingPanels';

@@ -40,6 +40,7 @@ class BatchRequestValidationError(ValueError):
 
 
 def validate_batch_request(file_count: int, max_batch_size: int) -> None:
+    """Validate whole-request batch sizing before per-file processing."""
     if file_count < MIN_BATCH_SIZE:
         raise BatchRequestValidationError("Batch verification requires at least 2 label images.")
     if file_count > max_batch_size:
@@ -47,6 +48,7 @@ def validate_batch_request(file_count: int, max_batch_size: int) -> None:
 
 
 def validate_batch_filenames(files: list[UploadFile]) -> None:
+    """Reject duplicate basenames so batch results stay unambiguous."""
     seen_filenames: set[str] = set()
     duplicate_count = 0
 
@@ -70,12 +72,15 @@ async def verify_batch_labels(
     expected_fields: ExpectedFields,
     settings: Settings | None = None,
 ) -> BatchVerificationResponse:
+    """Run shared-expected-fields verification for a limited file batch."""
     active_settings = settings or get_settings()
     validate_batch_request(len(files), active_settings.max_batch_size)
     validate_batch_filenames(files)
     reserve_verification_units(len(files), active_settings)
 
     total_start = start_timer()
+    # Batch concurrency gates service work; provider extraction still has its
+    # own lower-level semaphore so no extra provider calls are introduced.
     semaphore = asyncio.Semaphore(max(active_settings.batch_concurrency, 1))
     tasks = [
         _process_batch_file(
@@ -104,6 +109,7 @@ async def _process_batch_file(
     settings: Settings,
     semaphore: asyncio.Semaphore,
 ) -> BatchVerificationItem:
+    """Return either a normal per-file result or a safe per-file error item."""
     async with semaphore:
         processing_start = start_timer()
         try:
@@ -136,6 +142,7 @@ def _build_error_item(
     processing_start: float,
     error_message: str,
 ) -> BatchVerificationItem:
+    """Build a frontend-compatible failed item without extracted data."""
     return BatchVerificationItem(
         filename=file.filename or "uploaded-label",
         overall_status="error",

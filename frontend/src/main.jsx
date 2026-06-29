@@ -1,3 +1,4 @@
+// Boots the React app and imports the global CSS bundles once for Vite.
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';

@@ -6,6 +6,7 @@ param(
     [switch]$NoEnvFile
 )
 
+# Starts the Vite frontend with local dependency and API origin setup.
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 

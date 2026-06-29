@@ -1,3 +1,4 @@
+// Landing information panel summarizing workflow, boundaries, and documentation links.
 import { Fragment } from 'react';
 
 const GITHUB_DOC_BASE_URL = 'https://github.com/nicolasgioanni/label-compliance-verifier/blob/main/';

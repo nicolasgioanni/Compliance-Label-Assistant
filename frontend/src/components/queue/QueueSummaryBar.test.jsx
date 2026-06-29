@@ -1,3 +1,4 @@
+// Queue summary tests protect export availability and summary status copy.
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import QueueSummaryBar from './QueueSummaryBar';

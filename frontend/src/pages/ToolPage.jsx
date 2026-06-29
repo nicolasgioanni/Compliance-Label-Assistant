@@ -1,8 +1,11 @@
+// Verification tool route with page-level notification ownership.
 import { useCallback, useEffect, useRef, useState } from 'react';
 import ErrorBanner from '../components/shared/ErrorBanner';
 import VerificationForm from '../components/verification/VerificationForm';
 
 export default function ToolPage({ serviceErrorMessage = null }) {
+  // The tool page owns banner replacement so health, upload, and verification
+  // messages share one visible notification path.
   const [activeError, setActiveError] = useState(null);
   const activeErrorRef = useRef(null);
   const nextErrorIdRef = useRef(0);

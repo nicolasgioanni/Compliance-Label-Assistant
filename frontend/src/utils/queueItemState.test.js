@@ -1,3 +1,4 @@
+// Queue item state tests protect stale-result and status transition behavior.
 import { describe, expect, it, vi } from 'vitest';
 import { DEFAULT_GOVERNMENT_WARNING } from '../constants/defaultWarningText';
 import {

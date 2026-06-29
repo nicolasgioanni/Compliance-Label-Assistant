@@ -1,3 +1,4 @@
+// Feature detection for optional directory upload controls.
 export function supportsDirectoryUpload(input = createFileInput()) {
   return Boolean(input && ('webkitdirectory' in input || 'directory' in input));
 }

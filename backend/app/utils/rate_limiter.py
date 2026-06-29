@@ -11,6 +11,8 @@ from time import time
 
 @dataclass(frozen=True)
 class RateLimitResult:
+    """Outcome and retry metadata for one fixed-window reservation."""
+
     allowed: bool
     limit: int
     remaining: int
@@ -28,6 +30,7 @@ class FixedWindowRateLimiter:
         self._used_units = 0
 
     def consume(self, *, cost: int, limit: int, window_seconds: int) -> RateLimitResult:
+        """Atomically reserve units or return the current retry window."""
         normalized_cost = max(cost, 0)
         normalized_limit = max(limit, 0)
         normalized_window_seconds = max(window_seconds, 1)
@@ -59,11 +62,13 @@ class FixedWindowRateLimiter:
             )
 
     def reset(self) -> None:
+        """Reset the process-local window for tests and explicit cleanup."""
         with self._lock:
             self._window_started_at = 0.0
             self._used_units = 0
 
     def _reset_expired_window(self, current_time: float, window_seconds: int) -> None:
+        """Start a new window when no active window remains."""
         if self._window_started_at <= 0 or current_time >= self._window_started_at + window_seconds:
             self._window_started_at = current_time
             self._used_units = 0

@@ -1,3 +1,4 @@
+// Queue workflow tests protect upload planning, previews, filters, and verify gating.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../../api/verificationApi', () => ({

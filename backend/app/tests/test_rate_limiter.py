@@ -1,3 +1,5 @@
+"""Fixed-window rate limiter tests for process-local budget accounting."""
+
 from app.utils.rate_limiter import FixedWindowRateLimiter
 
 

@@ -1,6 +1,9 @@
+// Plans queue additions without mutating state so upload warnings stay testable.
 import { MAX_QUEUE_FILES, normalizeFilename, validateSingleFile } from './fileValidation';
 
 export function planQueueFileAddition({ files, activeQueueItems, maxQueueSize = MAX_QUEUE_FILES }) {
+  // Duplicate detection uses canonical basenames so folder uploads cannot add
+  // the same label under a different relative path.
   const filesToAdd = [];
   const existingFileKeys = new Set(activeQueueItems.map((item) => normalizeFilename(getQueueItemFileKey(item))));
   const selectedFileKeys = new Set();

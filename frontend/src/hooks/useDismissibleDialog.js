@@ -1,3 +1,4 @@
+// Shared modal-dismissal behavior for Escape, outside click, and body scroll lock.
 import { useEffect } from 'react';
 
 let activeDialogCount = 0;

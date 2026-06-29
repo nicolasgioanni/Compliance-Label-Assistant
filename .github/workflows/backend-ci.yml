@@ -1,5 +1,7 @@
 name: Backend CI
 
+# Validation-only workflow; deployment and provider secrets are intentionally
+# outside GitHub Actions for this prototype.
 on:
   pull_request:
     branches:
@@ -19,6 +21,7 @@ jobs:
       run:
         working-directory: backend
     env:
+      # Tests mock provider behavior, so CI does not need a real provider key.
       OPENAI_API_KEY: ""
     steps:
       - uses: actions/checkout@v4

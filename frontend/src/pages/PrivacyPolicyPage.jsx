@@ -1,3 +1,4 @@
+// Privacy route wrapper using the shared legal content renderer.
 import LegalContentPage from './legal/LegalContentPage';
 import { PRIVACY_POLICY_PAGE } from './legal/legalPageContent';
 

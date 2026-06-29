@@ -1,3 +1,4 @@
+// Decorative skeleton primitives used for perceived progress without polling.
 function joinClassNames(...classNames) {
   return classNames.filter(Boolean).join(' ');
 }

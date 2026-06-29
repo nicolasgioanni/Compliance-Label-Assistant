@@ -1,3 +1,4 @@
+// Warning text tests protect the frontend default sent through the API client.
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_GOVERNMENT_WARNING } from './defaultWarningText';
 

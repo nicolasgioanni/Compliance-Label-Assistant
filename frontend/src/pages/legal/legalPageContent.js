@@ -1,3 +1,4 @@
+// Structured privacy and terms content that avoids overclaiming prototype compliance.
 export const PRIVACY_POLICY_PAGE = {
   className: 'privacy-page',
   eyebrow: 'Prototype Transparency',

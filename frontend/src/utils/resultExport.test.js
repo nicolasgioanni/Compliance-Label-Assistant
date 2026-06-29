@@ -1,3 +1,4 @@
+// Export tests protect CSV/XLSX row shape, filenames, and object URL cleanup.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   buildExportFilename,

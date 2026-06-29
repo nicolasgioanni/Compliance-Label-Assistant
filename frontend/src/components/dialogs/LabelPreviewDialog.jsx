@@ -1,5 +1,6 @@
 import { useDismissibleDialog } from '../../hooks/useDismissibleDialog';
 import { useObjectUrl } from '../../hooks/useObjectUrl';
+// Modal preview for a queued browser File object.
 import DialogPortal from './DialogPortal';
 
 export default function LabelPreviewDialog({ item, onClose }) {

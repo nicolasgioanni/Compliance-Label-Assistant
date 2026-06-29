@@ -1,3 +1,4 @@
+// App shell tests protect route selection, footer/legal links, and health status behavior.
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { checkHealth, verifySingleLabel, warmVerificationBackend } from './api/verificationApi';

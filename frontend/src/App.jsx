@@ -1,3 +1,4 @@
+// Owns the lightweight pathname switch used instead of a routing library.
 import AppShell from './components/shared/AppShell';
 import { useServiceHealth } from './hooks/useServiceHealth';
 import AboutPage from './pages/AboutPage';
@@ -22,6 +23,8 @@ export default function App() {
 }
 
 function getActivePath() {
+  // Vercel rewrites these direct-visit paths to index.html, then this client
+  // switch decides which page module to show.
   if (typeof window === 'undefined') {
     return '/';
   }
@@ -36,6 +39,8 @@ function getActivePath() {
 }
 
 function getStaticPage(activePath) {
+  // Legal and license pages stay footer-linked while the primary navigation
+  // remains focused on Home, About, and Verification Tool.
   if (activePath === '/about') {
     return <AboutPage />;
   }

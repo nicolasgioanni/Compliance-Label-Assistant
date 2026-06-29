@@ -1,3 +1,4 @@
+// Landing route wrapper for the evaluator-oriented overview panels.
 import ResizableLandingPanels from './landing/ResizableLandingPanels';
 
 export default function LandingPage() {

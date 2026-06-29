@@ -1,3 +1,5 @@
+"""OpenAI extraction boundary tests using fake SDK clients only."""
+
 from types import SimpleNamespace
 
 import pytest

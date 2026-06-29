@@ -1,3 +1,4 @@
+// Copy-data workflow tests protect expected-field transfer and stale-result handling.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../../api/verificationApi', () => ({

@@ -1,3 +1,4 @@
+// Expected-field tests protect required-field and hidden-warning behavior.
 import { describe, expect, it } from 'vitest';
 import {
   createEmptyExpectedFields,

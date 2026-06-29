@@ -1,3 +1,4 @@
+/* Global design tokens shared by the app shell, forms, queue, and results. */
 :root {
   --color-bg: #071d33;
   --color-surface: #f7f9fc;
@@ -56,6 +57,7 @@
   box-sizing: border-box;
 }
 
+/* Base document layout and typography. */
 body {
   background: var(--color-bg);
   color: var(--color-text);
@@ -76,6 +78,7 @@ body {
   padding: var(--shell-padding);
 }
 
+/* Shared application body region below the persistent header. */
 .app-main {
   display: flex;
   flex-direction: column;

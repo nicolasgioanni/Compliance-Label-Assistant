@@ -1,3 +1,4 @@
+// Selected-label detail area for expected data entry, current result, or errors.
 import { getStatusClassName } from '../../utils/statusStyles';
 import { hasCurrentResult } from '../../utils/statusResolution';
 import ExpectedFieldsForm from './ExpectedFieldsForm';

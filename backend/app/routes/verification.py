@@ -33,6 +33,7 @@ async def verify_label(
     country_of_origin: str = Form(""),
     government_warning: str = Form(...),
 ) -> SingleVerificationResponse:
+    """Verify one uploaded label using the stable multipart API contract."""
     expected_fields = _build_expected_fields(
         brand_name=brand_name,
         class_type=class_type,
@@ -45,16 +46,21 @@ async def verify_label(
     try:
         return await verify_single_label(file=file, expected_fields=expected_fields)
     except UploadValidationError as exc:
+        # Validation and preprocessing errors are user-fixable upload problems,
+        # so they stay 400s instead of exposing lower-level exceptions.
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except ImagePreprocessingError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except VerificationRateLimitError as exc:
+        # The headers are part of the public rate-limit contract for callers.
         raise HTTPException(
             status_code=429,
             detail=str(exc),
             headers=build_rate_limit_headers(exc.result),
         ) from exc
     except ExtractionConfigurationError as exc:
+        # Missing provider setup is a backend availability issue, not a bad
+        # image request from the reviewer.
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     except InvalidExtractionResponseError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
@@ -73,6 +79,7 @@ async def verify_batch(
     country_of_origin: str = Form(""),
     government_warning: str = Form(...),
 ) -> BatchVerificationResponse:
+    """Verify a shared-expected-fields batch through the backend batch API."""
     expected_fields = _build_expected_fields(
         brand_name=brand_name,
         class_type=class_type,
@@ -103,7 +110,8 @@ def _build_expected_fields(
     country_of_origin: str,
     government_warning: str,
 ) -> ExpectedFields:
-    # The form field is kept for API compatibility; the standard warning is server-owned.
+    # The form field is kept for API compatibility; the standard warning is
+    # server-owned so stale client text cannot change verification rules.
     return ExpectedFields(
         brand_name=brand_name,
         class_type=class_type,

@@ -1,3 +1,4 @@
+// Provides the shared header, footer, and route body shell.
 import AppFooter from './AppFooter';
 import Header from './Header';
 

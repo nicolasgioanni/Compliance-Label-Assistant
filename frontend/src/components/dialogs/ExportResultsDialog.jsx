@@ -1,3 +1,4 @@
+// Modal that selects the browser-side export file type without changing queue state.
 import { useState } from 'react';
 import { useDismissibleDialog } from '../../hooks/useDismissibleDialog';
 import InfoTooltip from '../shared/InfoTooltip';

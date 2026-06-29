@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { supportsDirectoryUpload } from '../../utils/browserSupport';
+// File and folder upload controls for adding labels to the in-memory queue.
 import { FILE_INPUT_ACCEPT, SUPPORTED_IMAGE_DESCRIPTION } from '../../utils/fileValidation';
 
 export default function ImageUploadDropzone({

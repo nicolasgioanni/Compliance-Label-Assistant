@@ -1,3 +1,4 @@
+/* Shared static, legal, license, about, and landing page layouts. */
 .static-page {
   --static-page-panel-height: calc(var(--workflow-panel-height, 40.2rem) + 4rem);
   display: flex;

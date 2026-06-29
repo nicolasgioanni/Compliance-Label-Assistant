@@ -20,6 +20,7 @@ class VerificationRateLimitError(RuntimeError):
 
 
 def reserve_verification_units(unit_cost: int, settings: Settings | None = None) -> RateLimitResult | None:
+    """Reserve verification units before extraction can spend provider budget."""
     active_settings = settings or get_settings()
     if not active_settings.verification_rate_limit_enabled:
         return None
@@ -35,6 +36,7 @@ def reserve_verification_units(unit_cost: int, settings: Settings | None = None)
 
 
 def build_rate_limit_headers(result: RateLimitResult) -> dict[str, str]:
+    """Expose retry metadata using stable HTTP header names."""
     return {
         "Retry-After": str(result.retry_after_seconds),
         "X-RateLimit-Limit": str(result.limit),
@@ -44,4 +46,5 @@ def build_rate_limit_headers(result: RateLimitResult) -> dict[str, str]:
 
 
 def reset_verification_rate_limiter() -> None:
+    """Reset process-local counters for isolated tests."""
     _VERIFICATION_RATE_LIMITER.reset()

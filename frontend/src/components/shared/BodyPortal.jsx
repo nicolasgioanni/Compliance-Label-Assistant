@@ -1,3 +1,4 @@
+// Browser-only portal helper for overlays that should escape route containers.
 import { createPortal } from 'react-dom';
 
 export default function BodyPortal({ children }) {

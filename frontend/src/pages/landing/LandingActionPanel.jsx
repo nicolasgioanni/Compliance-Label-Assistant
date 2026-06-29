@@ -1,3 +1,4 @@
+// Landing action panel with primary workflow and source/documentation links.
 const SOURCE_CODE_URL = 'https://github.com/nicolasgioanni/label-compliance-verifier';
 
 export default function LandingActionPanel() {

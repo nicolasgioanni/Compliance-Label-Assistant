@@ -7,6 +7,7 @@ const STATUS_LABELS = {
   error: 'Error',
 };
 
+// Maps backend and frontend workflow statuses to stable UI labels and classes.
 export function getStatusLabel(status) {
   return STATUS_LABELS[status] || 'Needs Review';
 }

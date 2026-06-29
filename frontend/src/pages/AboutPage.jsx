@@ -1,3 +1,4 @@
+// About route renderer for structured project and documentation content.
 import { Fragment } from 'react';
 import {
   ABOUT_HERO,

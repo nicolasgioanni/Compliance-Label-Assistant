@@ -1,3 +1,4 @@
+// Status resolution tests protect current-result precedence over workflow state.
 import { describe, expect, it } from 'vitest';
 import {
   getAutomatedStatus,

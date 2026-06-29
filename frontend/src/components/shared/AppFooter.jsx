@@ -73,3 +73,4 @@ export default function AppFooter() {
     </footer>
   );
 }
+// Shared footer for prototype identity, disclaimer text, and legal resource links.

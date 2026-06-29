@@ -1,3 +1,4 @@
+// Shared header with the constrained primary navigation and backend status pill.
 const NAV_ITEMS = [
   { href: '/', label: 'Home' },
   { href: '/about', label: 'About' },

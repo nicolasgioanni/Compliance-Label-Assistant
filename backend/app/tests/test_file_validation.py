@@ -1,3 +1,5 @@
+"""Upload validation tests for supported formats, size limits, and image safety."""
+
 import asyncio
 from io import BytesIO
 
@@ -29,6 +31,7 @@ def _upload(filename: str | None, content_type: str, content: bytes) -> UploadFi
 
 
 def _validate(file: UploadFile, max_file_size_mb: int = 5, max_image_pixels: int = 25_000_000) -> bytes:
+    """Run async upload validation in sync tests without provider calls."""
     return asyncio.run(
         validate_upload_file(
             file,

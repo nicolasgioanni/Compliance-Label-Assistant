@@ -1,3 +1,5 @@
+"""CORS contract tests for browser-origin deployment assumptions."""
+
 from fastapi.testclient import TestClient
 
 from app import main as app_main

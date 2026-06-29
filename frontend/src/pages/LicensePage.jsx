@@ -1,3 +1,4 @@
+// License route wrapper around static Apache 2.0 summary content.
 import {
   LICENSE_ACTIONS,
   LICENSE_DISCLAIMER,

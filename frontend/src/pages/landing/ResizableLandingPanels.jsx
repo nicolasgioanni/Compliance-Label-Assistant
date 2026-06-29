@@ -1,3 +1,4 @@
+// Split landing layout with drag resizing for overview and action panels.
 import { useCallback, useRef, useState } from 'react';
 import LandingActionPanel from './LandingActionPanel';
 import LandingInfoPanel from './LandingInfoPanel';

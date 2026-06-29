@@ -1,3 +1,4 @@
+// File validation tests protect browser-side upload warnings and accept lists.
 import { describe, expect, it } from 'vitest';
 import {
   FILE_INPUT_ACCEPT,

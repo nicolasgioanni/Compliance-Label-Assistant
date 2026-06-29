@@ -1,3 +1,4 @@
+// Shared notification copy used by queue and verification workflows.
 export const SERVICE_UNAVAILABLE_MESSAGE =
   'The verification service is currently unavailable. Please try again shortly.';
 export const STALE_RESULT_EDIT_MESSAGE = 'Changing selected label data will mark the previous verification result stale.';

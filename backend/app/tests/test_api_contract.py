@@ -1,3 +1,10 @@
+"""End-to-end API contract tests for public backend responses.
+
+These tests mock provider extraction where needed so route validation,
+response shapes, headers, rate limits, and error mapping can be verified
+without live provider calls.
+"""
+
 from io import BytesIO
 
 from fastapi.testclient import TestClient
@@ -34,6 +41,7 @@ async def _fail_if_extraction_called(image_bytes: bytes, settings):
 
 
 def _mock_extraction_fail_if_called(monkeypatch) -> None:
+    """Protect validation paths that must reject before extraction."""
     monkeypatch.setattr(single_verification_service, "extract_label_fields", _fail_if_extraction_called)
 
 
@@ -77,6 +85,7 @@ OLD_UNNUMBERED_WARNING = (
 
 
 def _expected_form_data(**overrides: str) -> dict[str, str]:
+    """Build the multipart field names consumed by the verification routes."""
     form_data = {
         "brand_name": "OLD TOM DISTILLERY",
         "class_type": "Kentucky Straight Bourbon Whiskey",

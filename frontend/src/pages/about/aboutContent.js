@@ -1,3 +1,4 @@
+// Structured About page content kept separate from route rendering logic.
 const GITHUB_DOC_BASE_URL = 'https://github.com/nicolasgioanni/label-compliance-verifier/blob/main/';
 
 export const ABOUT_HERO = {

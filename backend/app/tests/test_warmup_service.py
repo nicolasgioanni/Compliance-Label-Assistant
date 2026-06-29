@@ -1,3 +1,5 @@
+"""Warmup service tests for best-effort provider initialization behavior."""
+
 from app.config import Settings
 from app.services import warmup_service
 

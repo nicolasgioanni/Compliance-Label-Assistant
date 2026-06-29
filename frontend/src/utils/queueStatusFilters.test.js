@@ -1,3 +1,4 @@
+// Queue filter tests protect status-to-filter mapping and default visibility.
 import { describe, expect, it } from 'vitest';
 import {
   createDefaultQueueFilterIds,

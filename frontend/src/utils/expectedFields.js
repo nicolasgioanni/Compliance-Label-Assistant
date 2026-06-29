@@ -1,3 +1,4 @@
+// Defines the frontend expected-field shape sent to the backend API client.
 import { DEFAULT_GOVERNMENT_WARNING } from '../constants/defaultWarningText';
 
 export const EXPECTED_FIELD_DEFINITIONS = [
@@ -10,6 +11,8 @@ export const EXPECTED_FIELD_DEFINITIONS = [
   { id: 'governmentWarning', label: 'Government Warning Text', hidden: true },
 ];
 
+// The standard warning is hidden in the UI but still travels through the
+// multipart contract for compatibility with the backend route signature.
 export const VISIBLE_EXPECTED_FIELD_DEFINITIONS = EXPECTED_FIELD_DEFINITIONS.filter((field) => !field.hidden);
 export const REQUIRED_EXPECTED_FIELD_DEFINITIONS = EXPECTED_FIELD_DEFINITIONS.filter((field) => field.required);
 

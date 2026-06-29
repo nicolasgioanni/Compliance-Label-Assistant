@@ -1,3 +1,4 @@
+// Upload dropzone tests protect file/folder input behavior and user-facing warnings.
 import { fireEvent, render, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { FILE_INPUT_ACCEPT } from '../../utils/fileValidation';

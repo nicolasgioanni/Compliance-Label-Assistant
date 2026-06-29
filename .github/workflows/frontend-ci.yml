@@ -1,5 +1,7 @@
 name: Frontend CI
 
+# Validation-only workflow for the Vite frontend; deployment remains with the
+# Vercel project configuration.
 on:
   pull_request:
     branches:

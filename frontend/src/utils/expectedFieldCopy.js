@@ -1,3 +1,4 @@
+// Helpers for copying expected-field data between queued labels.
 import { createEmptyExpectedFields } from './expectedFields';
 
 export const COPY_EXPECTED_FIELD_NAMES = [

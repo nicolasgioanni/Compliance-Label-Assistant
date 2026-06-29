@@ -1,3 +1,4 @@
+// Renders the upload controls, queue list, filtering, and queue empty states.
 import ImageUploadDropzone from '../upload/ImageUploadDropzone';
 import InfoTooltip from '../shared/InfoTooltip';
 import QueueItemCard from './QueueItemCard';

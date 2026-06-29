@@ -1,3 +1,4 @@
+/* Verification workflow layout and shared panel containers. */
 .verification-workflow {
   --workflow-panel-height: 40.2rem;
   display: flex;

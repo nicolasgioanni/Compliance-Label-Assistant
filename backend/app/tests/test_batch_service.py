@@ -1,3 +1,5 @@
+"""Batch service tests for request-level validation and per-file isolation."""
+
 import asyncio
 from io import BytesIO
 
@@ -20,6 +22,7 @@ EXPECTED_FIELDS = ExpectedFields(
 
 
 def _upload_file(filename: str) -> UploadFile:
+    """Create a small in-memory upload without touching persistent storage."""
     return UploadFile(
         filename=filename,
         file=BytesIO(b"image-bytes"),

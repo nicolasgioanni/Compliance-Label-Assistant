@@ -1,3 +1,4 @@
+/* Dialog, banner, tooltip, and feedback overlay styling. */
 .export-dialog-overlay {
   align-items: center;
   animation: export-dialog-fade 140ms ease-out;

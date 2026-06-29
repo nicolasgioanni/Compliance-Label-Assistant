@@ -1,3 +1,4 @@
+// Result navigation tests protect selected-label result/edit/error transitions.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../../api/verificationApi', () => ({

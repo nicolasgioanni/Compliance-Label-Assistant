@@ -1,3 +1,4 @@
+// Modal for copying expected application data from one queued label to others.
 import { useEffect, useMemo, useState } from 'react';
 import { useDismissibleDialog } from '../../hooks/useDismissibleDialog';
 import { hasAnyVisibleExpectedFieldValue } from '../../utils/expectedFields';
