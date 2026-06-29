@@ -2,9 +2,9 @@
 
 ## Implemented Controls
 
-Provider calls happen only in `backend/app/providers/openai/extraction.py`. The frontend never calls the provider directly.
+Provider calls happen only in `backend/app/providers/openai/extraction.py`. The frontend has no direct provider integration.
 
-Queue, batch, upload-size, pixel-count, timeout, concurrency, output-token, and daily verification-unit limits are the current lightweight cost and abuse controls. They do not replace production authentication or distributed rate limiting.
+Queue, batch, upload-size, pixel-count, timeout, concurrency, output-token, and daily verification-unit limits are the current lightweight cost and abuse controls. They are not substitutes for production authentication or distributed rate limiting.
 
 Speed and cost-sensitive settings are centralized in `backend/app/config.py`:
 
@@ -29,9 +29,9 @@ Speed and cost-sensitive settings are centralized in `backend/app/config.py`:
 
 No current SLA, production throughput target, or measured provider-cost estimate is documented in this repository.
 
-Required CI tests mock provider behavior and do not run provider-backed benchmarks. Coverage, lint, typecheck, build, and contract tests protect merge quality, but they are not evidence of live provider latency, extraction accuracy, or production cost.
+Required CI tests mock provider behavior and omit provider-backed benchmarks. Coverage, lint, typecheck, build, and contract tests protect merge quality, but they are not evidence of live provider latency, extraction accuracy, or production cost.
 
-If benchmark or cost numbers are added later, they should identify the fixture set, provider configuration, deployment tier, number of runs, date, and whether the backend was warm or cold.
+Future benchmark or cost numbers need the fixture set, provider configuration, deployment tier, number of runs, date, and whether the backend was warm or cold.
 
 ## Image Preprocessing
 
@@ -55,7 +55,7 @@ Backend:
 
 The backend enforces a process-local daily cap of 50 verification units by default. A successful reservation is required before OpenAI extraction can run. When the cap is exhausted, `/verify` and `/verify-batch` return HTTP `429` with a safe user-facing message and rate-limit headers.
 
-This cap is intentionally simple for the MVP. It resets on backend restart or deploy and is not shared across multiple backend instances. Configure OpenAI project budgets as secondary billing alerts; dashboard budgets should not be treated as the app's hard guard.
+This cap is intentionally simple for the MVP. It resets on backend restart or deploy and is not shared across multiple backend instances. OpenAI project budgets provide secondary billing alerts; dashboard budgets are not the app's hard guard.
 
 ## Caching
 
@@ -81,13 +81,13 @@ Not implemented:
 
 The frontend avoids duplicate queue entries by basename. The backend `/verify-batch` rejects duplicate basenames before processing. The system does not deduplicate repeat verifications of the same image after expected data changes or reruns.
 
-## Safe Optimization Areas
+## Potential Optimization Areas
 
-- Add a test-only provider stub for manual local workflows that should not make provider calls. Not currently documented in code.
+- Add a test-only provider stub for manual local workflows that run without provider calls. Not currently documented in code.
 - Add request-level extraction cache only if retention, privacy, and invalidation rules are explicitly defined.
 - Tune image detail, width, and JPEG quality against representative labels before changing defaults.
 
-## Do Not Change Casually
+## Stability-Sensitive Defaults
 
 - Provider model and image detail defaults.
 - Retry count and timeout.

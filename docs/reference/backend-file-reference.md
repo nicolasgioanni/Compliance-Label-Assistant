@@ -6,7 +6,7 @@
 | --- | --- | --- | --- | --- | --- |
 | `backend/app/__init__.py` | Marks `app` as a Python package. | none | none | Python imports | No runtime behavior. |
 | `backend/app/main.py` | FastAPI application factory, CORS setup, route registration, unexpected error handler. | `create_app`, `app`, `handle_unexpected_error` | FastAPI, CORS middleware, settings, routers, logging config | Uvicorn, tests | App title is `Compliance Label Assistant API`. |
-| `backend/app/config.py` | Centralized environment configuration. | `Settings`, `get_settings` | `os`, dataclasses, `lru_cache` | routes, services, provider, tests | Only backend source that should read backend env vars. |
+| `backend/app/config.py` | Centralized environment configuration. | `Settings`, `get_settings` | `os`, dataclasses, `lru_cache` | routes, services, provider, tests | Only backend source that reads backend env vars. |
 | `backend/app/constants.py` | Shared backend constants. | `STANDARD_GOVERNMENT_WARNING` | none | routes, verification tests | Server-owned government warning text. |
 | `backend/app/schemas.py` | Pydantic API models and status literals. | `ExpectedFields`, `ExtractedFields`, `FieldResult`, `SingleVerificationResponse`, `BatchVerificationItem`, `BatchVerificationResponse` | Pydantic, typing literals | routes, services, verification | Defines public response shapes. |
 
@@ -85,4 +85,4 @@
 | `backend/requirements.txt` | Python dependencies. | See [dependency reference](dependency-reference.md). |
 | `backend/runtime.txt` | Python runtime declaration. | `python-3.11.9`. |
 | `backend/start.sh` | Uvicorn startup wrapper. | Uses `${PORT:-8000}`. |
-| `backend/.env.example` | Safe backend env placeholder values. | Do not put real secrets here. |
+| `backend/.env.example` | Safe backend env placeholder values. | Real secrets remain outside this file. |

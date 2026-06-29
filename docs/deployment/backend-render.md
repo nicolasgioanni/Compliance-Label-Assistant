@@ -46,13 +46,13 @@ See [deployment environment variables](environment-variables.md).
 
 ## Port Behavior
 
-Render provides `$PORT`. The start command must bind to `0.0.0.0` and use `$PORT`.
+Render provides `$PORT`. The start command binds to `0.0.0.0` and uses `$PORT`.
 
 ## Deploy Gate
 
-Render auto-deploy from `main` is acceptable only after GitHub branch protection is active and requires `backend-ci`, `frontend-ci`, and `repo-hygiene`. If Render dashboard settings support deploy-after-checks or deployment protection, enable them for the production service.
+Render auto-deploy from `main` is intended only after GitHub branch protection is active and requires `backend-ci`, `frontend-ci`, and `repo-hygiene`. Render dashboard deploy-after-checks or deployment protection can provide an additional production-service guard when available.
 
-If Render supports an explicit health check path for the service, use `/health`.
+When Render supports an explicit health check path for the service, the path is `/health`.
 
 ## CORS
 
@@ -93,12 +93,12 @@ Backend fails to start:
 Provider configuration error:
 
 - Check `OPENAI_API_KEY` exists in Render environment settings.
-- Do not print or paste the real key into docs or logs.
+- Docs and logs use placeholders rather than the real key.
 
 CORS error:
 
 - Check `ALLOWED_ORIGINS` includes the deployed frontend origin.
-- Avoid wildcard origins in deployed environments.
+- Deployed environments use explicit origins rather than wildcard origins.
 
 Upload errors:
 

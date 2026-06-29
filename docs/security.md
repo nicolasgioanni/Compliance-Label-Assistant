@@ -7,10 +7,10 @@ Compliance Label Assistant is a lightweight prototype, not a production security
 ## Secrets And Provider Boundary
 
 - `OPENAI_API_KEY` is read only by backend configuration in `backend/app/config.py`.
-- The frontend uses only `VITE_API_BASE_URL` and never calls OpenAI directly.
+- The frontend uses only `VITE_API_BASE_URL`; provider calls remain backend-only.
 - Provider-specific extraction code is isolated under `backend/app/providers/openai`, so the extraction layer can later be replaced by an approved AI or OCR provider.
-- `.env` files are ignored; committed examples must contain placeholders or safe defaults only.
-- Vercel frontend configuration must not receive provider secrets.
+- `.env` files are ignored; committed examples contain placeholders or safe defaults only.
+- Vercel frontend configuration does not receive provider secrets.
 - Render backend configuration owns provider secrets such as `OPENAI_API_KEY`.
 
 ## Upload And Data Handling
@@ -22,7 +22,7 @@ Compliance Label Assistant is a lightweight prototype, not a production security
 
 ## Browser And API Boundaries
 
-- Backend CORS uses `ALLOWED_ORIGINS`; deployed Render configuration must include the deployed Vercel origin and should not use a wildcard origin.
+- Backend CORS uses `ALLOWED_ORIGINS`; deployed Render configuration includes the deployed Vercel origin and uses explicit origins rather than a wildcard origin.
 - Backend API responses include lightweight defensive headers: `X-Content-Type-Options`, `Referrer-Policy`, and `Cache-Control`.
 - The Vercel frontend config adds static security headers without a CSP, because the backend API origin is deployment-specific.
 - React renders extracted text and user-entered values as text, not HTML.
@@ -30,9 +30,9 @@ Compliance Label Assistant is a lightweight prototype, not a production security
 
 ## Logging And Repository Hygiene
 
-Do not log provider keys, tokens, raw image bytes, base64 image payloads, full uploaded payloads, full environment dumps, or real local `.env` contents. Current unexpected-error logging records exception class names rather than stack traces or payloads.
+Logging excludes provider keys, tokens, raw image bytes, base64 image payloads, full uploaded payloads, full environment dumps, and real local `.env` contents. Current unexpected-error logging records exception class names rather than stack traces or payloads.
 
-Before committing, check that ignored env files, generated outputs, logs, private dashboard URLs, credentials, and raw uploaded payloads are not staged.
+Repository hygiene checks cover ignored env files, generated outputs, logs, private dashboard URLs, credentials, and raw uploaded payloads.
 
 ## Abuse And Cost Controls
 

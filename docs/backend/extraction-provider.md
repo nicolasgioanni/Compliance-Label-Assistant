@@ -62,8 +62,8 @@ Current code sets `raw_text` to `null`.
 ## Security Notes
 
 - Provider key stays in backend settings.
-- The frontend never receives provider secrets.
-- Do not log request image bytes, base64 payloads, provider keys, or full provider responses.
+- Provider secrets remain backend-only.
+- Logging excludes request image bytes, base64 payloads, provider keys, and full provider responses.
 
 ## Testing
 

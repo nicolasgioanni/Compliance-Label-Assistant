@@ -6,7 +6,7 @@ Backend configuration is centralized in:
 
 - `backend/app/config.py`
 
-Routes and services should import settings from this module instead of reading environment variables directly.
+Routes and services import settings from this module instead of reading environment variables directly.
 
 ## Settings
 
@@ -67,4 +67,4 @@ Routes and services should import settings from this module instead of reading e
 
 ## Local Examples
 
-Use `backend/.env.example` as a placeholder template. Do not copy real secret values into committed files.
+`backend/.env.example` is the placeholder template. Real secret values remain outside committed files.

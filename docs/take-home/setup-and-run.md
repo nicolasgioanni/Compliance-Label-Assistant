@@ -105,7 +105,7 @@ The checked-in example is `frontend/.env.example`.
 | `JPEG_QUALITY` | Optional | `60` | JPEG encoding quality for preprocessed images. |
 | `ALLOWED_ORIGINS` | Required when frontend origin differs from default | `http://localhost:5173` | Comma-separated CORS allowlist. |
 
-The checked-in example is `backend/.env.example`. Do not commit local `.env` files with real values.
+The checked-in example is `backend/.env.example`. Local `.env` files with real values remain excluded from source control.
 
 ## Test Commands
 
@@ -138,7 +138,7 @@ cd frontend
 npm run build
 ```
 
-There is no checked-in backend build script. Render should install `backend/requirements.txt` and start Uvicorn with the command documented in [../deployment/backend-render.md](../deployment/backend-render.md).
+There is no checked-in backend build script. Render installs `backend/requirements.txt` and starts Uvicorn with the command documented in [../deployment/backend-render.md](../deployment/backend-render.md).
 
 ## Smoke Test
 

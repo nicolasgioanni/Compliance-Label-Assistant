@@ -55,4 +55,4 @@ If behavior cannot be confirmed from code or checked-in config, mark it as:
 - `Needs confirmation`
 - `Not currently documented in code`
 
-Do not fill gaps with assumptions that read like implemented behavior.
+Unconfirmed gaps remain marked as uncertainty rather than assumptions that read like implemented behavior.

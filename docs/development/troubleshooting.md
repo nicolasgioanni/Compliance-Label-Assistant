@@ -23,7 +23,7 @@ Safe fix:
 .\scripts\start-frontend.ps1 -FrontendPort 5174
 ```
 
-Do not put provider keys in frontend env files.
+Provider keys belong only in backend environment configuration.
 
 ## Backend Fails To Start
 
@@ -49,7 +49,7 @@ Safe fix:
 .\scripts\start-backend.ps1 -BackendPort 8010
 ```
 
-Do not edit application imports or startup code to work around a local dependency or port issue.
+Local dependency or port issues are resolved through setup, working-directory, dependency, or port configuration rather than application import/startup changes.
 
 ## Missing Environment Variables
 
@@ -71,7 +71,7 @@ Safe fix:
 OPENAI_API_KEY=<OPENAI_API_KEY>
 ```
 
-Do not commit real values.
+Real environment values remain outside committed files.
 
 ## API Base URL Wrong
 
@@ -93,7 +93,7 @@ Safe fix:
 VITE_API_BASE_URL=<BACKEND_URL>
 ```
 
-Do not hard-code deployed backend URLs in frontend source.
+Deployed backend URLs are configured through `VITE_API_BASE_URL` rather than hard-coded frontend source.
 
 ## CORS Errors
 
@@ -117,7 +117,7 @@ ALLOWED_ORIGINS=<FRONTEND_URL>
 
 Use a comma-separated list for multiple origins.
 
-Do not use a wildcard origin in deployed backend settings.
+Deployed backend settings use explicit frontend origins rather than wildcard origins.
 
 ## Upload Fails
 
@@ -143,7 +143,7 @@ Safe fix:
 - Use a smaller readable image.
 - Keep frontend and backend file limits aligned.
 
-Do not bypass frontend or backend upload validation to accept a failing file.
+Frontend and backend upload validation remain active for rejected files.
 
 ## Image Preprocessing Fails
 
@@ -162,9 +162,9 @@ Check:
 Safe fix:
 
 - Try a readable JPG, PNG, WebP, or TIFF.
-- Do not bypass backend validation.
+- Backend validation remains active.
 
-Do not log raw image bytes or base64 payloads while debugging preprocessing.
+Preprocessing debug logs exclude raw image bytes and base64 payloads.
 
 ## Provider Request Fails
 
@@ -193,7 +193,7 @@ Safe fix:
 - Retry later for temporary provider failures.
 - Adjust timeout or retry settings only after testing.
 
-Do not paste provider keys, provider payloads, or full environment dumps into docs, logs, or issue comments.
+Docs, logs, and issue comments use placeholders and summaries rather than provider keys, provider payloads, or full environment dumps.
 
 ## Invalid Provider Response
 
@@ -213,7 +213,7 @@ Safe fix:
 - Retry the request.
 - Add a focused provider parsing test before changing parser behavior.
 
-Do not loosen structured parsing without updating API contract tests.
+Structured parsing changes include matching API contract test updates.
 
 ## Verification Result Looks Wrong
 
@@ -237,7 +237,7 @@ Safe fix:
 - Verify expected field values.
 - Add or update backend verification tests before changing rule behavior.
 
-Do not change deterministic rules based only on one live provider result.
+Deterministic rule changes rely on focused tests and representative cases rather than one live provider result.
 
 ## Vercel Deployment Fails
 
@@ -264,7 +264,7 @@ cd frontend
 npm run build
 ```
 
-Do not change Vercel project settings until the local build failure is understood.
+Vercel project setting changes follow local build-failure diagnosis.
 
 ## Render Deployment Fails
 
@@ -289,7 +289,7 @@ Safe fix:
 - Match the documented Render settings.
 - Configure backend environment variables in Render.
 
-Do not print or paste real Render environment values into documentation or logs.
+Documentation and logs use placeholders rather than real Render environment values.
 
 ## Tests Fail
 
@@ -305,7 +305,7 @@ Safe fix:
 
 - Fix the behavior or update tests only when behavior intentionally changed.
 
-Do not delete or skip failing tests to make validation pass.
+Failing tests are fixed or intentionally updated when behavior changes; skipped or deleted tests are not used as a validation shortcut.
 
 ## Build Fails
 
@@ -327,4 +327,4 @@ npm run typecheck
 npm run build
 ```
 
-Do not commit generated `dist/` or coverage output while debugging build failures.
+Generated `dist/` and coverage output remain excluded from commits while debugging build failures.

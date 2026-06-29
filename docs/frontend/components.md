@@ -70,6 +70,6 @@ Components focus on rendering and user interaction. API calls and reusable state
 
 ## Skeleton Loading
 
-Skeletons are frontend-only perceived-performance placeholders. They do not add API calls, caching, polling, backend endpoints, progress percentages, or artificial delays.
+Skeletons are frontend-only perceived-performance placeholders. They add no API calls, caching, polling, backend endpoints, progress percentages, or artificial delays.
 
 Use the shared skeleton primitives for decorative placeholder shapes, and keep visible loading text in the owning region. The selected-label verification skeleton mirrors the final result layout while the existing `/verify` request is pending, then disappears immediately for success or error states.

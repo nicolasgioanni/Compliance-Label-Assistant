@@ -16,7 +16,7 @@ This is an independent prototype. It is not an official TTB, Treasury, or govern
 | Backend API | https://compliance-label-assistant.onrender.com |
 | Source repository | https://github.com/nicolasgioanni/label-compliance-verifier |
 
-These are public application URLs. Do not add private dashboard links, credentials, tokens, or real environment values to documentation.
+These are public application URLs. Private dashboard links, credentials, tokens, and real environment values remain outside repository documentation.
 
 ## What The App Does
 
@@ -45,6 +45,42 @@ The current frontend calls `GET /health`, `POST /warmup`, and `POST /verify`. Th
 - CI: split GitHub Actions workflows for backend, frontend, and repository hygiene.
 
 Deep technical documentation lives in [docs/](docs/README.md).
+
+## Implementation Approach
+
+The implementation is a standalone proof of concept rather than a COLA integration. Reviewers provide expected application values, upload label artwork, and review field-level comparison evidence.
+
+The React/Vite frontend owns the reviewer workflow: upload, queue state, expected-field entry, result review, filtering, and export. API calls are centralized in `frontend/src/api/verificationApi.js`.
+
+The FastAPI backend validates and preprocesses uploads before extraction. OpenAI provider code is isolated under `backend/app/providers/openai/`, while deterministic comparison rules live under `backend/app/verification/`. Route handlers remain thin and delegate workflow orchestration to service modules.
+
+## Tools Used
+
+- React 18, Vite 6, JavaScript, CSS, Vitest, Testing Library, and ESLint for the frontend.
+- Python 3.11, FastAPI, Uvicorn, Pydantic, pytest, and Ruff for the backend.
+- OpenAI Python SDK for backend-only vision-model extraction.
+- Pillow for image validation and preprocessing.
+- `write-excel-file` and browser-generated CSV for exports.
+- Vercel for the static frontend and Render Starter for the backend API.
+
+## Assumptions
+
+- The prototype is standalone and does not integrate with COLA.
+- Reviewers provide expected application field values before verification.
+- Uploaded test images are non-sensitive and suitable for prototype evaluation.
+- Human review remains final for ambiguous, low-confidence, or unusual labels.
+- The selected fields are enough to demonstrate the workflow; the app does not evaluate every federal alcohol labeling requirement.
+- Uploaded images are processed temporarily by application code and are not persistently stored.
+- The OpenAI extraction boundary can later be replaced by an approved OCR or AI provider.
+
+## Trade-Offs And Limitations
+
+- OpenAI vision extraction makes the prototype useful on varied label images, but it creates an external provider dependency, cost, and outbound network requirement.
+- Extraction and verification are separated so model output does not directly decide pass or fail.
+- The implementation intentionally omits persistent upload storage, authentication, a database, audit logging, and official review history because those controls require product, retention, and deployment decisions outside the prototype scope.
+- The frontend queue calls `POST /verify` for each ready label so each queued label can keep its own expected field values. The backend `/verify-batch` endpoint remains available for shared expected-field batch requests.
+- Image resizing and compression reduce payload size and latency, but tiny text, glare, blur, poor lighting, and unusual layouts can still affect extraction quality.
+- Government warning checks are not replacements for human review of typography, placement, font size, boldness, or full label-layout requirements.
 
 ## Quick Start
 
@@ -129,17 +165,30 @@ Backend:
 | `ALLOWED_ORIGINS` | Comma-separated browser origins allowed by CORS. |
 | `VERIFICATION_DAILY_UNIT_LIMIT` | Daily global verification unit cap; default is 50. |
 
-Additional backend tuning variables are documented in [backend environment variables](docs/backend/environment-variables.md) and [deployment environment variables](docs/deployment/environment-variables.md). Never commit real `.env` values.
+Additional backend tuning variables are documented in [backend environment variables](docs/backend/environment-variables.md) and [deployment environment variables](docs/deployment/environment-variables.md). Real `.env` values remain excluded from source control and documentation.
 
 ## Deployment Overview
 
-- Vercel should use `frontend/` as the project root, `npm run build` as the build command, and `dist` as the output directory.
-- Vercel needs `VITE_API_BASE_URL=<BACKEND_URL>` for deployed browser requests.
-- Render should use `backend/` as the service root, Python `3.11.9`, installed dependencies from `backend/requirements.txt`, and the Uvicorn start command documented in deployment docs.
+- The Vercel project uses `frontend/` as the project root, `npm run build` as the build command, and `dist` as the output directory.
+- The deployed frontend uses `VITE_API_BASE_URL=<BACKEND_URL>` for browser requests.
+- The Render service uses `backend/` as the service root, Python `3.11.9`, installed dependencies from `backend/requirements.txt`, and the Uvicorn start command documented in deployment docs.
 - Render provides `PORT`; `backend/start.sh` runs Uvicorn with `${PORT:-8000}`.
 - Provider secrets belong only in the backend deployment environment.
 
 See [deployment overview](docs/deployment/overview.md), [frontend on Vercel](docs/deployment/frontend-vercel.md), and [backend on Render](docs/deployment/backend-render.md).
+
+## Performance Smoke Context
+
+A small warm-backend smoke test was run against the deployed Render backend API on 2026-06-09 using synthetic fixtures from `sample-data/images`. Each fixture was verified three times after calling `/warmup`; all documented medians in that run were under five seconds.
+
+| Case | Scenario | Documented status | Median backend processing time | Median API request time |
+| --- | --- | --- | ---: | ---: |
+| TC01 | Clean baseline label | `pass` | 2,556 ms | 2,633 ms |
+| TC03 | Clean label with intentional ABV mismatch | `pass` | 2,966 ms | 3,080 ms |
+| TC10 | Low-light label with multiple expected mismatches | `pass` | 2,645 ms | 2,761 ms |
+| TC09 | Rotated/glare image-quality case | `fail` | 3,323 ms | 3,463 ms |
+
+These measurements are smoke-test context, not an SLA. Provider latency, Render cold starts, image complexity, and network conditions can affect response time. TC09 demonstrates the documented limitation that extraction quality can vary on glare, rotation, low light, and other imperfect images.
 
 ## Documentation Map
 
@@ -158,11 +207,11 @@ See [deployment overview](docs/deployment/overview.md), [frontend on Vercel](doc
 - [Known gaps](docs/maintenance/known-gaps.md)
 - [Sample label fixtures](sample-data/README.md)
 
-## Security Reminder
+## Security And Privacy
 
-- Keep `OPENAI_API_KEY` backend-only.
-- Do not put provider keys in frontend code or Vercel frontend variables.
-- Do not commit `backend/.env`, `frontend/.env`, real tokens, private dashboard URLs, uploaded payloads, or sensitive operational details.
+- `OPENAI_API_KEY` is backend-only.
+- Provider keys remain out of frontend code and Vercel frontend variables.
+- `backend/.env`, `frontend/.env`, real tokens, private dashboard URLs, uploaded payloads, and sensitive operational details remain excluded from committed files.
 - Uploaded files are validated and processed temporarily by application code; they are not persistently stored by this prototype.
 
 ## License

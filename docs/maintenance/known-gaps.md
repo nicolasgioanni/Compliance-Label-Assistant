@@ -34,4 +34,4 @@
 - Final legal review of Privacy Policy, Terms of Use, AI-use disclosure, and public footer wording before production or commercial use.
 - Distributed production rate-limit requirements.
 - Whether cloud AI is allowed in the target deployment network.
-- Whether future sample data should add more beverage types, label formats, and supported field categories.
+- Whether future sample data will add more beverage types, label formats, and supported field categories.

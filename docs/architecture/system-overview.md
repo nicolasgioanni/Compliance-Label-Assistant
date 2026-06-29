@@ -72,7 +72,7 @@ External provider:
 - Backend `/verify-batch` requires 2 to `MAX_BATCH_SIZE` files.
 - Backend provider configuration is read through `backend/app/config.py`.
 - `OPENAI_API_KEY` is required for extraction-backed verification.
-- `ALLOWED_ORIGINS` must include the active frontend origin for browser calls.
+- `ALLOWED_ORIGINS` includes the active frontend origin for browser calls.
 - Government production use would need PII, retention, audit logging, egress, approved-provider, access-control, monitoring, and rate-limit review.
 
 ## Intentionally Out Of Scope

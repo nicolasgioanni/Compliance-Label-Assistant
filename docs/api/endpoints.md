@@ -189,9 +189,9 @@ Services:
 Validation rules:
 
 - Filename is required.
-- Extension, MIME type, decoded image format, and decoded content must match supported image types.
-- File must be non-empty and smaller than `MAX_FILE_SIZE_MB`.
-- Decoded pixel count must be at or below `MAX_IMAGE_PIXELS` when that setting is positive.
+- Extension, MIME type, decoded image format, and decoded content are required to match supported image types.
+- File content is required to be non-empty and smaller than `MAX_FILE_SIZE_MB`.
+- Decoded pixel count is required to be at or below `MAX_IMAGE_PIXELS` when that setting is positive.
 - Unreadable and decompression-bomb style images are rejected before extraction.
 
 Performance notes:

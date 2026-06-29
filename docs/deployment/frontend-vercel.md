@@ -17,15 +17,15 @@
 | --- | --- |
 | `VITE_API_BASE_URL` | `<BACKEND_URL>` |
 
-Do not configure backend provider secrets in Vercel.
+Vercel configuration excludes backend provider secrets.
 
 ## Preview And Production Notes
 
 - Preview deployments need a backend URL that is reachable from the browser.
-- Production deployments should use the production Render backend URL.
-- The production branch should be `main`.
-- Production promotion should depend on protected `main` and the required GitHub checks: `backend-ci`, `frontend-ci`, and `repo-hygiene`.
-- Enable Vercel deployment protection or deployment checks in the Vercel dashboard if available for the project.
+- Production deployments use the production Render backend URL.
+- The production branch is `main`.
+- Production promotion depends on protected `main` and the required GitHub checks: `backend-ci`, `frontend-ci`, and `repo-hygiene`.
+- Vercel deployment protection or deployment checks are dashboard controls when available for the project.
 - If a preview frontend uses a different origin, add that origin to backend `ALLOWED_ORIGINS`.
 - A CSP is intentionally not configured in this prototype because the backend API origin is deployment-specific.
 
@@ -45,7 +45,7 @@ Build fails:
 
 Wrong output directory:
 
-- Vercel must use `dist`, not repository root.
+- Vercel output directory is `dist`, not repository root.
 
 ## Production Checklist
 

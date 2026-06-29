@@ -13,7 +13,7 @@ The implementation keeps human review as the final decision point. The system as
 - Keep the prototype focused on the business problem described by the take-home assignment: routine comparison of label artwork against expected application data.
 - Separate visual text extraction from verification so comparison decisions remain explicit and testable.
 - Keep secrets and provider calls on the backend.
-- Avoid persistent storage unless the product scope requires retention, accounts, audit history, or review workflow state.
+- Keep persistent storage out of scope unless the product scope requires retention, accounts, audit history, or review workflow state.
 - Favor a simple reviewer workflow over a broad feature set.
 - Document limitations clearly rather than implying production compliance readiness.
 
@@ -24,11 +24,11 @@ The implementation keeps human review as the final decision point. The system as
 | Reviewers upload label artwork images. | The take-home assignment focuses on label artwork and does not require direct COLA integration or COLA PDF ingestion. | The app accepts JPG, PNG, WebP, and TIFF image uploads. COLA PDFs and direct COLA records are out of scope. |
 | Expected application data is entered by the user. | No COLA API, database, or application-record source is required by the assignment. | Reviewers enter expected values for brand name, class or type, alcohol content, net contents, bottler/producer, and country of origin; the standard government warning is applied automatically. |
 | Human review remains final. | Label review contains nuance, especially for capitalization, punctuation, image quality, and legal interpretation. | Results include field-level statuses rather than a single irreversible decision. |
-| Government warning text should be stricter than general label text. | The warning statement is a specific regulated text area and is less tolerant of formatting and wording variation than ordinary brand text. | Warning text is verified separately and documented as stricter than normalized brand or class matching. |
-| Uploaded files should not be persisted by application code. | Persistent storage would introduce retention, privacy, and audit-design questions that are outside the prototype scope. | Files are validated and processed in memory. No database or uploaded-file storage is included. |
+| Government warning text is stricter than general label text. | The warning statement is a specific regulated text area and is less tolerant of formatting and wording variation than ordinary brand text. | Warning text is verified separately and documented as stricter than normalized brand or class matching. |
+| Uploaded files are not persisted by application code. | Persistent storage would introduce retention, privacy, and audit-design questions that are outside the prototype scope. | Files are validated and processed in memory. No database or uploaded-file storage is included. |
 | Cloud extraction is acceptable for a prototype, but not automatically production-ready for restricted environments. | A vision provider improves prototype extraction quality, while production government infrastructure may require approved network and provider controls. | The OpenAI integration is isolated behind backend provider modules and configured with backend-only environment variables. |
 | Speed matters, but guaranteed latency is not claimed. | A slow reviewer tool is unlikely to be adopted, but provider latency and deployment tier are not fully controlled by the app. | The backend resizes and compresses images, and the queue uses bounded concurrency. Documentation avoids promising a fixed response time. |
-| Batch handling should be bounded. | Reviewers may need to process multiple labels, but unrestricted batch processing could increase cost, latency, and failure complexity. | The frontend queue is limited to 10 labels, and backend batch size is configurable with `MAX_BATCH_SIZE`. |
+| Batch handling is bounded. | Reviewers may need to process multiple labels, but unrestricted batch processing could increase cost, latency, and failure complexity. | The frontend queue is limited to 10 labels, and backend batch size is configurable with `MAX_BATCH_SIZE`. |
 
 ## Major Decisions And Alternatives
 
@@ -92,9 +92,9 @@ The frontend exports current verification results to CSV and XLSX. This gives re
 
 The export is intentionally limited to current result data. It does not include raw uploaded images, raw provider payloads, or a persistent report history.
 
-### No Separate Landing Page
+### Reviewer-First Landing And Tool Routes
 
-The deployed application should open directly into the working tool. Evaluators need to test the prototype quickly, so a separate marketing-style landing page would add friction without improving the take-home deliverable.
+The deployed frontend includes a concise landing page, a direct verification tool route at `/app`, an about page, and transparency pages for privacy and terms. This keeps the first screen evaluator-oriented while still allowing direct access to the working tool from the navigation and documented URLs.
 
 ## Matching Strategy
 
@@ -124,7 +124,7 @@ The prototype includes security choices appropriate to the take-home scope:
 - Uploaded files are validated before extraction.
 - Images are processed in memory and are not persistently stored by application code.
 - CORS is configured through backend environment settings.
-- Export utilities avoid raw extracted text and neutralize spreadsheet formula prefixes.
+- Export utilities omit raw extracted text and neutralize spreadsheet formula prefixes.
 - User-provided and extracted text is rendered as text, not as raw HTML.
 
 The prototype does not include production controls such as authentication, role-based access, audit logging, retention policy, distributed rate limiting, production monitoring, or federal compliance hardening.
@@ -145,4 +145,4 @@ Important future work includes:
 - Broader field coverage and validation against additional alcohol labeling requirements.
 - Measured extraction-quality evaluation across a larger labeled test set.
 
-These items are not implemented in the current prototype and should not be treated as current capabilities.
+These items are not implemented in the current prototype and are not current capabilities.

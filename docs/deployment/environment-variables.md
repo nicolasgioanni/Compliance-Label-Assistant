@@ -42,7 +42,7 @@ Example files:
 - `backend/.env.example`
 - `frontend/.env.example`
 
-Never commit real secret values.
+Real secret values remain excluded from committed files.
 
 Backend warmup can make a non-generation provider metadata request when `OPENAI_NETWORK_WARMUP` is enabled. It does not send label images, provider request content, or extraction payloads, but the metadata request may still count as an API request or be rate-limited.
 

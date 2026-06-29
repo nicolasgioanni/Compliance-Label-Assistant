@@ -9,7 +9,7 @@
 
 ## Recommended Branch Workflow
 
-Because no strict repository policy is documented in code, use this as a recommendation:
+No strict repository policy is documented in code. The recommended workflow is:
 
 1. Create a short-lived branch for each change.
 2. Keep frontend, backend, API, deployment, and docs changes scoped.
@@ -41,7 +41,7 @@ npm run build
 
 ## Secret Hygiene
 
-Do not commit:
+Excluded from commits:
 
 - `backend/.env`
 - `frontend/.env`
@@ -53,7 +53,7 @@ Do not commit:
 
 ## Generated Files
 
-Do not commit:
+Excluded from commits:
 
 - `backend/.venv/`
 - `frontend/node_modules/`
@@ -64,7 +64,7 @@ Do not commit:
 
 Lockfiles:
 
-- `frontend/package-lock.json` is tracked and should be updated when frontend dependencies change.
+- `frontend/package-lock.json` is tracked and changes when frontend dependencies change.
 
 ## API Contract Changes
 

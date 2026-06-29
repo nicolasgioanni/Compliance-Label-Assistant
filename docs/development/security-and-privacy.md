@@ -2,10 +2,10 @@
 
 ## Secret Handling
 
-- Keep `OPENAI_API_KEY` backend-only.
+- `OPENAI_API_KEY` remains backend-only.
 - Configure backend secrets in `backend/.env` locally and Render environment settings in deployment.
-- Do not configure provider keys in Vercel, frontend env files, frontend code, docs, logs, screenshots, or examples.
-- Use placeholders such as `<OPENAI_API_KEY>`, `<BACKEND_URL>`, and `<FRONTEND_URL>`.
+- Provider keys remain outside Vercel, frontend env files, frontend code, docs, logs, screenshots, and examples.
+- Placeholder values such as `<OPENAI_API_KEY>`, `<BACKEND_URL>`, and `<FRONTEND_URL>` document required configuration.
 
 ## Environment Files
 
@@ -19,7 +19,7 @@ Tracked examples:
 - `backend/.env.example`
 - `frontend/.env.example`
 
-Example files must contain placeholders or safe defaults only.
+Example files contain placeholders or safe defaults only.
 
 ## Upload Handling
 
@@ -31,11 +31,11 @@ Current backend behavior:
 - Preprocesses image bytes in memory.
 - Does not persist uploaded files.
 
-Do not add persistent upload storage without explicit retention and privacy requirements.
+Persistent upload storage remains out of scope unless retention and privacy requirements are explicitly defined.
 
 ## Logging
 
-Do not log:
+Logging excludes:
 
 - provider keys
 - tokens
@@ -51,7 +51,7 @@ Current unexpected-error logging records only exception class names.
 
 Backend CORS is configured from `ALLOWED_ORIGINS`.
 
-Production should use explicit frontend origins, not `*`.
+Production uses explicit frontend origins rather than `*`.
 
 ## Browser And Export Safety
 
@@ -63,11 +63,11 @@ Production should use explicit frontend origins, not `*`.
 
 ## Error Responses
 
-Return safe user-facing error messages. Do not return stack traces, provider secrets, raw provider payloads, or sensitive configuration values.
+Error handling returns safe user-facing messages. Stack traces, provider secrets, raw provider payloads, and sensitive configuration values remain outside API responses.
 
 ## Git Hygiene
 
-Before committing:
+Repository hygiene checks include:
 
 - Check `git status --short`.
 - Confirm ignored env files are not staged.
@@ -87,4 +87,4 @@ The current prototype does not include:
 - distributed production rate limiting
 - production monitoring
 
-These are not current features and should not be claimed in docs or user interface copy.
+These are not current features and remain outside documentation and user interface claims.

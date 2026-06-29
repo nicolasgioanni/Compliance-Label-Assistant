@@ -6,7 +6,7 @@
 
 ## Purpose
 
-Verification modules compare extracted fields against expected application data using deterministic code. They do not call the provider, read image bytes, or make final legal determinations.
+Verification modules compare extracted fields against expected application data using deterministic code. Provider calls, image-byte handling, and final legal determinations remain outside this layer.
 
 ## Files
 
@@ -56,7 +56,7 @@ Government warning:
 
 - Government warning verification is strict for extracted text: the backend checks presence, uppercase `GOVERNMENT WARNING:` heading, and exact standard wording.
 - Compares against `STANDARD_GOVERNMENT_WARNING`.
-- Uses review statuses for similar or punctuation/capitalization differences that do not pass.
+- Uses review statuses for similar or punctuation/capitalization differences that fail exact matching.
 - The prototype does not make final typography, boldness, font-size, placement, or label-layout determinations; those remain human-review items.
 
 ## Optional Expected Fields

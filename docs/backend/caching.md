@@ -12,7 +12,7 @@ Cache key:
 
 Purpose:
 
-- Avoid repeated SDK client construction for identical settings.
+- Reduces repeated SDK client construction for identical settings.
 
 ## Test Cache Reset
 
@@ -32,4 +32,4 @@ The current code does not implement:
 
 Repeat verification of the same image can make another provider call. This is current behavior.
 
-Do not add persistent caching without defining retention, privacy, invalidation, and testing expectations.
+Persistent caching remains out of scope until retention, privacy, invalidation, and testing expectations are defined.

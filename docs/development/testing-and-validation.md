@@ -33,7 +33,7 @@ npm run preview
 
 ## Continuous Integration
 
-GitHub Actions is split into required validation workflows that run on pull requests to `main` and pushes to `main`. They do not deploy and do not require `OPENAI_API_KEY`, Vercel credentials, Render credentials, or provider secrets.
+GitHub Actions is split into required validation workflows that run on pull requests to `main` and pushes to `main`. These workflows validate only; they require no `OPENAI_API_KEY`, Vercel credentials, Render credentials, or provider secrets.
 
 `.github/workflows/backend-ci.yml` exposes the required `backend-ci` check and runs from `backend/`:
 
@@ -70,7 +70,7 @@ Configure GitHub branch protection to require `backend-ci`, `frontend-ci`, and `
 
 ## Latest Local Validation Snapshot
 
-For implementation work that touches validation, run the backend, frontend, and repo hygiene commands above and record the actual result in the pull request notes. Do not treat older test-count snapshots as current once tests or workflow files change.
+For implementation work that touches validation, run the backend, frontend, and repo hygiene commands above and record the actual result in the pull request notes. Older test-count snapshots stop being current once tests or workflow files change.
 
 ## Full-Stack Local Validation
 
@@ -111,5 +111,5 @@ For implementation work that touches validation, run the backend, frontend, and 
 
 - No backend typecheck command is configured.
 - No Playwright or Cypress browser smoke command is configured.
-- Coverage thresholds are not enforced yet; baseline coverage should be reviewed before adding conservative thresholds.
+- Coverage thresholds are not enforced yet; baseline coverage review precedes conservative threshold additions.
 - No GitHub Actions-controlled deployment command is configured.

@@ -16,7 +16,7 @@ The deployed frontend does not require a test account. The deployed backend is c
 - Deployed review: open the frontend URL and test the application in the browser.
 - Local review: backend verification requires `OPENAI_API_KEY` in the backend environment.
 - Frontend local configuration uses `VITE_API_BASE_URL` to point the browser app at the backend.
-- No real environment files or secret values should be committed to the repository.
+- Real environment files and secret values remain outside the repository.
 
 ## Supported Verification Fields
 

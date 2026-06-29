@@ -38,7 +38,7 @@ Keep changes small, accurate, and aligned with the frontend/backend boundaries a
 2. Put detailed behavior docs under `docs/`.
 3. Update file references when files are added, renamed, removed, or repurposed.
 4. Mark unclear behavior as `Needs confirmation`.
-5. Do not include real secrets or local `.env` values.
+5. Keep real secrets and local `.env` values out of documentation.
 
 ## Review Checklist
 

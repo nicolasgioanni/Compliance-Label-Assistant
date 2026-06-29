@@ -57,7 +57,7 @@ Responsibilities:
 - Skip when no provider key exists.
 - Initialize the cached OpenAI client when possible.
 - Optionally make one non-generation model metadata request to warm the provider network path.
-- Never send image files, provider request content, expected fields, or extraction payloads.
+- Warmup sends no image files, provider request content, expected fields, or extraction payloads.
 - Swallow warmup failures because warmup is best effort.
 - Runs provider network warmup at most once per model per backend process.
 
@@ -89,4 +89,4 @@ Uses `time.perf_counter()` and returns integer milliseconds.
 
 ## Service Boundaries
 
-Services should orchestrate workflow only. They should not contain HTTP form parsing, provider-specific payload details, deterministic comparison logic, or image validation implementation details.
+Services orchestrate workflow only. HTTP form parsing, provider-specific payload details, deterministic comparison logic, and image validation implementation details remain in their dedicated modules.

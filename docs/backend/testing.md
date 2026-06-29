@@ -35,4 +35,4 @@ No backend coverage threshold is configured yet.
 
 ## Test Provider Calls
 
-Existing provider tests patch provider interactions and should not require real provider requests.
+Existing provider tests patch provider interactions and require no real provider requests.

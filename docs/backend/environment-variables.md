@@ -62,7 +62,7 @@ ALLOWED_ORIGINS=<FRONTEND_URL>
 
 ## Deployment
 
-Configure backend variables in Render service environment settings. Do not expose `OPENAI_API_KEY` to Vercel or browser code.
+Backend variables are configured in Render service environment settings. `OPENAI_API_KEY` remains outside Vercel and browser code.
 
 Warmup initializes the cached provider client and can make a non-generation model metadata request. It does not upload label files, send provider request content, or call extraction. The metadata request may still count as an API request or be rate-limited.
 
