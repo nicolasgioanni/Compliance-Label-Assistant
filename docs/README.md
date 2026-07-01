@@ -1,23 +1,35 @@
 # Documentation
 
-This folder is the canonical implementation documentation for Compliance Label Assistant. It describes the current React and Vite frontend, FastAPI backend, OpenAI extraction provider boundary, deterministic verification rules, local scripts, deployment settings, tests, and file-level references.
+This folder contains the evaluator and implementation documentation for Compliance Label Assistant. It describes the current React and Vite frontend, FastAPI backend, backend-only OpenAI extraction boundary, deterministic verification rules, local scripts, deployment settings, tests, and reference material.
 
-The root [README](../README.md) is the concise project entrypoint. Use this index for deeper engineering details.
+For fast review, start with the root [README](../README.md) and [Reviewer Guide](../REVIEWER_GUIDE.md). Use this index for deeper technical details. The `docs/take-home/` folder is evaluator-facing summary documentation; the architecture, frontend, backend, API, deployment, development, security, and reference folders are the implementation reference.
 
-## Start Here
+## Reviewer-Facing Docs
 
-1. [System Overview](architecture/system-overview.md)
-2. [Repository Map](reference/repository-map.md)
-3. [Local Development](development/local-development.md)
-4. [Testing And Validation](development/testing-and-validation.md)
-5. [API Overview](api/overview.md)
-6. [Frontend Overview](frontend/overview.md)
-7. [Backend Overview](backend/overview.md)
-8. [Deployment Overview](deployment/overview.md)
-9. [Troubleshooting](development/troubleshooting.md)
-10. [Known Gaps](maintenance/known-gaps.md)
+- [Reviewer Guide](../REVIEWER_GUIDE.md)
+- [Take-Home Project Brief](take-home/project-brief.md)
+- [Engineering Decisions](take-home/engineering-decisions.md)
+- [Setup And Run Guide](take-home/setup-and-run.md)
+- [Requirements Mapping](take-home/requirements-mapping.md)
+- [Deployment Links](take-home/deployment-links.md)
 
-The `docs/take-home/` folder is intentionally separate from this implementation reference and is not used as the source of truth for current technical documentation.
+## Suggested Reading Order
+
+1. [Reviewer Guide](../REVIEWER_GUIDE.md)
+2. [README](../README.md)
+3. [Take-Home Project Brief](take-home/project-brief.md)
+4. [Engineering Decisions](take-home/engineering-decisions.md)
+5. [Setup And Run Guide](take-home/setup-and-run.md)
+6. [System Overview](architecture/system-overview.md)
+7. [Data Flow](architecture/data-flow.md)
+8. [API Overview](api/overview.md)
+9. [Frontend Overview](frontend/overview.md)
+10. [Backend Overview](backend/overview.md)
+11. [Security](security.md)
+12. [Testing And Validation](development/testing-and-validation.md)
+13. [Deployment Overview](deployment/overview.md)
+14. [Repository Map](reference/repository-map.md)
+15. [Known Gaps](maintenance/known-gaps.md)
 
 ## Architecture
 
@@ -71,7 +83,7 @@ The `docs/take-home/` folder is intentionally separate from this implementation 
 - [Overview](deployment/overview.md)
 - [Frontend On Vercel](deployment/frontend-vercel.md)
 - [Backend On Render](deployment/backend-render.md)
-- [Deployment Environment Variables](deployment/environment-variables.md)
+- [Environment Variables](deployment/environment-variables.md)
 - [Production Checklist](deployment/production-checklist.md)
 
 ## Development
