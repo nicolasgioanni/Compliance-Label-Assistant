@@ -95,8 +95,10 @@ cd Compliance-Label-Assistant
 Add a backend provider key to ignored `backend\.env`:
 
 ```text
-OPENAI_API_KEY=<OPENAI_API_KEY>
+OPENAI_API_KEY=
 ```
+
+Paste the real backend provider key after the equals sign in that ignored local file.
 
 Start both services:
 
