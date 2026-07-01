@@ -42,6 +42,8 @@ _EXTRACTION_SEMAPHORES: dict[tuple[int, int], asyncio.Semaphore] = {}
 
 
 class _ExtractionFields(BaseModel):
+    """Structured provider output accepted from the Responses parser."""
+
     brand_name: str | None = None
     class_type: str | None = None
     alcohol_content: str | None = None
@@ -52,11 +54,13 @@ class _ExtractionFields(BaseModel):
 
 
 def _build_image_data_url(image_bytes: bytes) -> str:
+    """Encode the preprocessed JPEG for the provider request payload."""
     encoded_image = base64.b64encode(image_bytes).decode("ascii")
     return f"data:image/jpeg;base64,{encoded_image}"
 
 
 def _parse_extracted_fields(parsed_output: object) -> ExtractedFields:
+    """Map provider-validated fields into the public backend schema."""
     parsed_source = parsed_output.model_dump() if isinstance(parsed_output, BaseModel) else parsed_output
     try:
         parsed_fields = _ExtractionFields.model_validate(parsed_source)
@@ -77,6 +81,7 @@ def _parse_extracted_fields(parsed_output: object) -> ExtractedFields:
 
 
 def _extract_label_fields_sync(image_bytes: bytes, settings: Settings) -> ExtractedFields:
+    """Run the blocking provider extraction call with safe error mapping."""
     if not settings.openai_api_key:
         raise ExtractionConfigurationError(
             "OpenAI extraction is not configured. Please set OPENAI_API_KEY on the backend."
@@ -86,6 +91,9 @@ def _extract_label_fields_sync(image_bytes: bytes, settings: Settings) -> Extrac
     image_data_url = _build_image_data_url(image_bytes)
 
     try:
+        # The prompt and response parameters are part of the extraction
+        # contract: one provider call should extract fields only, not decide
+        # verification status or store provider-side response data.
         response = client.responses.parse(
             model=settings.openai_model,
             input=[
@@ -103,6 +111,7 @@ def _extract_label_fields_sync(image_bytes: bytes, settings: Settings) -> Extrac
             ],
             store=False,
             temperature=0,
+            max_output_tokens=settings.openai_max_output_tokens,
             text_format=_ExtractionFields,
         )
         return _parse_extracted_fields(response.output_parsed)
@@ -121,6 +130,7 @@ def _extract_label_fields_sync(image_bytes: bytes, settings: Settings) -> Extrac
 
 
 async def extract_label_fields(image_bytes: bytes, settings: Settings | None = None) -> ExtractedFields:
+    """Throttle extraction concurrency and keep blocking SDK work off the loop."""
     active_settings = settings or get_settings()
     semaphore = _get_extraction_semaphore(active_settings.openai_extraction_concurrency)
     async with semaphore:
@@ -128,6 +138,7 @@ async def extract_label_fields(image_bytes: bytes, settings: Settings | None = N
 
 
 def _get_extraction_semaphore(concurrency: int) -> asyncio.Semaphore:
+    """Cache one semaphore per event loop and configured concurrency."""
     loop_id = id(asyncio.get_running_loop())
     cache_key = (loop_id, max(concurrency, 1))
     if cache_key not in _EXTRACTION_SEMAPHORES:

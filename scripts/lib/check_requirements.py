@@ -14,6 +14,7 @@ except Exception as exc:  # pragma: no cover - only used for local setup diagnos
 
 
 def iter_requirement_lines(requirements_path: Path) -> list[str]:
+    """Yield installable requirement lines while ignoring comments/options."""
     lines: list[str] = []
     for raw_line in requirements_path.read_text(encoding="utf-8").splitlines():
         line = raw_line.strip()
@@ -26,6 +27,7 @@ def iter_requirement_lines(requirements_path: Path) -> list[str]:
 
 
 def main() -> int:
+    """Report missing or incompatible backend packages for setup scripts."""
     requirements_path = Path(sys.argv[1])
     missing: list[str] = []
 

@@ -16,8 +16,12 @@
 | `OPENAI_IMAGE_DETAIL` | Optional | No | `low` | Provider image detail. |
 | `OPENAI_MAX_RETRIES` | Optional | No | `0` | SDK retry count. |
 | `OPENAI_EXTRACTION_CONCURRENCY` | Optional | No | `2` | Provider extraction concurrency. |
+| `OPENAI_MAX_OUTPUT_TOKENS` | Optional | No | `500` | Maximum provider output tokens per extraction response. |
 | `OPENAI_NETWORK_WARMUP` | Optional | No | `true` | Enables best-effort provider metadata warmup without extraction. |
 | `OPENAI_WARMUP_TIMEOUT_SECONDS` | Optional | No | `2` | Warmup metadata request timeout. |
+| `VERIFICATION_RATE_LIMIT_ENABLED` | Optional | No | `true` | Enables the in-memory daily verification unit cap. |
+| `VERIFICATION_DAILY_UNIT_LIMIT` | Optional | No | `50` | Daily global verification unit cap. |
+| `VERIFICATION_RATE_LIMIT_WINDOW_SECONDS` | Optional | No | `86400` | Rate-limit window length in seconds. |
 | `MAX_FILE_SIZE_MB` | Optional | No | `5` | Upload file-size limit. |
 | `MAX_IMAGE_PIXELS` | Optional | No | `25000000` | Decoded image pixel limit. |
 | `MAX_BATCH_SIZE` | Optional | No | `10` | Backend batch size limit. |
@@ -38,6 +42,8 @@ Example files:
 - `backend/.env.example`
 - `frontend/.env.example`
 
-Never commit real secret values.
+Real secret values remain excluded from committed files.
 
 Backend warmup can make a non-generation provider metadata request when `OPENAI_NETWORK_WARMUP` is enabled. It does not send label images, provider request content, or extraction payloads, but the metadata request may still count as an API request or be rate-limited.
+
+The app-level verification cap is a process-local in-memory guard. Configure OpenAI project budgets as secondary billing alerts; they are not a replacement for the app cap.

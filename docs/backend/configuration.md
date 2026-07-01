@@ -6,7 +6,7 @@ Backend configuration is centralized in:
 
 - `backend/app/config.py`
 
-Routes and services should import settings from this module instead of reading environment variables directly.
+Routes and services import settings from this module instead of reading environment variables directly.
 
 ## Settings
 
@@ -19,8 +19,12 @@ Routes and services should import settings from this module instead of reading e
 - `openai_image_detail`
 - `openai_max_retries`
 - `openai_extraction_concurrency`
+- `openai_max_output_tokens`
 - `openai_network_warmup`
 - `openai_warmup_timeout_seconds`
+- `verification_rate_limit_enabled`
+- `verification_daily_unit_limit`
+- `verification_rate_limit_window_seconds`
 - `max_file_size_mb`
 - `max_image_pixels`
 - `max_batch_size`
@@ -47,8 +51,12 @@ Routes and services should import settings from this module instead of reading e
 | `OPENAI_IMAGE_DETAIL` | `low` | `low`, `auto`, `high`. |
 | `OPENAI_MAX_RETRIES` | `0` | 0 to 2. |
 | `OPENAI_EXTRACTION_CONCURRENCY` | `2` | 1 to 4. |
+| `OPENAI_MAX_OUTPUT_TOKENS` | `500` | 1 to 2000. |
 | `OPENAI_NETWORK_WARMUP` | `true` | Common boolean values. |
 | `OPENAI_WARMUP_TIMEOUT_SECONDS` | `2` | 1 to 5. |
+| `VERIFICATION_RATE_LIMIT_ENABLED` | `true` | Common boolean values. |
+| `VERIFICATION_DAILY_UNIT_LIMIT` | `50` | 1 to 10000. |
+| `VERIFICATION_RATE_LIMIT_WINDOW_SECONDS` | `86400` | 60 to 604800. |
 | `MAX_FILE_SIZE_MB` | `5` | Integer; no explicit bound. |
 | `MAX_IMAGE_PIXELS` | `25000000` | Integer; values above 0 enforce a limit. |
 | `MAX_BATCH_SIZE` | `10` | Integer; used by batch request validation. |
@@ -59,4 +67,4 @@ Routes and services should import settings from this module instead of reading e
 
 ## Local Examples
 
-Use `backend/.env.example` as a placeholder template. Do not copy real secret values into committed files.
+`backend/.env.example` is the placeholder template. Real secret values remain outside committed files.

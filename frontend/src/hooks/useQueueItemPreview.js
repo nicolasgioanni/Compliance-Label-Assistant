@@ -1,3 +1,4 @@
+// Tracks which queued label is open in the preview dialog.
 import { useEffect, useState } from 'react';
 
 export function useQueueItemPreview(activeQueueItems) {

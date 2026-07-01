@@ -23,7 +23,7 @@ Safe fix:
 .\scripts\start-frontend.ps1 -FrontendPort 5174
 ```
 
-Do not put provider keys in frontend env files.
+Provider keys belong only in backend environment configuration.
 
 ## Backend Fails To Start
 
@@ -49,6 +49,8 @@ Safe fix:
 .\scripts\start-backend.ps1 -BackendPort 8010
 ```
 
+Local dependency or port issues are resolved through setup, working-directory, dependency, or port configuration rather than application import/startup changes.
+
 ## Missing Environment Variables
 
 Symptom: verification returns a setup/configuration error.
@@ -69,7 +71,7 @@ Safe fix:
 OPENAI_API_KEY=<OPENAI_API_KEY>
 ```
 
-Do not commit real values.
+Real environment values remain outside committed files.
 
 ## API Base URL Wrong
 
@@ -90,6 +92,8 @@ Safe fix:
 ```text
 VITE_API_BASE_URL=<BACKEND_URL>
 ```
+
+Deployed backend URLs are configured through `VITE_API_BASE_URL` rather than hard-coded frontend source.
 
 ## CORS Errors
 
@@ -112,6 +116,8 @@ ALLOWED_ORIGINS=<FRONTEND_URL>
 ```
 
 Use a comma-separated list for multiple origins.
+
+Deployed backend settings use explicit frontend origins rather than wildcard origins.
 
 ## Upload Fails
 
@@ -137,6 +143,8 @@ Safe fix:
 - Use a smaller readable image.
 - Keep frontend and backend file limits aligned.
 
+Frontend and backend upload validation remain active for rejected files.
+
 ## Image Preprocessing Fails
 
 Symptom: backend returns an image processing error.
@@ -154,7 +162,9 @@ Check:
 Safe fix:
 
 - Try a readable JPG, PNG, WebP, or TIFF.
-- Do not bypass backend validation.
+- Backend validation remains active.
+
+Preprocessing debug logs exclude raw image bytes and base64 payloads.
 
 ## Provider Request Fails
 
@@ -172,13 +182,18 @@ Check:
 - `OPENAI_API_KEY`
 - `OPENAI_TIMEOUT_SECONDS`
 - `OPENAI_MAX_RETRIES`
+- `VERIFICATION_DAILY_UNIT_LIMIT`
+- `VERIFICATION_RATE_LIMIT_ENABLED`
 - `backend/app/providers/openai/extraction.py`
 
 Safe fix:
 
 - Confirm backend provider key is configured.
+- If the message is `Daily verification limit reached. Please try again when the limit resets.`, wait for the rate-limit window to reset or intentionally adjust the backend cap.
 - Retry later for temporary provider failures.
 - Adjust timeout or retry settings only after testing.
+
+Docs, logs, and issue comments use placeholders and summaries rather than provider keys, provider payloads, or full environment dumps.
 
 ## Invalid Provider Response
 
@@ -197,6 +212,8 @@ Safe fix:
 
 - Retry the request.
 - Add a focused provider parsing test before changing parser behavior.
+
+Structured parsing changes include matching API contract test updates.
 
 ## Verification Result Looks Wrong
 
@@ -219,6 +236,8 @@ Safe fix:
 
 - Verify expected field values.
 - Add or update backend verification tests before changing rule behavior.
+
+Deterministic rule changes rely on focused tests and representative cases rather than one live provider result.
 
 ## Vercel Deployment Fails
 
@@ -245,6 +264,8 @@ cd frontend
 npm run build
 ```
 
+Vercel project setting changes follow local build-failure diagnosis.
+
 ## Render Deployment Fails
 
 Symptom: backend build or start fails.
@@ -268,6 +289,8 @@ Safe fix:
 - Match the documented Render settings.
 - Configure backend environment variables in Render.
 
+Documentation and logs use placeholders rather than real Render environment values.
+
 ## Tests Fail
 
 Symptom: pytest or Vitest fails.
@@ -281,6 +304,8 @@ Check:
 Safe fix:
 
 - Fix the behavior or update tests only when behavior intentionally changed.
+
+Failing tests are fixed or intentionally updated when behavior changes; skipped or deleted tests are not used as a validation shortcut.
 
 ## Build Fails
 
@@ -301,3 +326,5 @@ npm run lint
 npm run typecheck
 npm run build
 ```
+
+Generated `dist/` and coverage output remain excluded from commits while debugging build failures.

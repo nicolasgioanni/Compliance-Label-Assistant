@@ -1,3 +1,4 @@
+// Bottom action bar for selected-label and ready-label verification commands.
 export default function QueueActions({
   isLocked = false,
   isVerifyReadyDisabled = true,

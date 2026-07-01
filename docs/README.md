@@ -1,8 +1,8 @@
 # Documentation
 
-This folder contains the implementation and evaluator documentation for Compliance Label Assistant. It describes the current React and Vite frontend, FastAPI backend, backend-only OpenAI extraction boundary, deterministic verification rules, local scripts, deployment settings, tests, and reference material.
+This folder contains the evaluator and implementation documentation for Compliance Label Assistant. It describes the current React and Vite frontend, FastAPI backend, backend-only OpenAI extraction boundary, deterministic verification rules, local scripts, deployment settings, tests, and reference material.
 
-For evaluator review, start with the root [README](../README.md) and [Reviewer Guide](../REVIEWER_GUIDE.md). Use this index for deeper technical details.
+For fast review, start with the root [README](../README.md) and [Reviewer Guide](../REVIEWER_GUIDE.md). Use this index for deeper technical details. The `docs/take-home/` folder is evaluator-facing summary documentation; the architecture, frontend, backend, API, deployment, development, security, and reference folders are the implementation reference.
 
 ## Reviewer-Facing Docs
 
@@ -28,6 +28,8 @@ For evaluator review, start with the root [README](../README.md) and [Reviewer G
 11. [Security](security.md)
 12. [Testing And Validation](development/testing-and-validation.md)
 13. [Deployment Overview](deployment/overview.md)
+14. [Repository Map](reference/repository-map.md)
+15. [Known Gaps](maintenance/known-gaps.md)
 
 ## Architecture
 
@@ -89,9 +91,9 @@ For evaluator review, start with the root [README](../README.md) and [Reviewer G
 - [Local Development](development/local-development.md)
 - [Testing And Validation](development/testing-and-validation.md)
 - [Source Control](development/source-control.md)
+- [Contribution Workflow](development/contribution-workflow.md)
 - [Security And Privacy](development/security-and-privacy.md)
 - [Troubleshooting](development/troubleshooting.md)
-- [Contribution Workflow](development/contribution-workflow.md)
 
 ## Security And Privacy
 

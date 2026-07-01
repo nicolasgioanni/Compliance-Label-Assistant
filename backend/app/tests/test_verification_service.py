@@ -1,3 +1,5 @@
+"""Deterministic verification rule tests for field-level status contracts."""
+
 from app.constants import STANDARD_GOVERNMENT_WARNING as STANDARD_WARNING
 from app.schemas import ExpectedFields, ExtractedFields
 from app.verification.rules import (

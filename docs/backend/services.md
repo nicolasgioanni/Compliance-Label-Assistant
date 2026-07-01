@@ -57,8 +57,26 @@ Responsibilities:
 - Skip when no provider key exists.
 - Initialize the cached OpenAI client when possible.
 - Optionally make one non-generation model metadata request to warm the provider network path.
-- Never send image files, provider request content, expected fields, or extraction payloads.
+- Warmup sends no image files, provider request content, expected fields, or extraction payloads.
 - Swallow warmup failures because warmup is best effort.
+- Runs provider network warmup at most once per model per backend process.
+
+## `rate_limit_service.py`
+
+Exports:
+
+- `DAILY_VERIFICATION_LIMIT_MESSAGE`
+- `VerificationRateLimitError`
+- `reserve_verification_units(unit_cost, settings=None)`
+- `build_rate_limit_headers(result)`
+- `reset_verification_rate_limiter()`
+
+Responsibilities:
+
+- Reserve process-local daily verification units before OpenAI extraction can run.
+- Raise a safe rate-limit error when the daily cap is exhausted.
+- Build standard rate-limit response headers for routes.
+- Provide a reset helper for tests.
 
 ## `timing_service.py`
 
@@ -71,4 +89,4 @@ Uses `time.perf_counter()` and returns integer milliseconds.
 
 ## Service Boundaries
 
-Services should orchestrate workflow only. They should not contain HTTP form parsing, provider-specific payload details, deterministic comparison logic, or image validation implementation details.
+Services orchestrate workflow only. HTTP form parsing, provider-specific payload details, deterministic comparison logic, and image validation implementation details remain in their dedicated modules.

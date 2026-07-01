@@ -1,3 +1,5 @@
+"""OpenAI extraction boundary tests using fake SDK clients only."""
+
 from types import SimpleNamespace
 
 import pytest
@@ -48,6 +50,7 @@ def test_parse_uses_fast_field_only_responses_parameters(monkeypatch) -> None:
     settings = Settings(
         openai_api_key="test-key",
         openai_model="gpt-test",
+        openai_max_output_tokens=321,
     )
     extracted = _extract_label_fields_sync(b"image bytes", settings)
 
@@ -57,7 +60,7 @@ def test_parse_uses_fast_field_only_responses_parameters(monkeypatch) -> None:
     assert extracted.raw_text is None
     assert captured["client_settings"] is settings
     assert captured["model"] == "gpt-test"
-    assert "max_output_tokens" not in captured
+    assert captured["max_output_tokens"] == 321
     assert captured["store"] is False
     assert captured["temperature"] == 0
     assert set(captured["text_format"].model_fields) == {

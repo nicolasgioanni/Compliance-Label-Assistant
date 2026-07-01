@@ -1,3 +1,4 @@
+// Runs selected-label and ready-label verification without adding backend batch calls.
 import { useRef, useState } from 'react';
 import { verifySingleLabel } from '../api/verificationApi';
 import { SERVICE_UNAVAILABLE_MESSAGE } from '../constants/notificationMessages';
@@ -74,6 +75,8 @@ export function useQueueVerification({
     markQueueItemsVerifying(verificationQueue.map((item) => item.id));
     let nextIndex = 0;
 
+    // The frontend intentionally calls /verify once per ready label so each
+    // queue item keeps its own expected-field snapshot and result state.
     async function worker() {
       while (nextIndex < verificationQueue.length) {
         const item = verificationQueue[nextIndex];
@@ -110,6 +113,7 @@ export function useQueueVerification({
   }
 
   function startVerificationRun() {
+    // The ref closes the small gap before React state reflects an in-flight run.
     if (verificationInFlightRef.current) {
       return false;
     }

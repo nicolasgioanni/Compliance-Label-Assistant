@@ -1,3 +1,4 @@
+// Queue file validation tests protect duplicate, invalid, and limit handling.
 import { describe, expect, it } from 'vitest';
 import { buildUploadWarningMessage, planQueueFileAddition } from './queueFileValidation';
 

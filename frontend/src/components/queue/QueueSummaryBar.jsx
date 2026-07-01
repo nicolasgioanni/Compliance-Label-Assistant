@@ -1,4 +1,5 @@
 import { useState } from 'react';
+// Summary and export control for current queue verification evidence.
 import ExportResultsDialog from '../dialogs/ExportResultsDialog';
 import InfoTooltip from '../shared/InfoTooltip';
 

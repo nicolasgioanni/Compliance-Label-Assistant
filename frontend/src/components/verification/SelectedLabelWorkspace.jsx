@@ -1,9 +1,10 @@
+// Selected-label detail area for expected data entry, current result, or errors.
 import { getStatusClassName } from '../../utils/statusStyles';
 import { hasCurrentResult } from '../../utils/statusResolution';
 import ExpectedFieldsForm from './ExpectedFieldsForm';
 import InfoTooltip from '../shared/InfoTooltip';
-import LoadingState from '../shared/LoadingState';
 import SelectedResultDetail from './SelectedResultDetail';
+import SelectedResultSkeleton from './SelectedResultSkeleton';
 
 export default function SelectedLabelWorkspace({
   canCopyClaimData = false,
@@ -34,7 +35,7 @@ export default function SelectedLabelWorkspace({
     <section className={panelClassName}>
       <div className="selected-workspace-scroll">
         {!selectedItem ? <NoSelectedLabelState /> : null}
-        {selectedItem?.status === 'verifying' ? <SelectedLoadingState /> : null}
+        {selectedItem?.status === 'verifying' ? <SelectedResultSkeleton filename={selectedItem.filename} /> : null}
         {shouldShowResult ? (
           <SelectedResultDetail
             areActionsDisabled={isQueueLocked}
@@ -80,14 +81,6 @@ function NoSelectedLabelState() {
         </InfoTooltip>
       </div>
       <p>Add a label image to start a selected label review.</p>
-    </div>
-  );
-}
-
-function SelectedLoadingState() {
-  return (
-    <div className="workspace-loading-state">
-      <LoadingState />
     </div>
   );
 }

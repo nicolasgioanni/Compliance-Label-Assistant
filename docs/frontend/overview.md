@@ -15,11 +15,24 @@ The frontend provides the browser workflow for label queue management, expected 
 
 ## Runtime Shape
 
-- Single-page app without routing.
+- Single-page app with lightweight path-based routing in `frontend/src/App.jsx`.
 - Root HTML: `frontend/index.html`.
 - React entrypoint: `frontend/src/main.jsx`.
 - Application shell: `frontend/src/App.jsx`.
 - Endpoint-aware code: `frontend/src/api/verificationApi.js`.
+
+Current paths:
+
+| Path | Rendered page |
+| --- | --- |
+| `/` | `LandingPage` |
+| `/app` | `ToolPage` |
+| `/about` | `AboutPage` |
+| `/license` | `LicensePage` |
+| `/privacy` | `PrivacyPolicyPage` |
+| `/terms` | `TermsOfUsePage` |
+
+Unknown paths fall back to `/`.
 
 ## Main Responsibilities
 
@@ -41,6 +54,7 @@ The frontend provides the browser workflow for label queue management, expected 
 - The frontend does not persist uploaded files or results to a database.
 - The frontend does not use `dangerouslySetInnerHTML` for extracted or provider-produced text.
 - The frontend does not receive `OPENAI_API_KEY` or other provider secrets.
+- The frontend does not use cookies, localStorage, sessionStorage, analytics, accounts, or payments in current application code.
 
 ## Related Reference
 

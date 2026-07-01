@@ -1,17 +1,24 @@
+"""Configuration tests for backend defaults and bounded environment parsing."""
+
 import pytest
 
 from app.config import Settings
 
 
 def test_speed_and_cost_sensitive_defaults(monkeypatch) -> None:
+    """Protect prototype defaults for provider cost, latency, and upload size."""
     env_vars = [
         "OPENAI_MODEL",
         "OPENAI_TIMEOUT_SECONDS",
         "OPENAI_IMAGE_DETAIL",
         "OPENAI_MAX_RETRIES",
         "OPENAI_EXTRACTION_CONCURRENCY",
+        "OPENAI_MAX_OUTPUT_TOKENS",
         "OPENAI_NETWORK_WARMUP",
         "OPENAI_WARMUP_TIMEOUT_SECONDS",
+        "VERIFICATION_RATE_LIMIT_ENABLED",
+        "VERIFICATION_DAILY_UNIT_LIMIT",
+        "VERIFICATION_RATE_LIMIT_WINDOW_SECONDS",
         "MAX_FILE_SIZE_MB",
         "MAX_IMAGE_PIXELS",
         "MAX_BATCH_SIZE",
@@ -30,8 +37,12 @@ def test_speed_and_cost_sensitive_defaults(monkeypatch) -> None:
     assert settings.openai_image_detail == "low"
     assert settings.openai_max_retries == 0
     assert settings.openai_extraction_concurrency == 2
+    assert settings.openai_max_output_tokens == 500
     assert settings.openai_network_warmup is True
     assert settings.openai_warmup_timeout_seconds == 2
+    assert settings.verification_rate_limit_enabled is True
+    assert settings.verification_daily_unit_limit == 50
+    assert settings.verification_rate_limit_window_seconds == 86_400
     assert settings.max_file_size_mb == 5
     assert settings.max_image_pixels == 25_000_000
     assert settings.max_batch_size == 10
@@ -39,6 +50,12 @@ def test_speed_and_cost_sensitive_defaults(monkeypatch) -> None:
     assert settings.max_image_width == 640
     assert settings.jpeg_quality == 60
     assert settings.allowed_origins == ["http://localhost:5173"]
+
+
+def test_openai_api_key_defaults_to_empty_for_ci_without_secret(monkeypatch) -> None:
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+
+    assert Settings().openai_api_key == ""
 
 
 def test_openai_image_detail_defaults_to_low(monkeypatch) -> None:
@@ -83,6 +100,71 @@ def test_openai_network_warmup_defaults_to_true_for_invalid_values(monkeypatch) 
     monkeypatch.setenv("OPENAI_NETWORK_WARMUP", "maybe")
 
     assert Settings().openai_network_warmup is True
+
+
+@pytest.mark.parametrize(
+    ("raw_value", "expected"),
+    [
+        ("true", True),
+        ("1", True),
+        ("false", False),
+        ("0", False),
+        ("maybe", True),
+    ],
+)
+def test_verification_rate_limit_enabled_parses_common_boolean_values(
+    monkeypatch, raw_value: str, expected: bool
+) -> None:
+    monkeypatch.setenv("VERIFICATION_RATE_LIMIT_ENABLED", raw_value)
+
+    assert Settings().verification_rate_limit_enabled is expected
+
+
+@pytest.mark.parametrize(
+    ("raw_value", "expected"),
+    [
+        ("0", 1),
+        ("1", 1),
+        ("50", 50),
+        ("100000", 10_000),
+        ("not-a-number", 50),
+    ],
+)
+def test_verification_daily_unit_limit_is_bounded(monkeypatch, raw_value: str, expected: int) -> None:
+    monkeypatch.setenv("VERIFICATION_DAILY_UNIT_LIMIT", raw_value)
+
+    assert Settings().verification_daily_unit_limit == expected
+
+
+@pytest.mark.parametrize(
+    ("raw_value", "expected"),
+    [
+        ("0", 60),
+        ("60", 60),
+        ("86400", 86_400),
+        ("1000000", 604_800),
+        ("not-a-number", 86_400),
+    ],
+)
+def test_verification_rate_limit_window_is_bounded(monkeypatch, raw_value: str, expected: int) -> None:
+    monkeypatch.setenv("VERIFICATION_RATE_LIMIT_WINDOW_SECONDS", raw_value)
+
+    assert Settings().verification_rate_limit_window_seconds == expected
+
+
+@pytest.mark.parametrize(
+    ("raw_value", "expected"),
+    [
+        ("0", 1),
+        ("500", 500),
+        ("5000", 2_000),
+        ("not-a-number", 500),
+    ],
+)
+def test_openai_max_output_tokens_is_bounded(monkeypatch, raw_value: str, expected: int) -> None:
+    monkeypatch.setenv("OPENAI_MAX_OUTPUT_TOKENS", raw_value)
+
+    assert Settings().openai_max_output_tokens == expected
 
 
 @pytest.mark.parametrize(

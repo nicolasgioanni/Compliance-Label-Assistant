@@ -1,3 +1,5 @@
+"""OpenAI client factory tests for SDK reuse without extraction caching."""
+
 from app.config import Settings
 from app.providers.openai import client as openai_client
 

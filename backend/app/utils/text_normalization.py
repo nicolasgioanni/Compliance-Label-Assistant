@@ -39,6 +39,7 @@ def normalize_quotes(value: str | None) -> str:
 
 
 def normalize_punctuation(value: str | None) -> str:
+    """Remove punctuation for comparisons while preserving word separation."""
     normalized_value = normalize_quotes(value)
     cleaned_characters: list[str] = []
     for character in normalized_value:
@@ -93,6 +94,7 @@ def _has_in_word_quote(value: str | None) -> bool:
 
 
 def calculate_similarity(expected: str | None, found: str | None) -> float:
+    """Score normalized text similarity for needs-review thresholds."""
     expected_normalized = normalize_for_comparison(expected)
     found_normalized = normalize_for_comparison(found)
     if not expected_normalized or not found_normalized:
@@ -117,6 +119,7 @@ def extract_proof(value: str | None) -> float | None:
 
 
 def normalize_net_contents(value: str | None) -> float | None:
+    """Parse common volume units into milliliters for deterministic checks."""
     normalized_value = normalize_quotes(value)
     match = re.search(
         r"(\d+(?:\.\d+)?)\s*(milliliters?|millilitres?|mls?|liters?|litres?|l)\b",

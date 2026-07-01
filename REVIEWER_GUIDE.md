@@ -6,9 +6,14 @@ This guide is the shortest path for evaluating Compliance Label Assistant. It is
 
 | Resource | Link |
 | --- | --- |
-| Deployed application | https://compliance-label-assistant.vercel.app |
+| Landing page | https://compliance-label-assistant.vercel.app |
+| Verification tool | https://compliance-label-assistant.vercel.app/app |
+| About page | https://compliance-label-assistant.vercel.app/about |
+| Privacy Policy | https://compliance-label-assistant.vercel.app/privacy |
+| Terms of Use | https://compliance-label-assistant.vercel.app/terms |
+| License | https://compliance-label-assistant.vercel.app/license |
 | Backend API | https://compliance-label-assistant.onrender.com |
-| Source repository | https://github.com/nicolasgioanni/label-compliance-verifier |
+| Source repository | https://github.com/nicolasgioanni/Compliance-Label-Assistant |
 | Release and deployment links | [docs/take-home/deployment-links.md](docs/take-home/deployment-links.md) |
 | Sample labels | [sample-data/README.md](sample-data/README.md) |
 | Full documentation index | [docs/README.md](docs/README.md) |
@@ -82,16 +87,18 @@ Government warning verification is strict for extracted text: the backend checks
 Recommended setup from the repository root:
 
 ```powershell
-git clone https://github.com/nicolasgioanni/label-compliance-verifier.git
-cd label-compliance-verifier
+git clone https://github.com/nicolasgioanni/Compliance-Label-Assistant.git
+cd Compliance-Label-Assistant
 .\scripts\setup-local.ps1
 ```
 
 Add a backend provider key to ignored `backend\.env`:
 
 ```text
-OPENAI_API_KEY=<OPENAI_API_KEY>
+OPENAI_API_KEY=
 ```
+
+Paste the real backend provider key after the equals sign in that ignored local file.
 
 Start both services:
 
@@ -101,7 +108,12 @@ Start both services:
 
 Local URLs:
 
-- Frontend: `http://localhost:5173`
+- Frontend landing page: `http://localhost:5173`
+- Frontend verification tool: `http://localhost:5173/app`
+- Frontend about page: `http://localhost:5173/about`
+- Frontend privacy policy: `http://localhost:5173/privacy`
+- Frontend terms of use: `http://localhost:5173/terms`
+- Frontend license: `http://localhost:5173/license`
 - Backend API: `http://127.0.0.1:8000`
 - Health check: `http://127.0.0.1:8000/health`
 

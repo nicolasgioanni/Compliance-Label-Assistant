@@ -1,3 +1,4 @@
+// Shared VerificationForm test helpers for queue, result, export, and dialog tests.
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { expect, vi } from 'vitest';
 import { verifySingleLabel, warmVerificationBackend } from '../../api/verificationApi';

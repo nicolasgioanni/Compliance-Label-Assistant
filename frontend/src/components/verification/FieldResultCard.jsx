@@ -1,3 +1,4 @@
+// Displays one deterministic field comparison result from the backend.
 import { getStatusClassName, getStatusLabel } from '../../utils/statusStyles';
 
 export default function FieldResultCard({ result }) {

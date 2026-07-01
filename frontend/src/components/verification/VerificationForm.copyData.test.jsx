@@ -1,3 +1,4 @@
+// Copy-data workflow tests protect expected-field transfer and stale-result handling.
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../../api/verificationApi', () => ({
@@ -55,7 +56,7 @@ describe('VerificationForm.copyData', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Copy Claim Data' }));
-    fireEvent.mouseDown(container.querySelector('.copy-data-dialog-overlay'));
+    fireEvent.mouseDown(document.body.querySelector('.copy-data-dialog-overlay'));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Copy Claim Data' }));

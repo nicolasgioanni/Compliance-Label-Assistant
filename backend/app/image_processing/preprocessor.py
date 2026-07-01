@@ -19,6 +19,8 @@ class ImagePreprocessingError(ValueError):
 
 @dataclass(frozen=True)
 class PreprocessedImage:
+    """Image bytes and metadata passed from preprocessing into responses."""
+
     image_bytes: bytes
     width: int
     height: int
@@ -26,6 +28,7 @@ class PreprocessedImage:
 
 
 def _resize_if_needed(image: Image.Image, max_width: int) -> Image.Image:
+    """Preserve smaller images and downscale only width-heavy uploads."""
     if image.width <= max_width:
         return image
 
@@ -39,8 +42,11 @@ def preprocess_image_for_extraction(
     max_width: int,
     jpeg_quality: int = 60,
 ) -> PreprocessedImage:
+    """Prepare uploaded bytes for provider extraction without storing files."""
     try:
         with Image.open(BytesIO(file_bytes)) as uploaded_image:
+            # EXIF orientation and RGB conversion happen before resize so the
+            # provider receives a simple JPEG regardless of original format.
             oriented_image = ImageOps.exif_transpose(uploaded_image)
             rgb_image = oriented_image.convert("RGB")
             resized_image = _resize_if_needed(rgb_image, max_width)

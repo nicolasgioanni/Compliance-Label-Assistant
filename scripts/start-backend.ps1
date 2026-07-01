@@ -6,6 +6,7 @@ param(
     [switch]$NoEnvFile
 )
 
+# Starts the FastAPI backend with local dependency and env-file checks.
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 

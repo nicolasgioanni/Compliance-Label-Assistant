@@ -1,3 +1,4 @@
+/* Queue panel, filters, label cards, and upload-list states. */
 .queue-panel {
   display: flex;
   flex-direction: column;

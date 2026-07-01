@@ -1,3 +1,4 @@
+// Browser support tests protect optional directory-upload feature detection.
 import { describe, expect, it } from 'vitest';
 import { supportsDirectoryUpload } from './browserSupport';
 

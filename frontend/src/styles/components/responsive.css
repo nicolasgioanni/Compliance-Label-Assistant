@@ -1,3 +1,4 @@
+/* Responsive layout adjustments for narrow viewports and compact controls. */
 @media (max-width: 900px) {
   .verification-layout,
   .result-grid,

@@ -1,3 +1,4 @@
+// Displays extracted provider fields as plain text, never raw HTML.
 const EXTRACTED_FIELD_LABELS = {
   brand_name: 'Brand Name',
   class_type: 'Class/Type',

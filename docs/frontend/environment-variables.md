@@ -32,6 +32,6 @@ VITE_API_BASE_URL=<BACKEND_URL>
 
 ## Notes
 
-- Do not put `OPENAI_API_KEY` or other provider secrets in frontend env files.
+- `OPENAI_API_KEY` and other provider secrets remain outside frontend env files.
 - Vite exposes `VITE_` variables to browser code.
 - Local `frontend/.env` is ignored by Git.

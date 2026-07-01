@@ -1,3 +1,5 @@
+"""Batch service tests for request-level validation and per-file isolation."""
+
 import asyncio
 from io import BytesIO
 
@@ -20,6 +22,7 @@ EXPECTED_FIELDS = ExpectedFields(
 
 
 def _upload_file(filename: str) -> UploadFile:
+    """Create a small in-memory upload without touching persistent storage."""
     return UploadFile(
         filename=filename,
         file=BytesIO(b"image-bytes"),
@@ -98,6 +101,15 @@ def test_validate_batch_filenames_counts_multiple_duplicate_repeats() -> None:
         )
     except batch_service.BatchRequestValidationError as exc:
         assert "3 duplicate files were detected and not uploaded." in str(exc)
+    else:
+        raise AssertionError("Expected duplicate filename validation error.")
+
+
+def test_validate_batch_filenames_rejects_whitespace_padded_duplicates() -> None:
+    try:
+        batch_service.validate_batch_filenames([_upload_file(" label.png "), _upload_file("folder/label.png")])
+    except batch_service.BatchRequestValidationError as exc:
+        assert "1 duplicate file was detected and not uploaded." in str(exc)
     else:
         raise AssertionError("Expected duplicate filename validation error.")
 

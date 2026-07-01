@@ -1,3 +1,4 @@
+// Coordinates the queue column, selected-label workspace, and verification actions.
 import CopyClaimDataModal from '../dialogs/CopyClaimDataModal';
 import LabelPreviewDialog from '../dialogs/LabelPreviewDialog';
 import LabelQueue from '../queue/LabelQueue';

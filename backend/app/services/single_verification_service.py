@@ -12,6 +12,7 @@ from app.image_processing.preprocessor import preprocess_image_for_extraction
 from app.image_processing.validation import validate_upload_file
 from app.providers.openai.extraction import extract_label_fields
 from app.schemas import ExpectedFields, SingleVerificationResponse
+from app.services.rate_limit_service import reserve_verification_units
 from app.services.timing_service import get_elapsed_ms, start_timer
 from app.verification.rules import calculate_overall_status, verify_expected_fields
 
@@ -20,7 +21,9 @@ async def verify_single_label(
     file: UploadFile,
     expected_fields: ExpectedFields,
 ) -> SingleVerificationResponse:
+    """Reserve one verification unit and run the single-label workflow."""
     settings = get_settings()
+    reserve_verification_units(1, settings)
     return await process_single_label(file=file, expected_fields=expected_fields, settings=settings)
 
 
@@ -29,8 +32,11 @@ async def process_single_label(
     expected_fields: ExpectedFields,
     settings: Settings,
 ) -> SingleVerificationResponse:
+    """Validate, preprocess, extract, verify, and build the public response."""
     processing_start = start_timer()
 
+    # Upload validation and preprocessing are separated so user-fixable file
+    # issues are caught before any provider call is attempted.
     validation_start = start_timer()
     original_image_bytes = await validate_upload_file(
         file,
@@ -47,6 +53,8 @@ async def process_single_label(
     )
     preprocessing_time_ms = max(get_elapsed_ms(preprocessing_start), 1)
 
+    # Extraction is the only provider-backed step; deterministic verification
+    # below must not introduce another provider call.
     extraction_start = start_timer()
     extracted_fields = await extract_label_fields(preprocessed_image.image_bytes, settings)
     extraction_time_ms = max(get_elapsed_ms(extraction_start), 1)
@@ -55,6 +63,8 @@ async def process_single_label(
     field_results = verify_expected_fields(expected_fields, extracted_fields)
     verification_time_ms = max(get_elapsed_ms(verification_start), 1)
 
+    # Keep this response shape stable because frontend result panels and export
+    # helpers read these exact keys.
     return SingleVerificationResponse(
         filename=file.filename or "uploaded-label",
         overall_status=calculate_overall_status(field_results),

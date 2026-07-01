@@ -4,18 +4,18 @@
 
 - `.gitignore` excludes dependency folders, virtualenvs, caches, build output, logs, editor folders, and local env files.
 - `.gitattributes` normalizes repository text files to LF and keeps PowerShell scripts CRLF.
-- `.github/workflows/ci.yml` runs backend and frontend validation on pull requests and pushes to `main`.
+- `.github/workflows/backend-ci.yml`, `.github/workflows/frontend-ci.yml`, and `.github/workflows/repo-hygiene.yml` run required validation on pull requests and pushes to `main`.
 - No commit message convention is documented in the repository.
 
 ## Recommended Branch Workflow
 
-Because no strict repository policy is documented in code, use this as a recommendation:
+No strict repository policy is documented in code. The recommended workflow is:
 
 1. Create a short-lived branch for each change.
 2. Keep frontend, backend, API, deployment, and docs changes scoped.
 3. Run the validation commands relevant to changed areas.
 4. Open a pull request with a concise summary and test results.
-5. Configure branch protection on `main` to require the `Backend` and `Frontend` CI checks before merging.
+5. Configure branch protection on `main` to require the `backend-ci`, `frontend-ci`, and `repo-hygiene` checks before merging.
 6. Update docs when behavior, commands, environment variables, or deployment settings change.
 
 ## Before Opening A Pull Request
@@ -25,6 +25,7 @@ Run when practical:
 ```powershell
 cd backend
 .\.venv\Scripts\python.exe -m pytest
+.\.venv\Scripts\python.exe -m pytest --cov=app --cov-report=term-missing --cov-report=xml
 .\.venv\Scripts\python.exe -m ruff check app
 .\.venv\Scripts\python.exe -c "from app.main import app; print(app.title)"
 ```
@@ -34,12 +35,13 @@ cd frontend
 npm run lint
 npm run typecheck
 npm test
+npm run test:coverage -- --run
 npm run build
 ```
 
 ## Secret Hygiene
 
-Do not commit:
+Excluded from commits:
 
 - `backend/.env`
 - `frontend/.env`
@@ -51,7 +53,7 @@ Do not commit:
 
 ## Generated Files
 
-Do not commit:
+Excluded from commits:
 
 - `backend/.venv/`
 - `frontend/node_modules/`
@@ -62,7 +64,7 @@ Do not commit:
 
 Lockfiles:
 
-- `frontend/package-lock.json` is tracked and should be updated when frontend dependencies change.
+- `frontend/package-lock.json` is tracked and changes when frontend dependencies change.
 
 ## API Contract Changes
 

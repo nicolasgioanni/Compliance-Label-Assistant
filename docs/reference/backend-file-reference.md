@@ -6,7 +6,7 @@
 | --- | --- | --- | --- | --- | --- |
 | `backend/app/__init__.py` | Marks `app` as a Python package. | none | none | Python imports | No runtime behavior. |
 | `backend/app/main.py` | FastAPI application factory, CORS setup, route registration, unexpected error handler. | `create_app`, `app`, `handle_unexpected_error` | FastAPI, CORS middleware, settings, routers, logging config | Uvicorn, tests | App title is `Compliance Label Assistant API`. |
-| `backend/app/config.py` | Centralized environment configuration. | `Settings`, `get_settings` | `os`, dataclasses, `lru_cache` | routes, services, provider, tests | Only backend source that should read backend env vars. |
+| `backend/app/config.py` | Centralized environment configuration. | `Settings`, `get_settings` | `os`, dataclasses, `lru_cache` | routes, services, provider, tests | Only backend source that reads backend env vars. |
 | `backend/app/constants.py` | Shared backend constants. | `STANDARD_GOVERNMENT_WARNING` | none | routes, verification tests | Server-owned government warning text. |
 | `backend/app/schemas.py` | Pydantic API models and status literals. | `ExpectedFields`, `ExtractedFields`, `FieldResult`, `SingleVerificationResponse`, `BatchVerificationItem`, `BatchVerificationResponse` | Pydantic, typing literals | routes, services, verification | Defines public response shapes. |
 
@@ -26,8 +26,9 @@
 | `backend/app/services/__init__.py` | Marks services package. | none | none | package imports | No runtime behavior. |
 | `backend/app/services/single_verification_service.py` | Single-label workflow orchestration. | `verify_single_label`, `process_single_label` | settings, upload validation, preprocessing, extraction, timing, verification rules, schemas | verification route, batch service | Builds `SingleVerificationResponse`. |
 | `backend/app/services/batch_service.py` | Batch workflow orchestration and per-file error conversion. | `BatchRequestValidationError`, `validate_batch_request`, `validate_batch_filenames`, `verify_batch_labels` | asyncio, settings, single-label service, schemas, image/provider errors | verification route, tests | Rejects duplicate basenames before processing. |
+| `backend/app/services/rate_limit_service.py` | Verification unit cap orchestration. | `VerificationRateLimitError`, `reserve_verification_units`, `build_rate_limit_headers`, `reset_verification_rate_limiter` | settings, fixed-window limiter | verification services, routes, tests | Enforces process-local daily verification unit limits before extraction. |
 | `backend/app/services/timing_service.py` | Timing helper functions. | `start_timer`, `get_elapsed_ms` | `time.perf_counter` | services | Returns elapsed integer milliseconds. |
-| `backend/app/services/warmup_service.py` | Best-effort dependency warmup. | `warm_verification_dependencies` | settings, OpenAI client factory | warmup route, tests | Can make a model metadata request, but does not make extraction requests. |
+| `backend/app/services/warmup_service.py` | Best-effort dependency warmup. | `warm_verification_dependencies`, `clear_warmup_network_cache` | settings, OpenAI client factory | warmup route, tests | Can make one model metadata request per model per process, but does not make extraction requests. |
 
 ## Image Processing
 
@@ -56,6 +57,8 @@
 | `backend/app/utils/__init__.py` | Marks utils package. | none | none | package imports | No runtime behavior. |
 | `backend/app/utils/text_normalization.py` | Text cleanup, punctuation/quote normalization, similarity, ABV/proof/net-content parsing. | normalization and parsing helpers | `difflib`, `re`, `string` | verification rules, tests | Generic helpers only; field decisions live in `verification`. |
 | `backend/app/utils/logging_config.py` | Logging setup. | `configure_logging` | logging | `main.py` | Keeps logging format centralized. |
+| `backend/app/utils/rate_limiter.py` | Process-local fixed-window counter. | `RateLimitResult`, `FixedWindowRateLimiter` | dataclasses, threading, time | rate-limit service, tests | Generic in-memory limiter helper. |
+| `backend/app/utils/security_headers.py` | Applies security response headers. | `apply_security_headers` | Starlette/FastAPI response objects | `main.py`, tests | Used by normal responses and the unexpected-error handler. |
 
 ## Tests
 
@@ -65,10 +68,12 @@
 | `backend/app/tests/test_api_contract.py` | Tests route contracts, response fields, errors, and batch behavior. | FastAPI TestClient, schemas, settings, provider patching | Main API safety test file. |
 | `backend/app/tests/test_batch_service.py` | Tests batch request validation, duplicate filename handling, partial failures, and concurrency. | asyncio, FastAPI UploadFile, schemas, settings | Patches single-label processing for service tests. |
 | `backend/app/tests/test_config.py` | Tests settings defaults and image detail validation. | pytest monkeypatch, config | Covers speed/cost-sensitive defaults. |
+| `backend/app/tests/test_cors_contract.py` | Tests configured CORS behavior and preflight contract. | FastAPI TestClient, settings | Covers allowed origins and CORS method/header behavior. |
 | `backend/app/tests/test_file_validation.py` | Tests upload validation rules. | Pillow, UploadFile, pytest | Covers supported formats and rejection cases. |
 | `backend/app/tests/test_image_preprocessor.py` | Tests preprocessing behavior. | Pillow, pytest, config, preprocessor | Covers resize, RGB JPEG output, quality, and defaults. |
 | `backend/app/tests/test_openai_client.py` | Tests OpenAI client cache behavior. | provider client module, settings | Patches constructor behavior. |
 | `backend/app/tests/test_openai_extraction_service.py` | Tests extraction configuration, provider call parameters, and safe error mapping. | OpenAI errors, settings, extraction module | Does not require real provider calls. |
+| `backend/app/tests/test_rate_limiter.py` | Tests fixed-window rate limiter behavior. | rate limiter utility | Covers allowed, blocked, and reset behavior. |
 | `backend/app/tests/test_text_normalization.py` | Tests text normalization and parsing helpers. | text normalization utilities | Covers ABV, proof, and net contents. |
 | `backend/app/tests/test_verification_service.py` | Tests deterministic verification rules and overall status. | schemas, constants, verification rules | Covers brand, class or type, alcohol, net contents, warning, and optional fields. |
 | `backend/app/tests/test_warmup_service.py` | Tests warmup behavior. | settings, warmup service | Covers key present, key missing, and swallowed errors. |
@@ -80,4 +85,4 @@
 | `backend/requirements.txt` | Python dependencies. | See [dependency reference](dependency-reference.md). |
 | `backend/runtime.txt` | Python runtime declaration. | `python-3.11.9`. |
 | `backend/start.sh` | Uvicorn startup wrapper. | Uses `${PORT:-8000}`. |
-| `backend/.env.example` | Safe backend env placeholder values. | Do not put real secrets here. |
+| `backend/.env.example` | Safe backend env placeholder values. | Real secrets remain outside this file. |

@@ -21,9 +21,9 @@ Known verification errors are mapped in `backend/app/routes/verification.py`.
 
 Security headers are applied in `backend/app/utils/security_headers.py`.
 
-## Safe Logging Rules
+## Safe Logging Boundaries
 
-Do not log:
+Logging excludes:
 
 - provider keys
 - raw image bytes

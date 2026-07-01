@@ -125,15 +125,17 @@ All fields may be `null`.
 
 ## `BatchVerificationResponse`
 
+The example below is abbreviated to show the nested item shape. Real `/verify-batch` responses contain one `results` item per uploaded file, and valid batch requests require at least two files.
+
 ```json
 {
   "mode": "batch",
-  "total_labels": 1,
+  "total_labels": 2,
   "completed": 1,
   "status_counts": {
     "pass": 1,
     "fail": 0,
-    "error": 0
+    "error": 1
   },
   "total_processing_time_ms": 1,
   "results": [

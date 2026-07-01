@@ -1,3 +1,4 @@
+// Owns in-memory queue state for files, expected fields, filters, and selection.
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { warmVerificationBackend } from '../api/verificationApi';
 import { MAX_QUEUE_FILES } from '../utils/fileValidation';
@@ -95,6 +96,8 @@ export function useQueueItems({ showError = () => {} } = {}) {
   }, [copyModalSourceId, copyModalSourceItem]);
 
   function handleAddFiles(files) {
+    // Upload planning keeps invalid, duplicate, and over-limit files out of the
+    // queue before any backend request is possible.
     if (isVerificationBlocked()) {
       showError('Wait for verification to finish before adding more labels.');
       return;
@@ -167,6 +170,8 @@ export function useQueueItems({ showError = () => {} } = {}) {
   }
 
   function handleExpectedFieldsChange(nextExpectedFields) {
+    // Existing result evidence is retained but marked stale so exports and
+    // summaries do not treat it as current after expected data changes.
     if (!selectedItem || isVerificationBlocked()) {
       return;
     }
@@ -260,6 +265,7 @@ export function useQueueItems({ showError = () => {} } = {}) {
   }
 
   function warmBackendOnce() {
+    // Warmup is advisory. Queue updates must not depend on provider readiness.
     if (hasRequestedWarmupRef.current) {
       return;
     }

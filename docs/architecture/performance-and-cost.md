@@ -1,10 +1,10 @@
-# Performance And Cost
+# Performance and Cost
 
 ## Implemented Controls
 
-Provider calls happen only in `backend/app/providers/openai/extraction.py`. The frontend never calls the provider directly.
+Provider calls happen only in `backend/app/providers/openai/extraction.py`. The frontend has no direct provider integration.
 
-Queue, batch, upload-size, pixel-count, timeout, and concurrency limits are the current lightweight cost and abuse controls. They do not replace production authentication or rate limiting.
+Queue, batch, upload-size, pixel-count, timeout, concurrency, output-token, and daily verification-unit limits are the current lightweight cost and abuse controls. They are not substitutes for production authentication or distributed rate limiting.
 
 Speed and cost-sensitive settings are centralized in `backend/app/config.py`:
 
@@ -15,11 +15,23 @@ Speed and cost-sensitive settings are centralized in `backend/app/config.py`:
 | `OPENAI_IMAGE_DETAIL` | `low` | Image detail setting, allowed values `low`, `auto`, `high`. |
 | `OPENAI_MAX_RETRIES` | `0` | SDK retry count, bounded from 0 to 2. |
 | `OPENAI_EXTRACTION_CONCURRENCY` | `2` | Provider extraction concurrency, bounded from 1 to 4. |
+| `OPENAI_MAX_OUTPUT_TOKENS` | `500` | Maximum provider output tokens per extraction response, bounded from 1 to 2000. |
 | `OPENAI_NETWORK_WARMUP` | `true` | Enables a best-effort non-generation provider metadata request during warmup. |
 | `OPENAI_WARMUP_TIMEOUT_SECONDS` | `2` | Warmup metadata request timeout, bounded from 1 to 5. |
+| `VERIFICATION_RATE_LIMIT_ENABLED` | `true` | Enables the in-memory daily verification unit cap. |
+| `VERIFICATION_DAILY_UNIT_LIMIT` | `50` | Daily global verification unit cap, bounded from 1 to 10000. |
+| `VERIFICATION_RATE_LIMIT_WINDOW_SECONDS` | `86400` | Rate-limit window length, bounded from 60 to 604800 seconds. |
 | `MAX_IMAGE_WIDTH` | `640` | Preprocessed JPEG maximum width, bounded from 600 to 2000. |
 | `JPEG_QUALITY` | `60` | Preprocessed JPEG quality, bounded from 50 to 95. |
 | `BATCH_CONCURRENCY` | `3` | Backend `/verify-batch` per-file concurrency. |
+
+## Benchmark And Cost Status
+
+No current SLA, production throughput target, or measured provider-cost estimate is documented in this repository.
+
+Required CI tests mock provider behavior and omit provider-backed benchmarks. Coverage, lint, typecheck, build, and contract tests protect merge quality, but they are not evidence of live provider latency, extraction accuracy, or production cost.
+
+Future benchmark or cost numbers need the fixture set, provider configuration, deployment tier, number of runs, date, and whether the backend was warm or cold.
 
 ## Image Preprocessing
 
@@ -36,6 +48,14 @@ Backend:
 
 - Provider extraction uses a semaphore keyed by event loop and configured concurrency.
 - `/verify-batch` uses an `asyncio.Semaphore` based on `BATCH_CONCURRENCY`.
+- `/verify` reserves 1 verification unit before processing.
+- `/verify-batch` reserves one verification unit per file after batch-level validation and before per-file processing.
+
+## Daily Verification Cap
+
+The backend enforces a process-local daily cap of 50 verification units by default. A successful reservation is required before OpenAI extraction can run. When the cap is exhausted, `/verify` and `/verify-batch` return HTTP `429` with a safe user-facing message and rate-limit headers.
+
+This cap is intentionally simple for the MVP. It resets on backend restart or deploy and is not shared across multiple backend instances. OpenAI project budgets provide secondary billing alerts; dashboard budgets are not the app's hard guard.
 
 ## Caching
 
@@ -43,6 +63,7 @@ Implemented:
 
 - OpenAI client objects are cached by API key, timeout, and retry settings in `backend/app/providers/openai/client.py`.
 - The frontend calls `/warmup` once after the first successful queue addition. The backend builds the cached provider client and, when enabled, makes one model metadata request to warm the authenticated network path.
+- Provider network warmup runs at most once per model per backend process.
 
 Warmup notes:
 
@@ -60,13 +81,13 @@ Not implemented:
 
 The frontend avoids duplicate queue entries by basename. The backend `/verify-batch` rejects duplicate basenames before processing. The system does not deduplicate repeat verifications of the same image after expected data changes or reruns.
 
-## Safe Optimization Areas
+## Potential Optimization Areas
 
-- Add a test-only provider stub for manual local workflows that should not make provider calls. Not currently documented in code.
+- Add a test-only provider stub for manual local workflows that run without provider calls. Not currently documented in code.
 - Add request-level extraction cache only if retention, privacy, and invalidation rules are explicitly defined.
 - Tune image detail, width, and JPEG quality against representative labels before changing defaults.
 
-## Do Not Change Casually
+## Stability-Sensitive Defaults
 
 - Provider model and image detail defaults.
 - Retry count and timeout.

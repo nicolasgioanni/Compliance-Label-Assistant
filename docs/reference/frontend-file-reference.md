@@ -5,9 +5,29 @@
 | Path | Purpose | Main exports | Main dependencies | Used by | Notes |
 | --- | --- | --- | --- | --- | --- |
 | `frontend/src/main.jsx` | Creates the React root and imports global styles. | none | `react`, `react-dom/client`, `App`, CSS files | Vite HTML entry | Mounts into `#root`. |
-| `frontend/src/App.jsx` | App shell with backend health check, active error banner, header, verification workflow, and footer. | `App` default | `checkHealth`, shared components, `VerificationForm`, notification constants | `frontend/src/main.jsx` | Converts fetch failure into service unavailable copy. |
+| `frontend/src/App.jsx` | Path-based route selection and service-health wiring. | `App` default | `AppShell`, `useServiceHealth`, route page components | `frontend/src/main.jsx` | Supports `/`, `/app`, `/about`, `/license`, `/privacy`, and `/terms`; unknown paths fall back to `/`. |
 | `frontend/src/setupTests.js` | Test setup for jest-dom matchers. | none | `@testing-library/jest-dom/vitest` | Vitest config | Loaded by `vite.config.js`. |
-| `frontend/src/App.test.jsx` | Tests app-level notification behavior. | none | Testing Library, Vitest, mocked API, `App` | Test runner | Covers banner replacement and tone behavior. |
+| `frontend/src/App.test.jsx` | Tests app routes, shared layout, footer links, and notification behavior. | none | Testing Library, Vitest, mocked API, `App` | Test runner | Covers route rendering, footer navigation, banner replacement, and tone behavior. |
+
+## Pages
+
+| Path | Purpose | Main exports | Main dependencies | Used by | Notes |
+| --- | --- | --- | --- | --- | --- |
+| `frontend/src/pages/LandingPage.jsx` | Landing page route. | `LandingPage` default | landing panel components | `App` | Static entry page for `/`. |
+| `frontend/src/pages/ToolPage.jsx` | Verification tool route. | `ToolPage` default | `VerificationForm`, `ErrorBanner` | `App` | Receives backend service error copy from `App`. |
+| `frontend/src/pages/AboutPage.jsx` | About page route. | `AboutPage` default | `ABOUT_SECTION_GROUPS`, static page primitives | `App` | Renders standardized project overview, architecture, performance, scope, and documentation content. |
+| `frontend/src/pages/LicensePage.jsx` | License page route. | `LicensePage` default | `LICENSE_SUMMARY_SECTIONS`, static page primitives | `App` | Renders standardized static license content and external license actions. |
+| `frontend/src/pages/PrivacyPolicyPage.jsx` | Privacy Policy route. | `PrivacyPolicyPage` default | shared legal renderer, legal content | `App` | Renders prototype privacy, data-practices, and AI-use disclosure content. |
+| `frontend/src/pages/TermsOfUsePage.jsx` | Terms of Use route. | `TermsOfUsePage` default | shared legal renderer, legal content | `App` | Renders prototype terms, user-submission, and human-review content. |
+| `frontend/src/pages/about/aboutContent.js` | Structured about-page content. | `ABOUT_SECTION_GROUPS` | none | `AboutPage`, tests | Content mirrors current architecture, env, security, performance, and scope facts. |
+| `frontend/src/pages/license/licenseContent.js` | Structured license-page content. | `LICENSE_SUMMARY_SECTIONS` | none | `LicensePage` | Static Apache license summary content. |
+| `frontend/src/pages/legal/LegalContentPage.jsx` | Shared legal static-page renderer. | `LegalContentPage` default | legal page content objects, static page primitives | Privacy and terms pages | Renders section lists and accessible tables. |
+| `frontend/src/pages/legal/legalPageContent.js` | Structured privacy and terms content. | `PRIVACY_POLICY_PAGE`, `TERMS_OF_USE_PAGE` | none | legal pages | Keeps public legal/transparency copy out of route wrappers. |
+| `frontend/src/pages/static/StaticPagePrimitives.jsx` | Shared static-page primitives. | shell, header, section, card, callout, table, action helpers | none | About, legal, and license pages | Keeps static page hierarchy and accessibility markup consistent. |
+| `frontend/src/pages/landing/LandingActionPanel.jsx` | Landing page action panel. | `LandingActionPanel` default | none | `LandingPage` | Links visitors to the tool and supporting pages. |
+| `frontend/src/pages/landing/LandingInfoPanel.jsx` | Landing page information panel. | `LandingInfoPanel` default | none | `LandingPage` | Presents concise prototype context. |
+| `frontend/src/pages/landing/ResizableLandingPanels.jsx` | Landing page split-panel composition. | `ResizableLandingPanels` default | React hooks, landing panels | `LandingPage` | Handles responsive panel sizing. |
+| `frontend/src/pages/landing/ResizableLandingPanels.test.jsx` | Tests landing panel behavior. | none | Testing Library, landing component | Test runner | Covers resize and layout behavior. |
 
 ## API And Constants
 
@@ -52,18 +72,21 @@
 
 | Path | Purpose | Main exports | Main dependencies | Used by | Notes |
 | --- | --- | --- | --- | --- | --- |
-| `frontend/src/components/shared/AppFooter.jsx` | Footer component. | `AppFooter` default | none | `App` | Static user interface content. |
+| `frontend/src/components/shared/AppShell.jsx` | Shared app frame. | `AppShell` default | `Header`, `AppFooter` | `App` | Wraps routed page content and passes active navigation state. |
+| `frontend/src/components/shared/AppFooter.jsx` | Footer component. | `AppFooter` default | none | `AppShell` | Shared identity, prototype disclaimer, copyright/license text, and grouped Project/Legal resource links. |
 | `frontend/src/components/shared/ErrorBanner.jsx` | Dismissible alert banner. | `ErrorBanner` default | React hooks | `App` | Supports error, info, and warning tone classes. |
 | `frontend/src/components/shared/ErrorBanner.test.jsx` | Tests banner tones and dismissal. | none | Testing Library, `ErrorBanner` | Test runner | Covers default, info, warning, and auto-dismiss behavior. |
-| `frontend/src/components/shared/Header.jsx` | Header with service status indicator. | `Header` default | none | `App` | `isOnline` controls status display. |
+| `frontend/src/components/shared/Header.jsx` | Header with service status indicator. | `Header` default | none | `AppShell` | Receives active navigation path and service status. |
 | `frontend/src/components/shared/InfoTooltip.jsx` | Portal-based tooltip. | `InfoTooltip` default | React hooks, `createPortal` | many components | Measures trigger and tooltip position with viewport padding. |
-| `frontend/src/components/shared/LoadingState.jsx` | Verifying loading state. | `LoadingState` default | none | `SelectedLabelWorkspace` | Static loading user interface content. |
+| `frontend/src/components/shared/LoadingState.jsx` | Compact verifying loading state. | `LoadingState` default | none | none currently | Retained shared spinner-style loading component for simple future loading states. |
+| `frontend/src/components/shared/Skeleton.jsx` | Shared skeleton primitives. | `Skeleton`, `SkeletonText`, `SkeletonBlock` | none | selected verification skeleton | Renders decorative placeholders with stable size styles and `aria-hidden`. |
+| `frontend/src/components/shared/Skeleton.test.jsx` | Tests skeleton primitives. | none | Testing Library, skeleton primitives | Test runner | Covers decorative accessibility and variant classes. |
 
 ## Upload Components
 
 | Path | Purpose | Main exports | Main dependencies | Used by | Notes |
 | --- | --- | --- | --- | --- | --- |
-| `frontend/src/components/upload/ImageUploadDropzone.jsx` | File and folder upload controls. | `ImageUploadDropzone` default | React `useRef`, browser support utility, file validation constants | `LabelQueue` | Sends selected files to caller; disables folder button when unsupported. |
+| `frontend/src/components/upload/ImageUploadDropzone.jsx` | File and folder upload controls. | `ImageUploadDropzone` default | React `useRef`, browser support utility, file validation constants | `LabelQueue` | Sends selected files to caller; disables folder button when unsupported; shows the compact AI review notice. |
 | `frontend/src/components/upload/ImageUploadDropzone.test.jsx` | Tests upload controls. | none | Testing Library, file validation constants, component | Test runner | Covers accept filters, folder support, and callback behavior. |
 
 ## Verification Components
@@ -74,7 +97,8 @@
 | `frontend/src/components/verification/ExpectedFieldsForm.jsx` | Expected field input form. | `ExpectedFieldsForm` default | default warning, expected-field definitions, `InfoTooltip` | `SelectedLabelWorkspace` | Includes load example, clear fields, back-to-results, and copy-data controls. |
 | `frontend/src/components/verification/ExtractedTextPanel.jsx` | Displays extracted structured fields and raw text when present. | `ExtractedTextPanel` default | none | `SelectedResultDetail` | Current backend provider returns `raw_text: null`. |
 | `frontend/src/components/verification/FieldResultCard.jsx` | Displays one `FieldResult`. | `FieldResultCard` default | status style utilities | `SelectedResultDetail` | Shows expected, observed, reason, and confidence. |
-| `frontend/src/components/verification/SelectedLabelWorkspace.jsx` | Switches selected workspace state. | `SelectedLabelWorkspace` default | status utilities, expected form, tooltip, loading, result detail | `VerificationForm` | Handles empty, form, loading, error, and result views. |
+| `frontend/src/components/verification/SelectedLabelWorkspace.jsx` | Switches selected workspace state. | `SelectedLabelWorkspace` default | status utilities, expected form, tooltip, result skeleton, result detail | `VerificationForm` | Handles empty, form, verifying skeleton, error, and result views. |
+| `frontend/src/components/verification/SelectedResultSkeleton.jsx` | Result-shaped verifying placeholder. | `SelectedResultSkeleton` default | shared skeleton primitives | `SelectedLabelWorkspace` | Mirrors the result layout while `/verify` is pending without fake data or progress. |
 | `frontend/src/components/verification/SelectedResultDetail.jsx` | Selected result detail view. | `SelectedResultDetail` default | status utilities, `InfoTooltip`, extracted panel, field card | `SelectedLabelWorkspace` | Separates government warning comparison from other field results. |
 | `frontend/src/components/verification/VerificationForm.testUtils.jsx` | Shared test helpers for verification workflow tests. | test helpers | Testing Library, Vitest, mocked API/export modules, `VerificationForm` | verification tests | Provides file factories, render helpers, result fixtures, and object URL mocks. |
 | `frontend/src/components/verification/VerificationForm.queue.test.jsx` | Tests queue behavior. | none | test utilities, mocked API | Test runner | Covers upload warnings, warmup, duplicate handling, preview, filters, copy button enablement, and export enablement. |
@@ -117,6 +141,8 @@
 | `frontend/src/styles/components/selected-workspace.css` | Selected label workspace styles. | CSS | none | `components.css` | Workspace panel, states, and expected data area. |
 | `frontend/src/styles/components/status-results.css` | Status and result styles. | CSS | none | `components.css` | Status labels, field cards, summaries, extracted text. |
 | `frontend/src/styles/components/dialogs-feedback.css` | Dialog and feedback styles. | CSS | none | `components.css` | Modals, banners, tooltips, feedback states. |
+| `frontend/src/styles/components/static-pages.css` | Static page styles. | CSS | none | `components.css` | Shared static page, legal page, license page, about page, and landing informational panel styling. |
+| `frontend/src/styles/components/skeleton.css` | Skeleton placeholder styles. | CSS | none | `components.css` | CSS-only shimmer/static reduced-motion placeholders using existing design tokens. |
 | `frontend/src/styles/components/responsive.css` | Responsive adjustments. | CSS | none | `components.css` | Mobile and viewport-specific layout changes. |
 
 ## Public Assets

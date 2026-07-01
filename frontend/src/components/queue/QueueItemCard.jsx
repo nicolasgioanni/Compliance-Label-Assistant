@@ -1,3 +1,4 @@
+// Queue row card that keeps selection, preview, and removal targets separate.
 import { getQueueItemStatusClass, getQueueItemStatusLabel } from '../../utils/statusResolution';
 
 export default function QueueItemCard({

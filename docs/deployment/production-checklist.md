@@ -2,10 +2,11 @@
 
 ## Before Deployment
 
-- Run backend tests and ruff.
+- Run backend tests with coverage and ruff.
 - Run backend import/startup validation.
-- Run frontend lint, typecheck, tests, and build.
-- Confirm the GitHub Actions `Backend` and `Frontend` checks pass before merging to `main`.
+- Run frontend lint, typecheck, tests with coverage, and build.
+- Confirm the GitHub Actions `backend-ci`, `frontend-ci`, and `repo-hygiene` checks pass before merging to `main`.
+- Confirm `main` is protected with required checks and direct-push restrictions before enabling production auto-deploys.
 - Confirm `backend/.env` and `frontend/.env` are not committed.
 - Confirm docs and examples use placeholders only.
 
@@ -17,6 +18,8 @@
 - `VITE_API_BASE_URL` is set to `<BACKEND_URL>`.
 - No provider secret is configured in Vercel.
 - Static security headers from `frontend/vercel.json` are present.
+- Production deployment or promotion is limited to protected `main`.
+- Vercel deployment protection or deployment checks are enabled in the dashboard if available.
 
 ## Render Backend
 
@@ -27,6 +30,10 @@
 - `OPENAI_API_KEY` is configured as a secret.
 - `ALLOWED_ORIGINS` includes `<FRONTEND_URL>`.
 - Upload and provider settings are intentionally selected.
+- `VERIFICATION_DAILY_UNIT_LIMIT`, `VERIFICATION_RATE_LIMIT_ENABLED`, and `OPENAI_MAX_OUTPUT_TOKENS` are intentionally selected.
+- OpenAI project budgets are configured as secondary billing alerts.
+- Health check path is `/health` if Render exposes health check configuration.
+- Auto-deploy from `main` is enabled only after GitHub branch protection is active.
 
 ## Smoke Test
 
@@ -35,15 +42,18 @@ After deployment:
 1. Open the deployed frontend.
 2. Confirm no startup error banner appears.
 3. Confirm backend health is reachable through the frontend.
-4. Upload a supported image.
-5. Try an unsupported file and verify user-facing rejection.
-6. Enter expected data and run verification.
-7. Review field results and extracted fields.
-8. Export verified results.
-9. Confirm no secret values appear in browser output or logs.
+4. Confirm footer links open About, Verification Tool, Privacy Policy, Terms of Use, License, and Source Code.
+5. Upload a supported image.
+6. Try an unsupported file and verify user-facing rejection.
+7. Enter expected data and run verification.
+8. Review field results and extracted fields.
+9. Export verified results.
+10. Confirm no secret values appear in browser output or logs.
+11. Confirm deployed backend settings include the intended daily verification cap.
 
 ## Known Deployment Gaps
 
 - No checked-in Render config.
-- No CI-driven deployment workflow.
+- No GitHub Actions-controlled deployment workflow; deployments remain dashboard-configured after required checks pass.
+- No browser smoke workflow is required for merge yet.
 - No deployment health monitor configuration documented in code.

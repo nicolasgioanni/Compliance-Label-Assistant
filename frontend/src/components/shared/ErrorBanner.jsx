@@ -1,4 +1,6 @@
+// Dismissible status banner used for upload, health, and verification messages.
 import { useEffect, useState } from 'react';
+import BodyPortal from './BodyPortal';
 
 export default function ErrorBanner({ autoDismissMs = 15000, dismissible = true, message, onDismiss, tone = 'error' }) {
   const [isVisible, setIsVisible] = useState(Boolean(message));
@@ -29,16 +31,18 @@ export default function ErrorBanner({ autoDismissMs = 15000, dismissible = true,
   }
 
   return (
-    <div className="error-banner-layer">
-      <div className={`error-banner error-banner-${bannerTone}`} role="alert">
-        <span>{message}</span>
-        {dismissible ? (
-          <button aria-label="Dismiss error message" className="error-banner-close" type="button" onClick={handleDismiss}>
-            X
-          </button>
-        ) : null}
+    <BodyPortal>
+      <div className="error-banner-layer">
+        <div className={`error-banner error-banner-${bannerTone}`} role="alert">
+          <span>{message}</span>
+          {dismissible ? (
+            <button aria-label="Dismiss error message" className="error-banner-close" type="button" onClick={handleDismiss}>
+              X
+            </button>
+          ) : null}
+        </div>
       </div>
-    </div>
+    </BodyPortal>
   );
 }
 

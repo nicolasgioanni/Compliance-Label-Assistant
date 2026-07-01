@@ -5,6 +5,7 @@ param(
     [switch]$NoEnvFile
 )
 
+# Prepares ignored env files and dependencies without writing provider secrets.
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 

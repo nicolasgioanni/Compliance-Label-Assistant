@@ -1,3 +1,4 @@
+// Modal for copying expected application data from one queued label to others.
 import { useEffect, useMemo, useState } from 'react';
 import { useDismissibleDialog } from '../../hooks/useDismissibleDialog';
 import { hasAnyVisibleExpectedFieldValue } from '../../utils/expectedFields';
@@ -7,6 +8,7 @@ import {
 } from '../../utils/expectedFieldCopy';
 import { getQueueItemStatusClass, getQueueItemStatusLabel } from '../../utils/statusResolution';
 import InfoTooltip from '../shared/InfoTooltip';
+import DialogPortal from './DialogPortal';
 
 export default function CopyClaimDataModal({ queueItems, sourceItem, onApply, onClose }) {
   const [selectedTargetIds, setSelectedTargetIds] = useState(() => new Set());
@@ -113,60 +115,62 @@ export default function CopyClaimDataModal({ queueItems, sourceItem, onApply, on
   }
 
   return (
-    <div className="copy-data-dialog-overlay" onMouseDown={handleOverlayMouseDown}>
-      <div
-        aria-labelledby="copy-data-dialog-title"
-        aria-modal="true"
-        className="copy-data-dialog"
-        role="dialog"
-      >
-        {activeWarning ? (
-          <CopyDataWarning
-            activeWarning={activeWarning}
-            onDismissBlankWarning={handleDismissBlankWarning}
-            onDismissOverwriteWarning={handleDismissOverwriteWarning}
-          />
-        ) : null}
-        <div className="copy-data-dialog-header">
-          <div className="copy-data-title-row">
-            <h2 id="copy-data-dialog-title">Copy Expected Data to Labels</h2>
-            <InfoTooltip label="About copying expected data">
-              Copy the expected data from this label to other labels in your queue. Nothing changes until you click
-              Apply.
-            </InfoTooltip>
+    <DialogPortal>
+      <div className="copy-data-dialog-overlay" onMouseDown={handleOverlayMouseDown}>
+        <div
+          aria-labelledby="copy-data-dialog-title"
+          aria-modal="true"
+          className="copy-data-dialog"
+          role="dialog"
+        >
+          {activeWarning ? (
+            <CopyDataWarning
+              activeWarning={activeWarning}
+              onDismissBlankWarning={handleDismissBlankWarning}
+              onDismissOverwriteWarning={handleDismissOverwriteWarning}
+            />
+          ) : null}
+          <div className="copy-data-dialog-header">
+            <div className="copy-data-title-row">
+              <h2 id="copy-data-dialog-title">Copy Expected Data to Labels</h2>
+              <InfoTooltip label="About copying expected data">
+                Copy the expected data from this label to other labels in your queue. Nothing changes until you click
+                Apply.
+              </InfoTooltip>
+            </div>
           </div>
+
+          <CopyDataSourceBlock sourceItem={sourceItem} />
+
+          <CopyDataToolbar
+            hasSelectedTargets={selectedTargetIds.size > 0}
+            hasTargets={targetItems.length > 0}
+            onClearSelection={handleClearSelection}
+            onSelectAll={handleSelectAll}
+          />
+
+          <CopyDataTargetList
+            selectedTargetIds={selectedTargetIds}
+            sourceExpectedFields={sourceItem.expectedFields}
+            targetItems={targetItems}
+            onToggleTarget={handleToggleTarget}
+          />
+
+          <CopyDataMoveOption
+            clearSourceLabelId={clearSourceLabelId}
+            isChecked={shouldClearSource}
+            onChange={setShouldClearSource}
+          />
+
+          <CopyDataDialogFooter
+            canApply={canApply}
+            primaryButtonLabel={primaryButtonLabel}
+            onApply={handleApply}
+            onClose={onClose}
+          />
         </div>
-
-        <CopyDataSourceBlock sourceItem={sourceItem} />
-
-        <CopyDataToolbar
-          hasSelectedTargets={selectedTargetIds.size > 0}
-          hasTargets={targetItems.length > 0}
-          onClearSelection={handleClearSelection}
-          onSelectAll={handleSelectAll}
-        />
-
-        <CopyDataTargetList
-          selectedTargetIds={selectedTargetIds}
-          sourceExpectedFields={sourceItem.expectedFields}
-          targetItems={targetItems}
-          onToggleTarget={handleToggleTarget}
-        />
-
-        <CopyDataMoveOption
-          clearSourceLabelId={clearSourceLabelId}
-          isChecked={shouldClearSource}
-          onChange={setShouldClearSource}
-        />
-
-        <CopyDataDialogFooter
-          canApply={canApply}
-          primaryButtonLabel={primaryButtonLabel}
-          onApply={handleApply}
-          onClose={onClose}
-        />
       </div>
-    </div>
+    </DialogPortal>
   );
 }
 

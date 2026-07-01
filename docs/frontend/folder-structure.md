@@ -10,6 +10,7 @@ frontend/
 |   |-- components/
 |   |-- constants/
 |   |-- hooks/
+|   |-- pages/
 |   |-- styles/
 |   `-- utils/
 |-- eslint.config.js
@@ -33,6 +34,7 @@ frontend/
 | `frontend/src/components/verification` | Selected-label workspace and verification result rendering. |
 | `frontend/src/constants` | Shared user interface messages and default warning text. |
 | `frontend/src/hooks` | Queue orchestration and small reusable user interface hooks. |
+| `frontend/src/pages` | Route-level landing, tool, about, license, and static page content modules. |
 | `frontend/src/styles` | Global CSS and component partials. |
 | `frontend/src/utils` | Reusable frontend logic for validation, queue state, statuses, export, and browser support. |
 
@@ -48,8 +50,10 @@ These are not documented in detail:
 
 ## Where To Start
 
-- User interface shell: `frontend/src/App.jsx`
-- Main workflow: `frontend/src/components/verification/VerificationForm.jsx`
+- Route selection: `frontend/src/App.jsx`
+- User interface shell: `frontend/src/components/shared/AppShell.jsx`
+- Main workflow page: `frontend/src/pages/ToolPage.jsx`
+- Main workflow component: `frontend/src/components/verification/VerificationForm.jsx`
 - Queue state: `frontend/src/hooks/useQueueItems.js`
 - Verification calls: `frontend/src/hooks/useQueueVerification.js`
 - API client: `frontend/src/api/verificationApi.js`

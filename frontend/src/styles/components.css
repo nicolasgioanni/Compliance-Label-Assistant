@@ -1,7 +1,10 @@
+/* Component partial import order for layout, controls, workflow panels, and responsive rules. */
 @import "./components/layout.css";
 @import "./components/forms-controls.css";
 @import "./components/dialogs-feedback.css";
 @import "./components/selected-workspace.css";
 @import "./components/status-results.css";
 @import "./components/queue.css";
+@import "./components/static-pages.css";
+@import "./components/skeleton.css";
 @import "./components/responsive.css";

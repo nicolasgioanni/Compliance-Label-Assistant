@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import { supportsDirectoryUpload } from '../../utils/browserSupport';
+// File and folder upload controls for adding labels to the in-memory queue.
 import { FILE_INPUT_ACCEPT, SUPPORTED_IMAGE_DESCRIPTION } from '../../utils/fileValidation';
 
 export default function ImageUploadDropzone({
@@ -13,7 +14,9 @@ export default function ImageUploadDropzone({
 
   const inputDisabled = disabled;
   const folderInputDisabled = inputDisabled || !isFolderUploadSupported;
-  const folderUploadUnsupportedMessage = 'Folder upload is not supported in this browser. Use Add Files instead.';
+const folderUploadUnsupportedMessage = 'Folder upload is not supported in this browser. Use Add Files instead.';
+const AI_UPLOAD_NOTICE =
+  'This prototype uses AI to extract information from uploaded label images. Results may be incomplete or inaccurate and should be reviewed by a human before any compliance decision.';
 
   function handleFileChange(event) {
     const nextFiles = Array.from(event.target.files || []);
@@ -97,6 +100,7 @@ export default function ImageUploadDropzone({
       <p className="upload-helper">
         {SUPPORTED_IMAGE_DESCRIPTION} only &bull; Maximum {maxQueueSize} labels
       </p>
+      <p className="upload-ai-notice">{AI_UPLOAD_NOTICE}</p>
     </div>
   );
 }

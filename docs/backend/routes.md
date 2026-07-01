@@ -37,7 +37,7 @@ Calls `warm_verification_dependencies()` and returns:
 }
 ```
 
-Warmup initializes reusable backend dependencies when a provider key exists. It can make a best-effort model metadata request to warm the provider network path. It does not upload files, send provider request content, or make an extraction request.
+Warmup initializes reusable backend dependencies when a provider key exists. It can make one best-effort model metadata request per model per backend process to warm the provider network path. It does not upload files, send provider request content, or make an extraction request.
 
 ## `POST /verify`
 
@@ -56,7 +56,7 @@ Accepts multipart form data:
 
 Returns `SingleVerificationResponse`.
 
-Known errors are mapped to HTTP status codes in the route handler.
+Known errors are mapped to HTTP status codes in the route handler. Daily verification cap exhaustion returns HTTP `429` with rate-limit headers.
 
 ## `POST /verify-batch`
 
@@ -75,7 +75,7 @@ Accepts multipart form data:
 
 Returns `BatchVerificationResponse`.
 
-Batch-level validation errors return HTTP `400`. Per-file processing errors are returned inside result items.
+Batch-level validation errors return HTTP `400`. Daily verification cap exhaustion returns request-level HTTP `429` before per-file processing. Per-file processing errors are returned inside result items.
 
 ## Government Warning Input
 

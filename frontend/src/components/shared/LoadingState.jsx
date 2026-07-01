@@ -1,3 +1,4 @@
+// Full-panel loading copy used while shared app state is being resolved.
 export default function LoadingState() {
   return (
     <div className="loading-state" aria-live="polite">

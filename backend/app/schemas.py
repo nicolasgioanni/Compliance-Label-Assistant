@@ -1,4 +1,9 @@
-"""Pydantic models for API request and response shapes."""
+"""Pydantic models for API request and response shapes.
+
+These models are the backend/frontend JSON contract. Field names, nesting, and
+status literals are intentionally stable because result cards, exports, and API
+contract tests read the exact keys.
+"""
 
 from __future__ import annotations
 
@@ -19,6 +24,8 @@ OverallStatus = Literal["pass", "fail", "error"]
 
 
 class ExpectedFields(BaseModel):
+    """Reviewer-supplied target fields normalized into backend naming."""
+
     brand_name: str
     class_type: str
     alcohol_content: str
@@ -29,6 +36,8 @@ class ExpectedFields(BaseModel):
 
 
 class ExtractedFields(BaseModel):
+    """Provider-extracted label fields before deterministic comparison."""
+
     brand_name: str | None = None
     class_type: str | None = None
     alcohol_content: str | None = None
@@ -40,6 +49,8 @@ class ExtractedFields(BaseModel):
 
 
 class FieldResult(BaseModel):
+    """One deterministic comparison result for a checked field."""
+
     field_name: str
     expected: str
     found: str | None
@@ -49,6 +60,8 @@ class FieldResult(BaseModel):
 
 
 class SingleVerificationResponse(BaseModel):
+    """Frontend-facing result payload for one label verification request."""
+
     filename: str
     overall_status: OverallStatus
     expected_fields: ExpectedFields
@@ -70,6 +83,8 @@ class BatchVerificationItem(SingleVerificationResponse):
 
 
 class BatchVerificationResponse(BaseModel):
+    """Shared-expected-fields batch response with one item per submitted file."""
+
     mode: Literal["batch"] = "batch"
     total_labels: int
     completed: int

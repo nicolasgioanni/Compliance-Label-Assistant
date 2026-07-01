@@ -1,3 +1,4 @@
+// File validation tests protect browser-side upload warnings and accept lists.
 import { describe, expect, it } from 'vitest';
 import {
   FILE_INPUT_ACCEPT,
@@ -58,6 +59,12 @@ describe('file validation utilities', () => {
     const oversizedFile = makeFile('large.png', 'image/png', 5 * 1024 * 1024 + 1);
 
     expect(validateSingleFile(oversizedFile)).toMatch('smaller than 5 MB');
+  });
+
+  it('accepts a file exactly at the size limit', () => {
+    const maxSizedFile = makeFile('max-size.png', 'image/png', 5 * 1024 * 1024);
+
+    expect(validateSingleFile(maxSizedFile)).toBe('');
   });
 
   it('exports an accept list covering supported extensions and MIME types', () => {

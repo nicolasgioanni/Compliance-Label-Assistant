@@ -1,3 +1,4 @@
+// Pure queue-item state transitions shared by hooks and tests.
 import { createEmptyExpectedFields } from './expectedFields';
 import {
   clearCopiedExpectedFields,
@@ -12,6 +13,8 @@ const EMPTY_EXPECTED_FIELDS = createEmptyExpectedFields();
 export function createQueueItem(file, id = createClientId()) {
   const relativePath = getFileRelativePath(file);
 
+  // Queue items keep browser File objects in memory until verification; the
+  // app does not persist uploads or create server-side records.
   return {
     id,
     file,
@@ -27,6 +30,8 @@ export function createQueueItem(file, id = createClientId()) {
 }
 
 export function applyExpectedFieldsChange(item, nextExpectedFields) {
+  // Expected-field edits invalidate current evidence without deleting the old
+  // result, allowing the UI to explain stale data to the reviewer.
   return {
     ...item,
     expectedFields: nextExpectedFields,
@@ -79,6 +84,8 @@ export function showFormView(item) {
 }
 
 export function copyExpectedFieldsToQueueItem(item, sourceExpectedFields) {
+  // Copying changed expected data clears prior verification evidence because it
+  // was produced against a different target field set.
   if (!hasDifferentCopyExpectedFields(item.expectedFields, sourceExpectedFields)) {
     return item;
   }

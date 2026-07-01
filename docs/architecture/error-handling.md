@@ -62,9 +62,9 @@ The `/verify-batch` endpoint rejects invalid batch-level requests before process
 
 CORS is configured in `backend/app/main.py` from `settings.allowed_origins`. Browser requests fail when `ALLOWED_ORIGINS` does not include the active frontend origin. Local scripts add the selected frontend origin to process-level `ALLOWED_ORIGINS`.
 
-## What Not To Do
+## Safety Boundaries
 
-- Do not expose provider keys in frontend errors.
-- Do not log raw image bytes, base64 payloads, or full uploaded payloads.
-- Do not return stack traces to the browser.
-- Do not replace structured route error mapping with generic failures.
+- Provider keys remain outside frontend errors.
+- Logging excludes raw image bytes, base64 payloads, and full uploaded payloads.
+- Browser responses omit stack traces.
+- Structured route error mapping remains the expected backend behavior.

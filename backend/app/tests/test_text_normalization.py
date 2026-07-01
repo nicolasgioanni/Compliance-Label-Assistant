@@ -1,3 +1,5 @@
+"""Text normalization tests for deterministic verification helpers."""
+
 from app.utils.text_normalization import (
     calculate_similarity,
     extract_abv,

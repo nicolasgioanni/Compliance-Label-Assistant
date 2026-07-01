@@ -1,3 +1,4 @@
+// Multi-select status filters for narrowing the in-memory label queue.
 import { QUEUE_FILTERS } from '../../utils/queueStatusFilters';
 import InfoTooltip from '../shared/InfoTooltip';
 

@@ -30,18 +30,22 @@ Compliance Label Assistant is a lightweight prototype, not a production security
 - CSV export neutralizes formula-like cell prefixes and does not export raw extracted text.
 - XLSX export includes the same result summary rows as CSV.
 
-## Error Handling And Logging
+## Error Handling, Logging, And Repository Hygiene
 
 - Known upload, preprocessing, provider configuration, provider response, and provider service errors are mapped to user-facing API responses.
 - Unexpected backend errors return a generic message.
 - Do not log provider keys, tokens, raw image bytes, base64 image payloads, full uploaded payloads, full environment dumps, or real local `.env` contents.
+- Repository hygiene checks cover ignored env files, generated outputs, logs, private dashboard URLs, credentials, and raw uploaded payloads.
 
 ## Abuse And Cost Controls
 
 - Frontend queue size is limited to 10 files.
 - Frontend ready-label verification uses bounded concurrency.
 - Backend upload size, decoded pixel count, batch size, provider timeout, provider concurrency, and batch concurrency are configurable.
-- The prototype does not implement authentication, authorization, user-level rate limiting, or account-based quotas.
+- Backend verification requests are capped by a process-local in-memory daily verification-unit limit. The default is 50 units per 24-hour window across all users, where one label image costs one unit.
+- Provider responses are capped with `OPENAI_MAX_OUTPUT_TOKENS`.
+- Configure OpenAI project budgets as secondary billing alerts; app-level limiting remains the primary hard guard in this prototype.
+- The prototype does not implement authentication, authorization, distributed rate limiting, user-level rate limiting, or account-based quotas.
 
 ## Prototype Omissions
 

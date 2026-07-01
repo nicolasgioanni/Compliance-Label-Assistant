@@ -38,7 +38,7 @@ Internal behavior:
 
 - Fails with `ExtractionConfigurationError` when `OPENAI_API_KEY` is missing.
 - Base64-encodes preprocessed JPEG bytes as a data URL.
-- Sends the configured model and image detail.
+- Sends the configured model, image detail, and maximum output-token cap.
 - Uses structured parsing into an internal `_ExtractionFields` model.
 - Converts parsed output into public `ExtractedFields`.
 - Maps connection, timeout, rate limit, provider status, and SDK errors to safe user-facing messages.
@@ -62,8 +62,8 @@ Current code sets `raw_text` to `null`.
 ## Security Notes
 
 - Provider key stays in backend settings.
-- The frontend never receives provider secrets.
-- Do not log request image bytes, base64 payloads, provider keys, or full provider responses.
+- Provider secrets remain backend-only.
+- Logging excludes request image bytes, base64 payloads, provider keys, and full provider responses.
 
 ## Testing
 

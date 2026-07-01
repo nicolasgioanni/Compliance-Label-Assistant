@@ -1,3 +1,4 @@
+// Creates short-lived browser object URLs for local file previews.
 import { useEffect, useState } from 'react';
 
 export function useObjectUrl(value) {
@@ -13,6 +14,7 @@ export function useObjectUrl(value) {
     setObjectUrl(nextObjectUrl);
 
     return () => {
+      // Revoke previews on cleanup so queued files do not leak browser memory.
       if (typeof URL.revokeObjectURL === 'function') {
         URL.revokeObjectURL(nextObjectUrl);
       }

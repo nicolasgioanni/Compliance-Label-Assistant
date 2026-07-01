@@ -20,7 +20,7 @@ Development dependencies:
 | --- | --- |
 | `eslint`, `@eslint/js`, `eslint-plugin-react`, `eslint-plugin-react-hooks`, `globals` | Linting JavaScript, React, and hooks. |
 | `typescript`, `@types/node`, `@types/react`, `@types/react-dom` | JS typecheck support through `frontend/jsconfig.json`. |
-| `vitest`, `jsdom` | Frontend test runner and DOM environment. |
+| `vitest`, `@vitest/coverage-v8`, `jsdom` | Frontend test runner, coverage provider, and DOM environment. |
 | `@testing-library/react`, `@testing-library/user-event`, `@testing-library/jest-dom` | Component and interaction tests. |
 | `postcss`, `autoprefixer` | CSS post-processing. |
 
@@ -40,6 +40,7 @@ Source: `backend/requirements.txt`
 | `openai` | `>=2.38.0,<3.0.0` | OpenAI provider SDK. |
 | `httpx` | `0.28.1` | HTTP client dependency used by backend tests/framework ecosystem. |
 | `pytest` | `9.0.3` | Backend test runner. |
+| `pytest-cov` | `7.0.0` | Backend coverage reporting for pytest. |
 | `ruff` | `0.8.6` | Backend linting. |
 
 Transitive dependencies are not documented individually.

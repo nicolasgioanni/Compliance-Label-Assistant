@@ -471,10 +471,13 @@ def calculate_overall_status(field_results: list[FieldResult]) -> OverallStatus:
 
 
 def verify_expected_fields(expected_fields: ExpectedFields, extracted_fields: ExtractedFields) -> list[FieldResult]:
+    """Compare expected and extracted values without any provider calls."""
     field_results = [
         verify_brand_name(expected_fields.brand_name, extracted_fields.brand_name),
     ]
 
+    # Optional expected fields are skipped when blank so reviewers can verify a
+    # smaller field set without changing extraction behavior.
     if not _is_missing(expected_fields.class_type):
         field_results.append(verify_class_type(expected_fields.class_type, extracted_fields.class_type))
 
@@ -494,6 +497,8 @@ def verify_expected_fields(expected_fields: ExpectedFields, extracted_fields: Ex
             verify_country_of_origin(expected_fields.country_of_origin, extracted_fields.country_of_origin),
         )
 
+    # Government warning remains mandatory and server-owned even if the client
+    # submitted a different form value for API compatibility.
     field_results.append(
         verify_government_warning(STANDARD_GOVERNMENT_WARNING, extracted_fields.government_warning_text),
     )

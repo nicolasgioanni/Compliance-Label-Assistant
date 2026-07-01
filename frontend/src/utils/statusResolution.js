@@ -1,3 +1,4 @@
+// Resolves queue workflow statuses against current backend result evidence.
 import { getStatusLabel } from './statusStyles';
 
 const QUEUE_STATUS_LABELS = {
@@ -83,6 +84,8 @@ function applyStatusCount(summary, status) {
 }
 
 function normalizeOverallStatus(status) {
+  // Legacy needs-review overall statuses display as failures in the current
+  // queue summary model.
   if (status === 'needs_review') {
     return 'fail';
   }

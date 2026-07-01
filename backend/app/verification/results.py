@@ -11,6 +11,7 @@ def build_field_result(
     reason: str,
     confidence: float,
 ) -> FieldResult:
+    """Centralize field result construction so reason strings stay explicit."""
     return FieldResult(
         field_name=field_name,
         expected=expected,

@@ -1,3 +1,4 @@
+// Form for reviewer-entered expected fields before backend verification.
 import { DEFAULT_GOVERNMENT_WARNING } from '../../constants/defaultWarningText';
 import {
   createEmptyExpectedFields,

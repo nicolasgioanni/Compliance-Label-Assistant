@@ -1,3 +1,4 @@
+// Error banner tests protect shared notification dismissal behavior.
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import ErrorBanner from './ErrorBanner';
@@ -11,6 +12,20 @@ describe('ErrorBanner', () => {
     render(<ErrorBanner message="Something failed." />);
 
     expect(screen.getByRole('alert')).toHaveClass('error-banner', 'error-banner-error');
+  });
+
+  it('mounts the banner layer under the document body', () => {
+    const { container } = render(
+      <div className="page-body-transition">
+        <ErrorBanner message="Something failed." />
+      </div>,
+    );
+    const bodyTransition = container.querySelector('.page-body-transition');
+    const bannerLayer = document.body.querySelector('.error-banner-layer');
+
+    expect(bannerLayer).toBeInTheDocument();
+    expect(bannerLayer.parentElement).toBe(document.body);
+    expect(bodyTransition).not.toContainElement(bannerLayer);
   });
 
   it('supports an info tone with the same dismiss behavior', () => {

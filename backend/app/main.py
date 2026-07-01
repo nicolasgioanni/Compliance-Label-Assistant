@@ -1,4 +1,10 @@
-"""FastAPI application entrypoint."""
+"""FastAPI application entrypoint and route assembly.
+
+This module owns process-level API wiring only: configuration loading, CORS,
+shared security headers, route registration, and the final fallback error
+handler. Verification, provider, image, and response-building behavior stays in
+the service modules registered here so HTTP routing remains thin.
+"""
 
 import logging
 
@@ -17,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 async def handle_unexpected_error(request: Request, exc: Exception) -> JSONResponse:
+    """Return the public fallback error shape without leaking internals."""
     logger.error("Unhandled request error: %s", exc.__class__.__name__)
     return apply_security_headers(
         JSONResponse(
@@ -27,9 +34,12 @@ async def handle_unexpected_error(request: Request, exc: Exception) -> JSONRespo
 
 
 def create_app() -> FastAPI:
+    """Build the FastAPI app with deployment-sensitive middleware and routes."""
     configure_logging()
     settings = get_settings()
 
+    # Keep API metadata stable because frontend health checks and deployment
+    # import checks use this app object without starting Uvicorn.
     app = FastAPI(
         title="Compliance Label Assistant API",
         version="0.1.0",
@@ -40,6 +50,8 @@ def create_app() -> FastAPI:
         ),
     )
 
+    # Browser callers depend on explicit configured origins; provider secrets
+    # remain backend-only and are never represented in CORS configuration.
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.allowed_origins or [],
@@ -50,9 +62,12 @@ def create_app() -> FastAPI:
 
     @app.middleware("http")
     async def security_headers_middleware(request: Request, call_next):
+        """Apply shared defensive headers to normal route responses."""
         response = await call_next(request)
         return apply_security_headers(response)
 
+    # Public endpoint paths are registered here and consumed by the frontend API
+    # client and deployment smoke checks.
     app.include_router(health.router)
     app.include_router(warmup.router)
     app.include_router(verification.router)

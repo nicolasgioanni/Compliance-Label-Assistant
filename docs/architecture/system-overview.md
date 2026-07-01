@@ -62,7 +62,7 @@ External provider:
 - Frontend: Vercel project with `frontend` as root, `npm run build`, and `dist` output.
 - Backend: Render Starter web service with `backend` as root, Python 3.11, and Uvicorn startup.
 - `frontend/vercel.json` defines lightweight static response headers.
-- `.github/workflows/ci.yml` runs validation checks on pull requests and pushes to `main`.
+- `backend-ci`, `frontend-ci`, and `repo-hygiene` GitHub Actions checks run on pull requests and pushes to `main`.
 - There are no checked-in Render or Docker config files.
 
 ## Runtime Assumptions
@@ -72,7 +72,7 @@ External provider:
 - Backend `/verify-batch` requires 2 to `MAX_BATCH_SIZE` files.
 - Backend provider configuration is read through `backend/app/config.py`.
 - `OPENAI_API_KEY` is required for extraction-backed verification.
-- `ALLOWED_ORIGINS` must include the active frontend origin for browser calls.
+- `ALLOWED_ORIGINS` includes the active frontend origin for browser calls.
 - Government production use would need PII, retention, audit logging, egress, approved-provider, access-control, monitoring, and rate-limit review.
 
 ## Intentionally Out Of Scope
@@ -83,7 +83,7 @@ External provider:
 - Admin dashboard.
 - COLA integration.
 - Persistent uploaded file storage.
-- Production rate limiting.
+- Distributed production rate limiting.
 - Production monitoring.
 - PDF and HEIC/HEIF uploads.
 - Visual layout checks such as font size, bold styling, and exact label placement.
