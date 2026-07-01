@@ -4,12 +4,17 @@
   background:
     linear-gradient(
       90deg,
-      rgba(216, 226, 237, 0.8) 0%,
-      rgba(238, 244, 250, 0.95) 45%,
-      rgba(216, 226, 237, 0.8) 90%
+      #c8d6e5 0%,
+      #eaf2fa 36%,
+      #ffffff 50%,
+      #eaf2fa 64%,
+      #c8d6e5 100%
     );
-  background-size: 220% 100%;
+  background-size: 260% 100%;
   border-radius: var(--skeleton-radius, var(--radius-control));
+  box-shadow:
+    inset 0 0 0 1px rgba(31, 92, 151, 0.1),
+    0 1px 2px rgba(15, 31, 51, 0.06);
   display: block;
   flex-shrink: 0;
   height: var(--skeleton-height, 1rem);
@@ -34,6 +39,26 @@
 
 .selected-result-skeleton {
   min-width: 0;
+  padding-top: 0.55rem;
+  position: relative;
+}
+
+.selected-result-skeleton::before {
+  animation: skeleton-accent-slide 1.15s ease-in-out infinite;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(31, 92, 151, 0.22) 0%,
+      rgba(196, 154, 58, 0.78) 48%,
+      rgba(31, 92, 151, 0.22) 100%
+    );
+  border-radius: 999px;
+  content: "";
+  height: 0.2rem;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 
 .selected-result-skeleton__meta-value {
@@ -54,17 +79,52 @@
 
 @keyframes skeleton-shimmer {
   from {
-    background-position: 120% 0;
+    background-position: 130% 0;
   }
 
   to {
-    background-position: -120% 0;
+    background-position: -130% 0;
+  }
+}
+
+@keyframes skeleton-accent-slide {
+  0% {
+    opacity: 0.75;
+    transform: scaleX(0.18);
+    transform-origin: left;
+  }
+
+  45% {
+    opacity: 1;
+    transform: scaleX(0.72);
+    transform-origin: left;
+  }
+
+  55% {
+    opacity: 1;
+    transform: scaleX(0.72);
+    transform-origin: right;
+  }
+
+  100% {
+    opacity: 0.75;
+    transform: scaleX(0.18);
+    transform-origin: right;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .skeleton {
+  .skeleton,
+  .selected-result-skeleton::before {
     animation: none;
+  }
+
+  .skeleton {
     background-position: 0 0;
+  }
+
+  .selected-result-skeleton::before {
+    opacity: 0.85;
+    transform: none;
   }
 }
