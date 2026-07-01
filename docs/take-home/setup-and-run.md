@@ -13,8 +13,8 @@ This guide is the evaluator-facing setup path for running the prototype locally.
 ## Clone The Repository
 
 ```powershell
-git clone <repository-url>
-cd label-compliance-verifier
+git clone https://github.com/nicolasgioanni/Compliance-Label-Assistant.git
+cd Compliance-Label-Assistant
 ```
 
 ## Recommended Local Setup

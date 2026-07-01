@@ -3,7 +3,7 @@
 ## Top-Level Layout
 
 ```text
-label-compliance-verifier/
+Compliance-Label-Assistant/
 |-- .github/
 |-- backend/
 |-- docs/
